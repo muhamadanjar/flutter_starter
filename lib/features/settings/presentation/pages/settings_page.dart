@@ -1,0 +1,385 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/loading_widget.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../providers/settings_provider.dart';
+
+class SettingsPage extends ConsumerStatefulWidget {
+  const SettingsPage({super.key});
+
+  @override
+  ConsumerState<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends ConsumerState<SettingsPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(settingsProvider.notifier).loadSettings();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(settingsProvider);
+
+    if (state.isLoading && state.settings == null) {
+      return const Scaffold(
+        body: LoadingWidget(message: 'Loading settings...'),
+      );
+    }
+
+    final settings = state.settings ?? const AppSettings();
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Settings')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 600),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Appearance Section
+              _SectionHeader(title: 'Appearance'),
+              const SizedBox(height: 8),
+              _SettingsCard(
+                children: [
+                  _SettingsTile(
+                    icon: Icons.dark_mode_rounded,
+                    iconColor: context.colors.primary,
+                    title: 'Dark Mode',
+                    subtitle: 'Use dark theme throughout the app',
+                    trailing: Switch.adaptive(
+                      value: settings.darkMode,
+                      onChanged: (v) => ref.read(settingsProvider.notifier).updateSetting(darkMode: v),
+                      activeColor: context.colors.primary,
+                    ),
+                  ),
+                  const _SettingsDivider(),
+                  _SettingsTile(
+                    icon: Icons.text_fields_rounded,
+                    iconColor: context.colors.secondary,
+                    title: 'Font Size',
+                    subtitle: 'Adjust text size',
+                    trailing: DropdownButton<String>(
+                      value: settings.fontSize,
+                      underline: const SizedBox(),
+                      items: const [
+                        DropdownMenuItem(value: 'small', child: Text('Small')),
+                        DropdownMenuItem(value: 'medium', child: Text('Medium')),
+                        DropdownMenuItem(value: 'large', child: Text('Large')),
+                      ],
+                      onChanged: (v) {
+                        if (v != null) ref.read(settingsProvider.notifier).updateSetting(fontSize: v);
+                      },
+                    ),
+                  ),
+                  const _SettingsDivider(),
+                  _SettingsTile(
+                    icon: Icons.language_rounded,
+                    iconColor: context.colors.info,
+                    title: 'Language',
+                    subtitle: 'Select your preferred language',
+                    trailing: DropdownButton<String>(
+                      value: settings.language,
+                      underline: const SizedBox(),
+                      items: const [
+                        DropdownMenuItem(value: 'en', child: Text('English')),
+                        DropdownMenuItem(value: 'id', child: Text('Bahasa Indonesia')),
+                        DropdownMenuItem(value: 'zh', child: Text('Chinese')),
+                      ],
+                      onChanged: (v) {
+                        if (v != null) ref.read(settingsProvider.notifier).updateSetting(language: v);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Security Section
+              _SectionHeader(title: 'Security'),
+              const SizedBox(height: 8),
+              _SettingsCard(
+                children: [
+                  _SettingsTile(
+                    icon: Icons.fingerprint_rounded,
+                    iconColor: context.colors.success,
+                    title: 'Biometric Login',
+                    subtitle: 'Use fingerprint or face ID to login',
+                    trailing: Switch.adaptive(
+                      value: settings.biometricEnabled,
+                      onChanged: (v) => ref.read(settingsProvider.notifier).updateSetting(biometricEnabled: v),
+                      activeColor: context.colors.primary,
+                    ),
+                  ),
+                  const _SettingsDivider(),
+                  _SettingsTile(
+                    icon: Icons.lock_outline,
+                    iconColor: context.colors.warning,
+                    title: 'Change Password',
+                    subtitle: 'Update your account password',
+                    onTap: () => context.go('/change-password'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Notifications Section
+              _SectionHeader(title: 'Notifications'),
+              const SizedBox(height: 8),
+              _SettingsCard(
+                children: [
+                  _SettingsTile(
+                    icon: Icons.notifications_active_rounded,
+                    iconColor: context.colors.accent,
+                    title: 'Push Notifications',
+                    subtitle: 'Receive push notifications',
+                    trailing: Switch.adaptive(
+                      value: settings.notificationsEnabled,
+                      onChanged: (v) => ref.read(settingsProvider.notifier).updateSetting(notificationsEnabled: v),
+                      activeColor: context.colors.primary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Data & Privacy Section
+              _SectionHeader(title: 'Data & Privacy'),
+              const SizedBox(height: 8),
+              _SettingsCard(
+                children: [
+                  _SettingsTile(
+                    icon: Icons.sync_rounded,
+                    iconColor: context.colors.secondary,
+                    title: 'Auto Sync',
+                    subtitle: 'Automatically sync data when online',
+                    trailing: Switch.adaptive(
+                      value: settings.autoSync,
+                      onChanged: (v) => ref.read(settingsProvider.notifier).updateSetting(autoSync: v),
+                      activeColor: context.colors.primary,
+                    ),
+                  ),
+                  const _SettingsDivider(),
+                  _SettingsTile(
+                    icon: Icons.analytics_rounded,
+                    iconColor: context.colors.info,
+                    title: 'Analytics',
+                    subtitle: 'Help improve the app with anonymous data',
+                    trailing: Switch.adaptive(
+                      value: settings.analyticsEnabled,
+                      onChanged: (v) => ref.read(settingsProvider.notifier).updateSetting(analyticsEnabled: v),
+                      activeColor: context.colors.primary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Account Section
+              _SectionHeader(title: 'Account'),
+              const SizedBox(height: 8),
+              _SettingsCard(
+                children: [
+                  _SettingsTile(
+                    icon: Icons.person_outline,
+                    iconColor: context.colors.primary,
+                    title: 'Profile',
+                    subtitle: 'Manage your profile information',
+                    onTap: () => context.go('/profile'),
+                  ),
+                  const _SettingsDivider(),
+                  _SettingsTile(
+                    icon: Icons.info_outline_rounded,
+                    iconColor: context.colors.textSecondary,
+                    title: 'About',
+                    subtitle: 'App version and information',
+                    onTap: () => _showAboutDialog(context),
+                  ),
+                  const _SettingsDivider(),
+                  _SettingsTile(
+                    icon: Icons.logout_rounded,
+                    iconColor: context.colors.error,
+                    title: 'Sign Out',
+                    subtitle: 'Sign out of your account',
+                    titleColor: context.colors.error,
+                    onTap: () => _showLogoutDialog(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 40),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showAboutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: context.colors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('About', style: AppTypography.headlineSmall.copyWith(color: context.colors.textPrimary)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Enterprise Flutter App', style: AppTypography.labelLarge.copyWith(color: context.colors.textPrimary)),
+            const SizedBox(height: 4),
+            Text('Version 1.0.0', style: AppTypography.bodyMedium.copyWith(color: context.colors.textSecondary)),
+            const SizedBox(height: 12),
+            Text('Built with Flutter, Riverpod, Go Router, Dio, and Hive.', style: AppTypography.bodySmall.copyWith(color: context.colors.textSecondary)),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: context.colors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text('Sign Out', style: AppTypography.headlineSmall.copyWith(color: context.colors.textPrimary)),
+        content: Text(
+          'Are you sure you want to sign out?',
+          style: AppTypography.bodyMedium.copyWith(color: context.colors.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // Auth provider logout will be called via ref
+              ref.read(authProvider.notifier).logout();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.colors.error,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Sign Out'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// UI Components
+
+class _SectionHeader extends StatelessWidget {
+  final String title;
+
+  const _SectionHeader({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 4),
+      child: Text(
+        title,
+        style: AppTypography.labelLarge.copyWith(
+          color: context.colors.textSecondary,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+}
+
+class _SettingsCard extends StatelessWidget {
+  final List<Widget> children;
+
+  const _SettingsCard({required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: context.colors.cardBackground,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.colors.border, width: 0.5),
+      ),
+      child: Column(children: children),
+    );
+  }
+}
+
+class _SettingsDivider extends StatelessWidget {
+  const _SettingsDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Divider(color: context.colors.divider, height: 1),
+    );
+  }
+}
+
+class _SettingsTile extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String? subtitle;
+  final Color? titleColor;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+
+  const _SettingsTile({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    this.subtitle,
+    this.titleColor,
+    this.trailing,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      leading: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: iconColor.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Icon(icon, color: iconColor, size: 20),
+      ),
+      title: Text(
+        title,
+        style: AppTypography.labelMedium.copyWith(color: titleColor ?? context.colors.textPrimary),
+      ),
+      subtitle: subtitle != null
+          ? Text(
+              subtitle!,
+              style: AppTypography.bodySmall.copyWith(color: context.colors.textHint),
+            )
+          : null,
+      trailing: trailing ?? Icon(Icons.chevron_right, color: context.colors.textHint, size: 20),
+      onTap: onTap,
+    );
+  }
+}
