@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/localization/localization_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../providers/settings_provider.dart';
@@ -37,7 +39,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     final settings = state.settings ?? const AppSettings();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(context.l10n.settingsTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         child: ConstrainedBox(
@@ -53,7 +55,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   _SettingsTile(
                     icon: Icons.dark_mode_rounded,
                     iconColor: context.colors.primary,
-                    title: 'Dark Mode',
+                    title: context.l10n.settingsDarkMode,
                     subtitle: 'Use dark theme throughout the app',
                     trailing: Switch.adaptive(
                       value: settings.darkMode,
@@ -65,12 +67,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   _SettingsTile(
                     icon: Icons.text_fields_rounded,
                     iconColor: context.colors.secondary,
-                    title: 'Font Size',
+                    title: context.l10n.settingsFontSize,
                     subtitle: 'Adjust text size',
                     trailing: DropdownButton<String>(
                       value: settings.fontSize,
                       underline: const SizedBox(),
-                      items: const [
+                      items: [
                         DropdownMenuItem(value: 'small', child: Text('Small')),
                         DropdownMenuItem(value: 'medium', child: Text('Medium')),
                         DropdownMenuItem(value: 'large', child: Text('Large')),
@@ -84,7 +86,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   _SettingsTile(
                     icon: Icons.language_rounded,
                     iconColor: context.colors.info,
-                    title: 'Language',
+                    title: context.l10n.settingsLanguage,
                     subtitle: 'Select your preferred language',
                     trailing: DropdownButton<String>(
                       value: settings.language,
@@ -92,10 +94,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       items: const [
                         DropdownMenuItem(value: 'en', child: Text('English')),
                         DropdownMenuItem(value: 'id', child: Text('Bahasa Indonesia')),
-                        DropdownMenuItem(value: 'zh', child: Text('Chinese')),
                       ],
                       onChanged: (v) {
-                        if (v != null) ref.read(settingsProvider.notifier).updateSetting(language: v);
+                        if (v != null) {
+                          ref.read(settingsProvider.notifier).updateSetting(language: v);
+                          ref.read(localizationProvider.notifier).setLocale(v);
+                        }
                       },
                     ),
                   ),
@@ -111,7 +115,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   _SettingsTile(
                     icon: Icons.fingerprint_rounded,
                     iconColor: context.colors.success,
-                    title: 'Biometric Login',
+                    title: context.l10n.settingsBiometric,
                     subtitle: 'Use fingerprint or face ID to login',
                     trailing: Switch.adaptive(
                       value: settings.biometricEnabled,
@@ -139,7 +143,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   _SettingsTile(
                     icon: Icons.notifications_active_rounded,
                     iconColor: context.colors.accent,
-                    title: 'Push Notifications',
+                    title: context.l10n.settingsNotifications,
                     subtitle: 'Receive push notifications',
                     trailing: Switch.adaptive(
                       value: settings.notificationsEnabled,
@@ -159,7 +163,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   _SettingsTile(
                     icon: Icons.sync_rounded,
                     iconColor: context.colors.secondary,
-                    title: 'Auto Sync',
+                    title: context.l10n.settingsAutoSync,
                     subtitle: 'Automatically sync data when online',
                     trailing: Switch.adaptive(
                       value: settings.autoSync,
@@ -171,7 +175,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   _SettingsTile(
                     icon: Icons.analytics_rounded,
                     iconColor: context.colors.info,
-                    title: 'Analytics',
+                    title: context.l10n.settingsAnalytics,
                     subtitle: 'Help improve the app with anonymous data',
                     trailing: Switch.adaptive(
                       value: settings.analyticsEnabled,
@@ -191,7 +195,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   _SettingsTile(
                     icon: Icons.person_outline,
                     iconColor: context.colors.primary,
-                    title: 'Profile',
+                    title: context.l10n.profileTitle,
                     subtitle: 'Manage your profile information',
                     onTap: () => context.go('/profile'),
                   ),
@@ -207,7 +211,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   _SettingsTile(
                     icon: Icons.logout_rounded,
                     iconColor: context.colors.error,
-                    title: 'Sign Out',
+                    title: context.l10n.authLogout,
                     subtitle: 'Sign out of your account',
                     titleColor: context.colors.error,
                     onTap: () => _showLogoutDialog(context),
@@ -228,7 +232,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       builder: (context) => AlertDialog(
         backgroundColor: context.colors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('About', style: AppTypography.headlineSmall.copyWith(color: context.colors.textPrimary)),
+        title: const Text('About'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,7 +247,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(context.l10n.commonOk),
           ),
         ],
       ),
@@ -256,7 +260,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       builder: (context) => AlertDialog(
         backgroundColor: context.colors.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Text('Sign Out', style: AppTypography.headlineSmall.copyWith(color: context.colors.textPrimary)),
+        title: Text(context.l10n.authLogout),
         content: Text(
           'Are you sure you want to sign out?',
           style: AppTypography.bodyMedium.copyWith(color: context.colors.textSecondary),
@@ -264,19 +268,18 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.commonCancel),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              // Auth provider logout will be called via ref
               ref.read(authProvider.notifier).logout();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: context.colors.error,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
-            child: const Text('Sign Out'),
+            child: Text(context.l10n.authLogout),
           ),
         ],
       ),

@@ -1,3 +1,6 @@
+import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
+
 extension StringExtension on String {
   String get capitalize {
     if (isEmpty) return this;
@@ -48,4 +51,8 @@ extension IterableExtension<T> on Iterable<T> {
     }
     return null;
   }
+}
+
+extension LocalizationX on BuildContext {
+  AppLocalizations get l10n => AppLocalizations.of(this)!;
 }
