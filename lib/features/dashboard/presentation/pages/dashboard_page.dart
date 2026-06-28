@@ -98,9 +98,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: context.colors.warning.withOpacity(0.15),
+              color: context.colors.warning.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: context.colors.warning.withOpacity(0.3)),
+              border: Border.all(color: context.colors.warning.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
@@ -127,7 +127,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             crossAxisSpacing: 12,
             childAspectRatio: 1.4,
           ),
-          delegate: SliverChildList.fixed([
+          delegate: SliverChildListDelegate([
             StatCardWidget(
               title: 'Total Revenue',
               value: DateFormatter.formatCurrency(data.totalRevenue),
@@ -151,7 +151,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
             StatCardWidget(
               title: 'Active Users',
               value: DateFormatter.formatNumber(data.activeUsers),
-              icon: Icons.person_check_rounded,
+              icon: Icons.person_rounded,
               color: context.colors.success,
             ),
           ]),

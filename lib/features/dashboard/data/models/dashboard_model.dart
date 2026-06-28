@@ -50,7 +50,7 @@ class DashboardDataModel extends DashboardData {
 
   Map<String, dynamic> toLocalJson() => toJson();
 
-  factory DashboardDataModel.fromLocalJson(Map<String, dynamic> json) => fromJson(json);
+  factory DashboardDataModel.fromLocalJson(Map<String, dynamic> json) => DashboardDataModel.fromJson(json);
 }
 
 class ChartDataPointModel extends ChartDataPoint {

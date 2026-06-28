@@ -8,6 +8,7 @@ import '../../../../core/theme/app_typography.dart';
 import '../../../../core/utils/extensions.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../domain/entities/app_settings.dart';
 import '../providers/settings_provider.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
@@ -60,7 +61,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     trailing: Switch.adaptive(
                       value: settings.darkMode,
                       onChanged: (v) => ref.read(settingsProvider.notifier).updateSetting(darkMode: v),
-                      activeColor: context.colors.primary,
+                      activeThumbColor: context.colors.primary,
                     ),
                   ),
                   const _SettingsDivider(),
@@ -366,7 +367,7 @@ class _SettingsTile extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.15),
+          color: iconColor.withValues(alpha: 0.15),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(icon, color: iconColor, size: 20),

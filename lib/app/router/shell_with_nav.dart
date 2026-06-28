@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_adaptive_scaffold/flutter_adaptive_scaffold.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
@@ -80,7 +79,7 @@ class ShellWithNavigation extends StatelessWidget {
         onDestinationSelected: (index) => _onDestinationSelected(context, index),
         destinations: _destinations,
         backgroundColor: context.colors.surface,
-        indicatorColor: context.colors.primary.withOpacity(0.15),
+        indicatorColor: context.colors.primary.withValues(alpha: 0.15),
         surfaceTintColor: Colors.transparent,
         height: 64,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
@@ -149,7 +148,7 @@ class ShellWithNavigation extends StatelessWidget {
                 );
               }).toList(),
               backgroundColor: context.colors.surface,
-              indicatorColor: context.colors.primary.withOpacity(0.15),
+              indicatorColor: context.colors.primary.withValues(alpha: 0.15),
               selectedIconTheme: IconThemeData(color: context.colors.primary),
               unselectedIconTheme: IconThemeData(color: context.colors.textHint),
               selectedLabelTextStyle: AppTypography.labelMedium.copyWith(color: context.colors.primary),

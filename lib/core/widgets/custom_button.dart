@@ -68,7 +68,7 @@ class CustomButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         elevation: 0,
         backgroundColor: context.colors.primary,
-        disabledBackgroundColor: context.colors.primary.withOpacity(0.5),
+        disabledBackgroundColor: context.colors.primary.withValues(alpha: 0.5),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius),
         ),
@@ -83,7 +83,7 @@ class CustomButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         elevation: 0,
         backgroundColor: context.colors.secondary,
-        disabledBackgroundColor: context.colors.secondary.withOpacity(0.5),
+        disabledBackgroundColor: context.colors.secondary.withValues(alpha: 0.5),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius),
         ),
@@ -123,7 +123,7 @@ class CustomButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         elevation: 0,
         backgroundColor: context.colors.error,
-        disabledBackgroundColor: context.colors.error.withOpacity(0.5),
+        disabledBackgroundColor: context.colors.error.withValues(alpha: 0.5),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius),
         ),

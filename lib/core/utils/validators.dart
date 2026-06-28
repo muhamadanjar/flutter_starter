@@ -15,6 +15,8 @@ class Email extends FormzInput<String, EmailValidationError> {
   EmailValidationError? validator(String value) {
     return _emailRegex.hasMatch(value) ? null : EmailValidationError.invalid;
   }
+
+  bool get invalid => !isValid;
 }
 
 // Password Validator
@@ -33,6 +35,8 @@ class Password extends FormzInput<String, PasswordValidationError> {
     if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) return PasswordValidationError.noSpecialChar;
     return null;
   }
+
+  bool get invalid => !isValid;
 }
 
 // Confirmed Password Validator
@@ -48,6 +52,8 @@ class ConfirmedPassword extends FormzInput<String, ConfirmedPasswordValidationEr
   ConfirmedPasswordValidationError? validator(String value) {
     return password == value ? null : ConfirmedPasswordValidationError.mismatch;
   }
+
+  bool get invalid => !isValid;
 }
 
 // Name Validator
@@ -61,6 +67,8 @@ class Name extends FormzInput<String, NameValidationError> {
   NameValidationError? validator(String value) {
     return value.trim().length >= 2 ? null : NameValidationError.tooShort;
   }
+
+  bool get invalid => !isValid;
 }
 
 // Helper to get error messages

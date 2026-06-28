@@ -1,12 +1,11 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:enterprise_flutter_app/app/app.dart';
+import 'package:enterprise_flutter_app/core/constants/app_constants.dart';
+import 'package:enterprise_flutter_app/core/network/network_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
-
-import 'app/app.dart';
-import 'core/constants/app_constants.dart';
-import 'core/network/network_info.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

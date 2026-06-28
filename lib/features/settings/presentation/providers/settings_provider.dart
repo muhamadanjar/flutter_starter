@@ -1,8 +1,7 @@
-import 'package:dartz/dartz.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
+
 import '../../../../core/constants/app_constants.dart';
-import '../../../../core/errors/failures.dart';
 import '../../data/datasources/settings_local_datasource.dart';
 import '../../data/repositories/settings_repository_impl.dart';
 import '../../domain/entities/app_settings.dart';

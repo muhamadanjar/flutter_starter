@@ -54,5 +54,5 @@ extension IterableExtension<T> on Iterable<T> {
 }
 
 extension LocalizationX on BuildContext {
-  AppLocalizations get l10n => AppLocalizations.of(this)!;
+  AppLocalizations get l10n => AppLocalizations.of(this);
 }

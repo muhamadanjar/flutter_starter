@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'app_colors.dart';
-import 'app_typography.dart';
+import './app_colors.dart';
+import './app_typography.dart';
 
 class AppTheme {
   AppTheme._();
@@ -44,7 +44,7 @@ class AppTheme {
         ),
       ),
       // Card
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 0,
         color: AppColors.darkCardBackground,
         shape: RoundedRectangleBorder(
@@ -149,7 +149,7 @@ class AppTheme {
         space: 1,
       ),
       // Dialog
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppColors.darkSurface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
@@ -169,7 +169,7 @@ class AppTheme {
       // Chip
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.darkSurfaceVariant,
-        selectedColor: AppColors.primary.withOpacity(0.2),
+        selectedColor: AppColors.primary.withValues(alpha: 0.2),
         labelStyle: GoogleFonts.inter(
           textStyle: AppTypography.labelMedium,
         ),
@@ -184,7 +184,7 @@ class AppTheme {
         foregroundColor: AppColors.cream,
       ),
       // Tab Bar
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: AppColors.primary,
         unselectedLabelColor: AppColors.darkTextHint,
         indicatorColor: AppColors.primary,
@@ -202,7 +202,7 @@ class AppTheme {
           return AppColors.darkTextHint;
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) return AppColors.primary.withOpacity(0.5);
+          if (states.contains(WidgetState.selected)) return AppColors.primary.withValues(alpha: 0.5);
           return AppColors.darkSurfaceVariant;
         }),
       ),
@@ -258,7 +258,7 @@ class AppTheme {
         ),
       ),
       // Card
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 0,
         color: AppColors.lightCardBackground,
         shape: RoundedRectangleBorder(
@@ -363,7 +363,7 @@ class AppTheme {
         space: 1,
       ),
       // Dialog
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         backgroundColor: AppColors.lightSurface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
@@ -383,7 +383,7 @@ class AppTheme {
       // Chip
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.lightSurfaceVariant,
-        selectedColor: AppColors.primary.withOpacity(0.2),
+        selectedColor: AppColors.primary.withValues(alpha: 0.2),
         labelStyle: GoogleFonts.inter(
           textStyle: AppTypography.labelMedium,
         ),
@@ -398,7 +398,7 @@ class AppTheme {
         foregroundColor: AppColors.cream,
       ),
       // Tab Bar
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: TabBarThemeData(
         labelColor: AppColors.primary,
         unselectedLabelColor: AppColors.lightTextHint,
         indicatorColor: AppColors.primary,
@@ -416,7 +416,7 @@ class AppTheme {
           return AppColors.lightTextHint;
         }),
         trackColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.selected)) return AppColors.primary.withOpacity(0.5);
+          if (states.contains(WidgetState.selected)) return AppColors.primary.withValues(alpha: 0.5);
           return AppColors.lightSurfaceVariant;
         }),
       ),

@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/widgets/offline_banner.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
-import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/profile/presentation/pages/change_password_page.dart';
+import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
-import '../widgets/offline_banner.dart';
 import 'shell_with_nav.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
