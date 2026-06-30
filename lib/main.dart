@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:enterprise_flutter_app/app/app.dart';
 import 'package:enterprise_flutter_app/core/constants/app_constants.dart';
 import 'package:enterprise_flutter_app/core/network/network_info.dart';
+import 'package:enterprise_flutter_app/core/services/firebase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -11,6 +12,9 @@ void main() async {
 
   // Initialize Hive for local storage
   await _initializeHive();
+
+  // Initialize Firebase for push notifications
+  await _initializeFirebase();
 
   // Check initial connectivity (outside ProviderScope, so we create a temp instance)
   await _checkInitialConnectivity();
@@ -45,6 +49,18 @@ Future<void> _initializeHive() async {
       'analyticsEnabled': true,
       'fontSize': 'medium',
     });
+  }
+}
+
+Future<void> _initializeFirebase() async {
+  try {
+    final firebaseService = FirebaseService();
+    await firebaseService.initialize();
+    debugPrint('Firebase initialized successfully');
+  } catch (e) {
+    debugPrint('Firebase initialization failed: $e');
+    // Continue app execution even if Firebase fails to initialize
+    // This allows offline-only mode or graceful degradation
   }
 }
 
