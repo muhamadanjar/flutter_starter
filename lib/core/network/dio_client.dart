@@ -2,30 +2,36 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 
+import '../config/app_config.dart';
 import '../constants/api_constants.dart';
 import '../constants/app_constants.dart';
 import '../errors/exceptions.dart';
+import '../providers/config_provider.dart';
 import 'network_info.dart';
 
 class DioClient {
   late final Dio _dio;
   final NetworkInfo _networkInfo;
   final Box<dynamic> _authBox;
+  final AppConfig _config;
 
   DioClient({
     required NetworkInfo networkInfo,
     required Box<dynamic> authBox,
+    required AppConfig config,
   })  : _networkInfo = networkInfo,
-        _authBox = authBox {
+        _authBox = authBox,
+        _config = config {
     _dio = Dio(
       BaseOptions(
-        baseUrl: ApiConstants.baseUrl,
-        connectTimeout: ApiConstants.connectTimeout,
-        receiveTimeout: ApiConstants.receiveTimeout,
-        sendTimeout: ApiConstants.sendTimeout,
+        baseUrl: _config.baseUrl,
+        connectTimeout: _config.requestTimeout,
+        receiveTimeout: _config.requestTimeout,
+        sendTimeout: _config.requestTimeout,
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          'X-API-Version': _config.apiVersion,
         },
       ),
     );
@@ -274,5 +280,10 @@ class DioClient {
 final dioClientProvider = Provider<DioClient>((ref) {
   final networkInfo = ref.watch(networkInfoProvider);
   final authBox = Hive.box(AppConstants.authBox);
-  return DioClient(networkInfo: networkInfo, authBox: authBox);
+  final config = ref.watch(appConfigProvider);
+  return DioClient(
+    networkInfo: networkInfo,
+    authBox: authBox,
+    config: config,
+  );
 });

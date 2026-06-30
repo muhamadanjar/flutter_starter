@@ -245,6 +245,26 @@ flutter test
 flutter analyze
 ```
 
+## Environment Configuration (Flavors)
+
+**Flavor-based setup** for dev/staging/production with different base URLs and configs.
+
+- **Structure:** `main_dev.dart`, `main_staging.dart`, `main_production.dart` → `main_common.dart`
+- **Config:** `lib/core/config/app_config.dart` (dev/staging/prod presets)
+- **Access:** Riverpod provider `appConfigProvider`
+- **Integration:** DIO client uses config for base URL, request timeout, API version
+
+**Run by flavor:**
+```bash
+flutter run                              # Dev (default)
+flutter run -t lib/main_staging.dart     # Staging
+flutter run -t lib/main_production.dart  # Production
+```
+
+See **[ENVIRONMENT_SETUP.md](docs/ENVIRONMENT_SETUP.md)** for details.
+
+---
+
 ## Responsive Design
 
 **Adaptive layouts** adapt to mobile (< 600px), tablet (600-1200px), and desktop (≥ 1200px) screens.

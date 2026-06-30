@@ -31,7 +31,31 @@ formz: ^0.7.0 → ^0.8.0             # Minor: feature additions
 
 ---
 
-## Priority 2: Medium Updates (Next 2 Weeks)
+## Priority 2: Medium Updates (Blocked - Requires 2A First)
+
+**Status:** BLOCKED by hive_generator dependency incompatibility
+
+**Issue:** hive_generator 2.0.1 requires old build tools:
+- `build: ^2.0.0` (build_runner 2.15+ needs ^4.0.0)
+- `source_gen: ^1.0.0` (json_serializable 6.14+ needs ^4.1.2)
+- `analyzer: <7.0.0` (mockito 5.7+ needs ^13.0.0)
+
+**Solution:** Update hive_generator first (Priority 2A)
+
+### Priority 2A: hive_generator Update (Prerequisites for 2B)
+
+```yaml
+hive_generator: ^2.0.1 → ^2.1.0 (or latest compatible)
+```
+
+**Effort:** 1 hour
+**Risk:** MEDIUM (code generation tool)
+**Steps:**
+1. Update hive_generator
+2. Run `flutter pub run build_runner build --delete-conflicting-outputs`
+3. Verify no generated code changes break functionality
+
+### Priority 2B: Build Tools (After 2A)
 
 Minor/patch updates to build tools. Requires code regeneration.
 
@@ -39,7 +63,7 @@ Minor/patch updates to build tools. Requires code regeneration.
 # Current → Recommended
 json_annotation: ^4.9.0 → ^4.12.0
 json_serializable: ^6.8.0 → ^6.14.0
-build_runner: ^2.4.13 → ^2.15.0    # Fixes discontinued packages
+build_runner: ^2.4.9 → ^2.15.0    # Fixes discontinued packages
 mockito: ^5.4.4 → ^5.7.0
 ```
 
