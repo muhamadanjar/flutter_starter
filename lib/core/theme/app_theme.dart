@@ -12,7 +12,6 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      colorSchemeSeed: AppColors.primary,
       scaffoldBackgroundColor: AppColors.darkBackground,
       extensions: const <ThemeExtension<dynamic>>[AppColorScheme.dark],
       colorScheme: const ColorScheme.dark(
@@ -226,7 +225,6 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      colorSchemeSeed: AppColors.primary,
       scaffoldBackgroundColor: AppColors.lightBackground,
       extensions: const <ThemeExtension<dynamic>>[AppColorScheme.light],
       colorScheme: const ColorScheme.light(

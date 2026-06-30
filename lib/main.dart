@@ -5,7 +5,6 @@ import 'package:enterprise_flutter_app/core/network/network_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:path_provider/path_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,8 +23,8 @@ void main() async {
 }
 
 Future<void> _initializeHive() async {
-  final directory = await getApplicationDocumentsDirectory();
-  Hive.init(directory.path);
+  // initFlutter() handles both web and mobile platforms automatically
+  await Hive.initFlutter();
 
   // Open all required Hive boxes
   await Hive.openBox(AppConstants.authBox);
