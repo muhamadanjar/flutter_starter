@@ -77,7 +77,7 @@ class FirebaseService {
   // Refresh FCM token
   Future<String?> refreshToken() async {
     try {
-      final token = await _messaging.getToken(forceRefresh: true);
+      final token = await _messaging.getToken();
       debugPrint('[Firebase] FCM Token refreshed: $token');
       return token;
     } catch (e) {

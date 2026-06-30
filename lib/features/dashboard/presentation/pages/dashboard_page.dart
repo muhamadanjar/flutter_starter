@@ -5,6 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/utils/extensions.dart';
+import '../../../../core/widgets/adaptive_layout.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../../../../core/widgets/error_widget.dart' as err;
 import '../../domain/entities/dashboard.dart';
@@ -117,45 +118,40 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
           ),
         ),
 
-      // Stat Cards
-      SliverPadding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        sliver: SliverGrid(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 1.4,
+      // Stat Cards (Adaptive Grid)
+      AdaptiveSliverGrid(
+        mobileColumns: 1,
+        tabletColumns: 2,
+        desktopColumns: 4,
+        childAspectRatio: 1.4,
+        children: [
+          StatCardWidget(
+            title: 'Total Revenue',
+            value: DateFormatter.formatCurrency(data.totalRevenue),
+            change: data.revenueGrowth,
+            icon: Icons.account_balance_wallet_rounded,
+            color: context.colors.primary,
           ),
-          delegate: SliverChildListDelegate([
-            StatCardWidget(
-              title: 'Total Revenue',
-              value: DateFormatter.formatCurrency(data.totalRevenue),
-              change: data.revenueGrowth,
-              icon: Icons.account_balance_wallet_rounded,
-              color: context.colors.primary,
-            ),
-            StatCardWidget(
-              title: 'Total Orders',
-              value: DateFormatter.formatNumber(data.totalOrders),
-              change: data.orderGrowth,
-              icon: Icons.shopping_bag_rounded,
-              color: context.colors.secondary,
-            ),
-            StatCardWidget(
-              title: 'Total Users',
-              value: DateFormatter.formatNumber(data.totalUsers),
-              icon: Icons.people_rounded,
-              color: context.colors.info,
-            ),
-            StatCardWidget(
-              title: 'Active Users',
-              value: DateFormatter.formatNumber(data.activeUsers),
-              icon: Icons.person_rounded,
-              color: context.colors.success,
-            ),
-          ]),
-        ),
+          StatCardWidget(
+            title: 'Total Orders',
+            value: DateFormatter.formatNumber(data.totalOrders),
+            change: data.orderGrowth,
+            icon: Icons.shopping_bag_rounded,
+            color: context.colors.secondary,
+          ),
+          StatCardWidget(
+            title: 'Total Users',
+            value: DateFormatter.formatNumber(data.totalUsers),
+            icon: Icons.people_rounded,
+            color: context.colors.info,
+          ),
+          StatCardWidget(
+            title: 'Active Users',
+            value: DateFormatter.formatNumber(data.activeUsers),
+            icon: Icons.person_rounded,
+            color: context.colors.success,
+          ),
+        ],
       ),
 
       // Revenue Chart

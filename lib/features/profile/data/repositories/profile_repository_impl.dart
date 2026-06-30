@@ -1,4 +1,4 @@
-import 'package:dartz/dartz.dart';
+import 'package:fpdart/fpdart.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/network/network_info.dart';
@@ -25,11 +25,11 @@ class ProfileRepositoryImpl implements ProfileRepository {
       try {
         final profile = await remoteDataSource.getProfile();
         await localDataSource.cacheProfile(profile);
-        return Right(profile);
+        return right(profile);
       } on ServerException catch (e) {
-        return Left(ServerFailure(message: e.message ?? 'Server error'));
+        return left(ServerFailure(message: e.message ?? 'Server error'));
       } on UnauthorizedException catch (e) {
-        return Left(UnauthorizedFailure(message: e.message ?? 'Unauthorized'));
+        return left(UnauthorizedFailure(message: e.message ?? 'Unauthorized'));
       } catch (_) {
         return _getCachedProfile();
       }
@@ -41,19 +41,19 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, UserProfile>> updateProfile(Map<String, dynamic> data) async {
     if (!await networkInfo.isConnected) {
-      return const Left(NetworkFailure(message: 'No internet connection. Cannot update profile.'));
+      return left(NetworkFailure(message: 'No internet connection. Cannot update profile.'));
     }
 
     try {
       final profile = await remoteDataSource.updateProfile(data);
       await localDataSource.cacheProfile(profile);
-      return Right(profile);
+      return right(profile);
     } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message ?? 'Server error'));
+      return left(ServerFailure(message: e.message ?? 'Server error'));
     } on ValidationException catch (e) {
-      return Left(ValidationFailure(message: e.message ?? 'Validation error', fieldErrors: e.fieldErrors));
+      return left(ValidationFailure(message: e.message ?? 'Validation error', fieldErrors: e.fieldErrors));
     } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
+      return left(UnknownFailure(message: e.toString()));
     }
   }
 
@@ -64,7 +64,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
     required String confirmPassword,
   }) async {
     if (!await networkInfo.isConnected) {
-      return const Left(NetworkFailure(message: 'No internet connection. Cannot change password.'));
+      return left(NetworkFailure(message: 'No internet connection. Cannot change password.'));
     }
 
     try {
@@ -73,25 +73,25 @@ class ProfileRepositoryImpl implements ProfileRepository {
         newPassword: newPassword,
         confirmPassword: confirmPassword,
       );
-      return const Right(null);
+      return right(null);
     } on ServerException catch (e) {
-      return Left(ServerFailure(message: e.message ?? 'Server error'));
+      return left(ServerFailure(message: e.message ?? 'Server error'));
     } on ValidationException catch (e) {
-      return Left(ValidationFailure(message: e.message ?? 'Validation error', fieldErrors: e.fieldErrors));
+      return left(ValidationFailure(message: e.message ?? 'Validation error', fieldErrors: e.fieldErrors));
     } on UnauthorizedException catch (e) {
-      return Left(UnauthorizedFailure(message: e.message ?? 'Current password is incorrect'));
+      return left(UnauthorizedFailure(message: e.message ?? 'Current password is incorrect'));
     } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
+      return left(UnknownFailure(message: e.toString()));
     }
   }
 
   Future<Either<Failure, UserProfile>> _getCachedProfile() async {
     try {
       final cached = await localDataSource.getCachedProfile();
-      if (cached != null) return Right(cached);
-      return const Left(CacheFailure(message: 'No cached profile data found'));
+      if (cached != null) return right(cached);
+      return left(CacheFailure(message: 'No cached profile data found'));
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message ?? 'Cache error'));
+      return left(CacheFailure(message: e.message ?? 'Cache error'));
     }
   }
 }

@@ -26,6 +26,7 @@ lib/
 │   ├── app.dart                 # Root widget, theme, localization
 │   └── router/
 │       └── app_router.dart      # Go Router navigation config
+│       └── shell_with_nav.dart  # Adaptive navigation (mobile/tablet/desktop)
 ├── core/
 │   ├── constants/
 │   │   └── app_constants.dart   # Hive box names, API endpoints
@@ -35,26 +36,26 @@ lib/
 │   │   └── l10n_provider.dart   # Localization manager
 │   ├── network/
 │   │   └── network_info.dart    # Connectivity status
+│   ├── services/
+│   │   └── firebase_service.dart # Firebase messaging service
 │   ├── theme/
 │   │   └── app_theme.dart       # Material 3 themes (light/dark)
 │   ├── utils/
 │   │   └── extensions.dart      # String, DateTime, etc. utilities
+│   ├── providers/
+│   │   └── firebase_provider.dart # Riverpod FCM providers
 │   └── widgets/
+│       ├── responsive_builder.dart    # Screen size detection
+│       ├── adaptive_layout.dart       # Adaptive UI widgets
 │       └── [shared UI components]
 └── features/
-    └── dashboard/               # Feature module (scalable)
-        ├── domain/
-        │   ├── entities/
-        │   ├── repositories/
-        │   └── usecases/
-        ├── data/
-        │   ├── datasources/
-        │   ├── models/
-        │   └── repositories/
+    ├── dashboard/               # Feature module (scalable)
+    │   ├── domain/
+    │   ├── data/
+    │   └── presentation/
+    └── notifications/           # Push notifications feature
         └── presentation/
-            ├── pages/
-            ├── widgets/
-            └── providers/       # Riverpod providers
+            └── widgets/         # Notification settings widget
 ```
 
 ## Core Libraries — Usage
@@ -244,6 +245,21 @@ flutter test
 flutter analyze
 ```
 
+## Responsive Design
+
+**Adaptive layouts** adapt to mobile (< 600px), tablet (600-1200px), and desktop (≥ 1200px) screens.
+
+- **Navigation:** Mobile bottom nav → Tablet/desktop sidebar (via `ShellWithNavigation`)
+- **Grids:** Mobile 1 column → Tablet 2 → Desktop 4 (via `AdaptiveSliverGrid`)
+- **Content width:** Desktop constrained to max-width (via `AdaptiveContainer`)
+- **Spacing/fonts:** Scale by screen size (via `AdaptivePadding`, `AdaptiveText`)
+
+**Tools:** `ResponsiveBuilder`, `AdaptiveGrid`, `AdaptiveWrap`, `AdaptiveContainer`, `ScreenSizeVisibility`
+
+See **[ADAPTIVE_LAYOUTS.md](docs/ADAPTIVE_LAYOUTS.md)** for complete guide.
+
+---
+
 ## Architecture
 
 **Clean Architecture** separates code into Domain (business logic), Data (sources), and Presentation (UI). See **[CLEAN_ARCHITECTURE.md](docs/CLEAN_ARCHITECTURE.md)** for detailed guide.
@@ -342,6 +358,29 @@ flutter pub run build_runner build --delete-conflicting-outputs
 - Flutter: Latest stable
 - Riverpod: 2.5.1 (3.x available but requires migration)
 - Go Router: 14.2.0+
+
+**Dependency Status & Upgrades:**
+
+✅ **Completed:**
+- Removed `either_dart` (unused, unmaintained)
+- Migrated `dartz` → `fpdart` 1.1.0 (all 20 files updated)
+
+🟢 **Priority 1 (Ready Now):** Safe patches & minors
+- `dio` 5.9.2 → 5.10.0, `intl` 0.20.2 → 0.20.3
+- `cached_network_image` 3.4.0 → 3.4.1, `formz` 0.7.0 → 0.8.0
+- 📖 [PRIORITY1_UPDATES.md](docs/PRIORITY1_UPDATES.md) — step-by-step guide
+
+🟡 **Priority 2-4 (Next Month):** Build tools, linters, freezed
+- build_runner, json_*, mockito, flutter_lints
+- Freezed 3.x (code generation)
+
+🔴 **Priority 5 (Next Quarter):** Major versions
+- Riverpod 2.x → 3.x (breaking changes, core state mgmt)
+- Go Router 14.x → 17.x (breaking changes, all routing)
+- Firebase 2.x → 4.x, FL Chart 0.68 → 1.2, Google Fonts 6.x → 8.x
+
+- 📖 [PACKAGE_UPGRADE_ROADMAP.md](docs/PACKAGE_UPGRADE_ROADMAP.md) — full strategy
+- 📖 [DEPENDENCY_AUDIT.md](docs/DEPENDENCY_AUDIT.md) — migration history
 
 ## Performance Tips
 

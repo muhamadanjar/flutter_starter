@@ -1,4 +1,4 @@
-import 'package:dartz/dartz.dart';
+import 'package:fpdart/fpdart.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/network/network_info.dart';
@@ -26,9 +26,9 @@ class DashboardRepositoryImpl implements DashboardRepository {
         final remoteData = await remoteDataSource.getDashboardData();
         await localDataSource.cacheDashboardData(remoteData);
         await localDataSource.setLastSyncTime(DateTime.now());
-        return Right(remoteData);
+        return right(remoteData);
       } on ServerException catch (e) {
-        return Left(ServerFailure(message: e.message ?? 'Server error'));
+        return left(ServerFailure(message: e.message ?? 'Server error'));
       } on NetworkException catch (e) {
         return _getCachedDashboard();
       } catch (e) {
@@ -43,11 +43,11 @@ class DashboardRepositoryImpl implements DashboardRepository {
     try {
       final cachedData = await localDataSource.getCachedDashboardData();
       if (cachedData != null) {
-        return Right(cachedData);
+        return right(cachedData);
       }
-      return const Left(CacheFailure(message: 'No cached data available. Please connect to the internet.'));
+      return left(CacheFailure(message: 'No cached data available. Please connect to the internet.'));
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message ?? 'Cache error'));
+      return left(CacheFailure(message: e.message ?? 'Cache error'));
     }
   }
 }

@@ -1,4 +1,4 @@
-import 'package:dartz/dartz.dart';
+import 'package:fpdart/fpdart.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failures.dart';
 import '../../domain/entities/app_settings.dart';
@@ -14,7 +14,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
   Future<Either<Failure, AppSettings>> getSettings() async {
     try {
       final data = await localDataSource.getSettings();
-      return Right(AppSettings(
+      return right(AppSettings(
         darkMode: data['darkMode'] as bool? ?? true,
         notificationsEnabled: data['notificationsEnabled'] as bool? ?? true,
         biometricEnabled: data['biometricEnabled'] as bool? ?? false,
@@ -25,9 +25,9 @@ class SettingsRepositoryImpl implements SettingsRepository {
         fontSize: data['fontSize'] as String? ?? 'medium',
       ));
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message ?? 'Failed to load settings'));
+      return left(CacheFailure(message: e.message ?? 'Failed to load settings'));
     } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
+      return left(UnknownFailure(message: e.toString()));
     }
   }
 
@@ -45,11 +45,11 @@ class SettingsRepositoryImpl implements SettingsRepository {
         'fontSize': settings.fontSize,
       };
       await localDataSource.saveSettings(data);
-      return Right(settings);
+      return right(settings);
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message ?? 'Failed to save settings'));
+      return left(CacheFailure(message: e.message ?? 'Failed to save settings'));
     } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
+      return left(UnknownFailure(message: e.toString()));
     }
   }
 }

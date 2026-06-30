@@ -1,4 +1,4 @@
-import 'package:dartz/dartz.dart';
+import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failures.dart';
@@ -26,7 +26,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     if (!await networkInfo.isConnected) {
-      return const Left(NetworkFailure(message: 'No internet connection. Please check your network.'));
+      return left(NetworkFailure(message: 'No internet connection. Please check your network.'));
     }
 
     try {
@@ -47,23 +47,23 @@ class AuthRepositoryImpl implements AuthRepository {
       await localDataSource.saveUser(userModel);
       await localDataSource.setLoggedIn(true);
 
-      return Right(userModel);
+      return right(userModel);
     } on ServerException catch (e) {
-      return Left(ServerFailure(
+      return left(ServerFailure(
         message: e.message ?? 'Server error occurred',
         statusCode: e.statusCode,
       ));
     } on UnauthorizedException catch (e) {
-      return Left(UnauthorizedFailure(message: e.message ?? 'Unauthorized'));
+      return left(UnauthorizedFailure(message: e.message ?? 'Unauthorized'));
     } on ValidationException catch (e) {
-      return Left(ValidationFailure(
+      return left(ValidationFailure(
         message: e.message ?? 'Validation error',
         fieldErrors: e.fieldErrors,
       ));
     } on NetworkException catch (e) {
-      return Left(NetworkFailure(message: e.message ?? 'Network error'));
+      return left(NetworkFailure(message: e.message ?? 'Network error'));
     } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
+      return left(UnknownFailure(message: e.toString()));
     }
   }
 
@@ -75,7 +75,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String confirmPassword,
   }) async {
     if (!await networkInfo.isConnected) {
-      return const Left(NetworkFailure(message: 'No internet connection. Please check your network.'));
+      return left(NetworkFailure(message: 'No internet connection. Please check your network.'));
     }
 
     try {
@@ -97,21 +97,21 @@ class AuthRepositoryImpl implements AuthRepository {
       await localDataSource.saveUser(userModel);
       await localDataSource.setLoggedIn(true);
 
-      return Right(userModel);
+      return right(userModel);
     } on ServerException catch (e) {
-      return Left(ServerFailure(
+      return left(ServerFailure(
         message: e.message ?? 'Server error occurred',
         statusCode: e.statusCode,
       ));
     } on ValidationException catch (e) {
-      return Left(ValidationFailure(
+      return left(ValidationFailure(
         message: e.message ?? 'Validation error',
         fieldErrors: e.fieldErrors,
       ));
     } on NetworkException catch (e) {
-      return Left(NetworkFailure(message: e.message ?? 'Network error'));
+      return left(NetworkFailure(message: e.message ?? 'Network error'));
     } catch (e) {
-      return Left(UnknownFailure(message: e.toString()));
+      return left(UnknownFailure(message: e.toString()));
     }
   }
 
@@ -122,14 +122,14 @@ class AuthRepositoryImpl implements AuthRepository {
         await remoteDataSource.logout();
       }
       await localDataSource.clearAll();
-      return const Right(null);
+      return right(null);
     } on ServerException catch (e) {
       // Even if server logout fails, clear local data
       await localDataSource.clearAll();
-      return Left(ServerFailure(message: e.message ?? 'Server error'));
+      return left(ServerFailure(message: e.message ?? 'Server error'));
     } catch (e) {
       await localDataSource.clearAll();
-      return Left(UnknownFailure(message: e.toString()));
+      return left(UnknownFailure(message: e.toString()));
     }
   }
 
@@ -139,14 +139,14 @@ class AuthRepositoryImpl implements AuthRepository {
       try {
         final userModel = await remoteDataSource.getProfile();
         await localDataSource.saveUser(userModel);
-        return Right(userModel);
+        return right(userModel);
       } on ServerException catch (e) {
-        return Left(ServerFailure(
+        return left(ServerFailure(
           message: e.message ?? 'Server error occurred',
           statusCode: e.statusCode,
         ));
       } on UnauthorizedException catch (e) {
-        return Left(UnauthorizedFailure(message: e.message ?? 'Unauthorized'));
+        return left(UnauthorizedFailure(message: e.message ?? 'Unauthorized'));
       } catch (e) {
         // Fallback to cache on error
         return _getCachedUser();
@@ -160,11 +160,11 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final cachedUser = await localDataSource.getUser();
       if (cachedUser != null) {
-        return Right(cachedUser);
+        return right(cachedUser);
       }
-      return const Left(CacheFailure(message: 'No cached user data found'));
+      return left(CacheFailure(message: 'No cached user data found'));
     } on CacheException catch (e) {
-      return Left(CacheFailure(message: e.message ?? 'Cache error'));
+      return left(CacheFailure(message: e.message ?? 'Cache error'));
     }
   }
 
