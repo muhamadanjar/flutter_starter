@@ -1,14 +1,17 @@
+import 'package:dio/dio.dart';
+
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/dio_client.dart';
 import '../models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<Map<String, dynamic>> login({
-    required String email,
+    required String username,
     required String password,
   });
 
   Future<Map<String, dynamic>> register({
+    required String username,
     required String name,
     required String email,
     required String password,
@@ -27,21 +30,30 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<Map<String, dynamic>> login({
-    required String email,
+    required String username,
     required String password,
   }) async {
+
+    final bodyData = {
+      'username': username,
+      'password': password,
+    };
+
     final response = await _dioClient.post(
       ApiConstants.login,
-      data: {
-        'email': email,
-        'password': password,
-      },
+      data: Uri(queryParameters: bodyData).query,
+      options: Options(
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      ),
     );
     return response.data as Map<String, dynamic>;
   }
 
   @override
   Future<Map<String, dynamic>> register({
+    required String username,
     required String name,
     required String email,
     required String password,
@@ -50,6 +62,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final response = await _dioClient.post(
       ApiConstants.register,
       data: {
+        'username': username,
         'name': name,
         'email': email,
         'password': password,

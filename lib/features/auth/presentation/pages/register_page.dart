@@ -19,6 +19,7 @@ class RegisterPage extends ConsumerStatefulWidget {
 class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -26,6 +27,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   Name _name = const Name.pure();
+  Username _username = const Username.pure();
   Email _email = const Email.pure();
   Password _password = const Password.pure();
   ConfirmedPassword _confirmedPassword = const ConfirmedPassword.pure();
@@ -48,6 +50,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
   @override
   void dispose() {
     _nameController.dispose();
+    _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -59,6 +62,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
     if (!_formKey.currentState!.validate()) return;
 
     await ref.read(authProvider.notifier).register(
+      username: _usernameController.text.trim(),
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text,
@@ -112,6 +116,19 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
                         prefixIcon: Icon(Icons.person_outline, color: context.colors.textHint, size: 20),
                         onChanged: (v) => setState(() => _name = Name.dirty(v)),
                         errorText: _name.invalid ? ValidatorMessages.nameError(_name.error) : null,
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Username
+                      CustomTextField(
+                        label: 'Username',
+                        hint: 'Choose a username',
+                        controller: _usernameController,
+                        keyboardType: TextInputType.text,
+                        textInputAction: TextInputAction.next,
+                        prefixIcon: Icon(Icons.alternate_email, color: context.colors.textHint, size: 20),
+                        onChanged: (v) => setState(() => _username = Username.dirty(v)),
+                        errorText: _username.invalid ? ValidatorMessages.usernameError(_username.error) : null,
                       ),
                       const SizedBox(height: 20),
 

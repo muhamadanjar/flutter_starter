@@ -24,7 +24,7 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
   final _passwordFocusNode = FocusNode();
 
   bool _obscurePassword = true;
-  Email _email = const Email.pure();
+  Username _username = const Username.pure();
   Password _password = const Password.pure();
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -52,8 +52,8 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
     super.dispose();
   }
 
-  void _onEmailChanged(String value) {
-    setState(() => _email = Email.dirty(value));
+  void _onUsernameChanged(String value) {
+    setState(() => _username = Username.dirty(value));
   }
 
   void _onPasswordChanged(String value) {
@@ -64,7 +64,7 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
     if (!_formKey.currentState!.validate()) return;
 
     await ref.read(authProvider.notifier).login(
-      email: _emailController.text.trim(),
+      username: _emailController.text.trim(),
       password: _passwordController.text,
     );
   }
@@ -106,17 +106,17 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
                       _buildHeader(),
                       const SizedBox(height: 40),
 
-                      // Email Field
+                      // Username Field
                       CustomTextField(
-                        label: 'Email',
-                        hint: 'Enter your email',
+                        label: 'Username',
+                        hint: 'Enter your username',
                         controller: _emailController,
                         focusNode: _emailFocusNode,
-                        keyboardType: TextInputType.emailAddress,
+                        keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.next,
-                        prefixIcon: Icon(Icons.email_outlined, color: context.colors.textHint, size: 20),
-                        onChanged: _onEmailChanged,
-                        errorText: _email.invalid ? ValidatorMessages.emailError(_email.error) : null,
+                        prefixIcon: Icon(Icons.person_outline, color: context.colors.textHint, size: 20),
+                        onChanged: _onUsernameChanged,
+                        errorText: _username.invalid ? ValidatorMessages.usernameError(_username.error) : null,
                       ),
                       const SizedBox(height: 20),
 

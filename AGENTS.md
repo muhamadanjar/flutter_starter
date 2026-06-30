@@ -372,6 +372,42 @@ flutter pub run build_runner build --delete-conflicting-outputs
 - ✅ Code: `FirebaseService`, `firebase_provider`, message handlers in `main.dart`
 - 📖 Guide: [FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md)
 
+## Version & Release Management
+
+**Current Version:** See `pubspec.yaml` (e.g., 1.0.0+1)
+
+**Semantic Versioning (SemVer 2.0.0)**
+- MAJOR: Breaking changes (feat!:)
+- MINOR: New features (feat:)
+- PATCH: Bug fixes (fix:)
+- BUILD: CI/CD increments (+1, +2, ...)
+
+**Commit Message Convention (Conventional Commits)**
+- `fix:` → PATCH version
+- `feat:` → MINOR version
+- `feat!:` or `BREAKING CHANGE:` → MAJOR version
+- `docs:`, `style:`, `refactor:`, `perf:`, `test:` → PATCH version
+
+**Example Commits:**
+```
+fix(auth): resolve token expiry check
+
+feat(notifications): add firebase push notifications
+
+feat!: migrate dartz to fpdart (BREAKING CHANGE)
+```
+
+**Automatic Versioning:**
+- Commit messages analyzed on push to master
+- Version auto-bumped in pubspec.yaml
+- Git tag created (v1.0.0)
+- GitHub release published
+- Build number increments per CI run
+
+📖 See [SEMANTIC_VERSIONING.md](docs/SEMANTIC_VERSIONING.md) for complete guide.
+
+---
+
 ## Version Constraints
 
 - Dart: `>=3.2.0 <4.0.0`

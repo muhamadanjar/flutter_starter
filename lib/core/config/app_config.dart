@@ -15,7 +15,7 @@ class AppConfig {
 
   /// Development environment (local)
   static const dev = AppConfig(
-    baseUrl: 'http://localhost:3000/api',
+    baseUrl: 'http://localhost:8070',
     apiVersion: 'v1',
     environment: 'development',
     debugMode: true,
@@ -31,7 +31,7 @@ class AppConfig {
 
   /// Production environment
   static const production = AppConfig(
-    baseUrl: 'https://api.example.com/api',
+    baseUrl: 'https://usermanagement.jattirayyakonsultindo.co.id',
     apiVersion: 'v1',
     environment: 'production',
     debugMode: false,

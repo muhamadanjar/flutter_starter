@@ -1,5 +1,24 @@
 import 'package:formz/formz.dart';
 
+// Username Validator
+enum UsernameValidationError { tooShort, invalidCharacters }
+
+class Username extends FormzInput<String, UsernameValidationError> {
+  const Username.pure() : super.pure('');
+  const Username.dirty([super.value = '']) : super.dirty();
+
+  static final _usernameRegex = RegExp(r'^[a-zA-Z0-9_-]{3,}$');
+
+  @override
+  UsernameValidationError? validator(String value) {
+    if (value.trim().length < 3) return UsernameValidationError.tooShort;
+    if (!_usernameRegex.hasMatch(value)) return UsernameValidationError.invalidCharacters;
+    return null;
+  }
+
+  bool get invalid => !isValid;
+}
+
 // Email Validator
 enum EmailValidationError { invalid }
 
@@ -32,7 +51,7 @@ class Password extends FormzInput<String, PasswordValidationError> {
     if (!value.contains(RegExp(r'[A-Z]'))) return PasswordValidationError.noUppercase;
     if (!value.contains(RegExp(r'[a-z]'))) return PasswordValidationError.noLowercase;
     if (!value.contains(RegExp(r'[0-9]'))) return PasswordValidationError.noDigit;
-    if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) return PasswordValidationError.noSpecialChar;
+    // if (!value.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) return PasswordValidationError.noSpecialChar;
     return null;
   }
 
@@ -74,6 +93,17 @@ class Name extends FormzInput<String, NameValidationError> {
 // Helper to get error messages
 class ValidatorMessages {
   ValidatorMessages._();
+
+  static String usernameError(UsernameValidationError? error) {
+    switch (error) {
+      case UsernameValidationError.tooShort:
+        return 'Username must be at least 3 characters';
+      case UsernameValidationError.invalidCharacters:
+        return 'Username can only contain letters, numbers, hyphens, and underscores';
+      default:
+        return '';
+    }
+  }
 
   static String emailError(EmailValidationError? error) {
     switch (error) {

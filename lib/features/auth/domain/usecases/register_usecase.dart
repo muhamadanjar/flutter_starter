@@ -9,12 +9,14 @@ class RegisterUseCase {
   RegisterUseCase(this._repository);
 
   Future<Either<Failure, User>> call({
+    required String username,
     required String name,
     required String email,
     required String password,
     required String confirmPassword,
   }) {
     return _repository.register(
+      username: username,
       name: name,
       email: email,
       password: password,

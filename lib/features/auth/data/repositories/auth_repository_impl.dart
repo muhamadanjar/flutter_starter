@@ -22,7 +22,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, User>> login({
-    required String email,
+    required String username,
     required String password,
   }) async {
     if (!await networkInfo.isConnected) {
@@ -31,7 +31,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
     try {
       final response = await remoteDataSource.login(
-        email: email,
+        username: username,
         password: password,
       );
 
@@ -69,6 +69,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, User>> register({
+    required String username,
     required String name,
     required String email,
     required String password,
@@ -80,6 +81,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
     try {
       final response = await remoteDataSource.register(
+        username: username,
         name: name,
         email: email,
         password: password,
