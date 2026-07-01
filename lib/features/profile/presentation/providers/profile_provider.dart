@@ -2,12 +2,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/errors/failures.dart';
+import '../../../../core/logger/index.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/network/network_info.dart';
+import '../../../../core/services/gps_service.dart';
 import '../../data/datasources/profile_local_datasource.dart';
 import '../../data/datasources/profile_remote_datasource.dart';
 import '../../data/repositories/profile_repository_impl.dart';
+import '../../domain/dtos/index.dart';
 import '../../domain/entities/profile.dart';
+import '../../domain/repositories/profile_repository.dart';
 import '../../domain/usecases/change_password_usecase.dart';
 import '../../domain/usecases/get_profile_usecase.dart';
 import '../../domain/usecases/update_profile_usecase.dart';
@@ -81,14 +85,17 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
   final GetProfileUseCase _getProfileUseCase;
   final UpdateProfileUseCase _updateProfileUseCase;
   final ChangePasswordUseCase _changePasswordUseCase;
+  final ProfileRepository _profileRepository;
 
   ProfileNotifier({
     required GetProfileUseCase getProfileUseCase,
     required UpdateProfileUseCase updateProfileUseCase,
     required ChangePasswordUseCase changePasswordUseCase,
+    required ProfileRepository profileRepository,
   })  : _getProfileUseCase = getProfileUseCase,
         _updateProfileUseCase = updateProfileUseCase,
         _changePasswordUseCase = changePasswordUseCase,
+        _profileRepository = profileRepository,
         super(const ProfileState());
 
   Future<void> loadProfile() async {
@@ -152,6 +159,24 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
       ),
     );
   }
+
+  /// Update location metadata via auth/metas API
+  Future<void> updateLocationMetas(LocationData location) async {
+    try {
+      final metaUpdateRequest = BulkMetaUpdate(items: [
+        MetaItem(key: 'latitude', value: location.latitude.toString()),
+        MetaItem(key: 'longitude', value: location.longitude.toString()),
+        MetaItem(key: 'location_timestamp', value: location.timestamp.toIso8601String()),
+        MetaItem(key: 'location_accuracy', value: location.accuracy?.toString() ?? ''),
+      ]);
+
+      await _profileRepository.updateMetas(metaUpdateRequest);
+      log.i('Location synced to auth/metas: ${location.latitude}, ${location.longitude}');
+    } catch (e) {
+      log.w('Failed to sync location to auth/metas: $e');
+      rethrow;
+    }
+  }
 }
 
 // Profile Provider
@@ -160,5 +185,6 @@ final profileProvider = StateNotifierProvider<ProfileNotifier, ProfileState>((re
     getProfileUseCase: ref.watch(getProfileUseCaseProvider),
     updateProfileUseCase: ref.watch(updateProfileUseCaseProvider),
     changePasswordUseCase: ref.watch(changePasswordUseCaseProvider),
+    profileRepository: ref.watch(profileRepositoryProvider),
   );
 });

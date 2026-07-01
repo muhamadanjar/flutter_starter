@@ -30,6 +30,11 @@ class UserPref extends PrefGroup {
   late final Pref<String?> fcmToken = pref<String?>('fcm_token', null);
   late final Pref<int> fcmTokenUpdatedAt = pref<int>('fcm_token_updated_at', 0);
 
+  // GPS/Location preferences
+  late final Pref<String> latitude = pref<String>('latitude', '');
+  late final Pref<String> longitude = pref<String>('longitude', '');
+  late final Pref<int> locationTimestamp = pref<int>('location_timestamp', 0);
+
   /// Clear auth data (logout)
   Future<void> clearAuth() async {
     await userId.delete();

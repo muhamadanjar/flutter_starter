@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/dio_client.dart';
-import '../models/meta_update_request.dart';
+import '../../domain/dtos/meta_update_request.dart';
 import '../models/profile_model.dart';
 
 abstract class ProfileRemoteDataSource {
