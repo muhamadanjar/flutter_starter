@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:dio/dio.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/dio_client.dart';
 import '../models/meta_update_request.dart';
@@ -19,6 +21,9 @@ abstract class ProfileRemoteDataSource {
   /// Single: updateMetas(SingleMetaUpdate(key: 'theme', value: 'dark'))
   /// Bulk:   updateMetas(BulkMetaUpdate(items: [MetaItem(key: 'theme', value: 'dark'), ...]))
   Future<dynamic> updateMetas(MetaUpdateRequest request);
+
+  /// Upload avatar image, returns image URL
+  Future<String> uploadAvatar(File imageFile);
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -80,5 +85,29 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     }
 
     return responseData;
+  }
+
+  @override
+  Future<String> uploadAvatar(File imageFile) async {
+    final fileName = imageFile.path.split('/').last;
+
+    final formData = FormData.fromMap({
+      'avatar': await MultipartFile.fromFile(
+        imageFile.path,
+        filename: fileName,
+      ),
+    });
+
+    final response = await _dioClient.post(
+      ApiConstants.uploadAvatar,
+      data: formData,
+    );
+
+    final imageUrl = response.data['data']['avatar_url'] as String?;
+    if (imageUrl == null) {
+      throw Exception('No avatar URL in response');
+    }
+
+    return imageUrl;
   }
 }

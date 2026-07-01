@@ -355,6 +355,84 @@ dart fix --apply
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
+## Documentation
+
+**Rule: All documentation goes in `/docs` folder**
+
+### Types of Documentation
+
+| Type | File | Purpose |
+|------|------|---------|
+| Setup | `SETUP_GUIDE.md` | First-time developer setup |
+| Architecture | `CLEAN_ARCHITECTURE.md` | Design patterns, layers |
+| Features | `ADAPTIVE_LAYOUTS.md`, etc. | Feature-specific guides |
+| Configuration | `ENVIRONMENT_SETUP.md` | Environment config |
+| Versioning | `SEMANTIC_VERSIONING.md` | Release & versioning |
+| Storage | `PREFERENCES_GUIDE.md` | Preference system |
+| Logging | `LOGGING_GUIDE.md` | Logging setup & usage |
+| Dependencies | `PACKAGE_UPGRADE_ROADMAP.md` | Dependency strategy |
+| Firebase | `FIREBASE_SETUP.md` | Push notifications |
+| Integration | `DEPENDENCY_AUDIT.md` | Migration history |
+
+### Documentation Checklist
+
+When adding new feature/system:
+
+- [ ] Create `docs/FEATURE_NAME.md`
+- [ ] Include: Overview, Architecture, Quick Start, API Reference, Examples
+- [ ] Add to README.md links
+- [ ] Update AGENTS.md if it's a core system
+- [ ] Include troubleshooting section
+- [ ] Link to related docs
+- [ ] Keep under 600 lines (split if larger)
+
+### Example: Adding New Feature Documentation
+
+```markdown
+# Feature Name Guide
+
+## Overview
+Concise description
+
+## Architecture
+Diagram/structure
+
+## Quick Start
+Minimal working example
+
+## API Reference
+Methods/properties
+
+## Common Use Cases
+5-6 real examples
+
+## Best Practices
+DO/DON'T checklist
+
+## Troubleshooting
+Common issues
+
+## Related Docs
+Links
+```
+
+### Current Documentation
+
+✅ **Complete** (11 docs):
+- SETUP_GUIDE.md - First time setup
+- CLEAN_ARCHITECTURE.md - Architecture patterns
+- ADAPTIVE_LAYOUTS.md - Responsive UI
+- ENVIRONMENT_SETUP.md - Flavor configuration
+- ENVIRONMENT_CONFIGURATION.md - Config theory
+- PREFERENCES_GUIDE.md - Storage system
+- LOGGING_GUIDE.md - Logging management
+- FIREBASE_SETUP.md - Push notifications
+- FIREBASE_QUICK_START.md - Firebase reference
+- SEMANTIC_VERSIONING.md - Release process
+- PACKAGE_UPGRADE_ROADMAP.md - Upgrade strategy
+- DEPENDENCY_AUDIT.md - Package migrations
+- PRIORITY1_UPDATES.md - Completed updates
+
 ## Known Issues & Fixes
 
 **MissingPluginException (path_provider on web)**

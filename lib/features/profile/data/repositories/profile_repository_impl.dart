@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:fpdart/fpdart.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failures.dart';
@@ -80,6 +81,24 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return left(ValidationFailure(message: e.message ?? 'Validation error', fieldErrors: e.fieldErrors));
     } on UnauthorizedException catch (e) {
       return left(UnauthorizedFailure(message: e.message ?? 'Current password is incorrect'));
+    } catch (e) {
+      return left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String>> uploadAvatar(File imageFile) async {
+    if (!await networkInfo.isConnected) {
+      return left(NetworkFailure(message: 'No internet connection. Cannot upload avatar.'));
+    }
+
+    try {
+      final imageUrl = await remoteDataSource.uploadAvatar(imageFile);
+      return right(imageUrl);
+    } on ServerException catch (e) {
+      return left(ServerFailure(message: e.message ?? 'Server error'));
+    } on ValidationException catch (e) {
+      return left(ValidationFailure(message: e.message ?? 'Validation error', fieldErrors: e.fieldErrors));
     } catch (e) {
       return left(UnknownFailure(message: e.toString()));
     }

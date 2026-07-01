@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:fpdart/fpdart.dart';
 import '../../../../core/errors/failures.dart';
 import '../entities/profile.dart';
@@ -10,4 +11,5 @@ abstract class ProfileRepository {
     required String newPassword,
     required String confirmPassword,
   });
+  Future<Either<Failure, String>> uploadAvatar(File imageFile);
 }
