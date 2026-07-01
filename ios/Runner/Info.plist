@@ -66,5 +66,46 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	<!-- Location & GPS Permissions -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access to your location to track and save your GPS coordinates.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs access to your location for background tracking and location-based features.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to your location for background tracking.</string>
+
+	<!-- Camera Permission -->
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs access to your camera to take photos and upload avatars.</string>
+
+	<!-- Photo Library Permission -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to your photo library to upload images and files.</string>
+	<key>NSPhotoLibraryAddOnlyUsageDescription</key>
+	<string>This app needs permission to save photos to your photo library.</string>
+
+	<!-- Microphone Permission (for future video) -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs access to your microphone for video recording features.</string>
+
+	<!-- Biometric Permission -->
+	<key>NSFaceIDUsageDescription</key>
+	<string>This app uses Face ID to authenticate your identity for secure login.</string>
+
+	<!-- Local Network Permission (for connectivity check) -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>This app needs to check your local network connectivity.</string>
+	<key>NSBonjourServiceTypes</key>
+	<array>
+		<string>_http._tcp</string>
+		<string>_https._tcp</string>
+	</array>
+
+	<!-- File System Access -->
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 </dict>
 </plist>

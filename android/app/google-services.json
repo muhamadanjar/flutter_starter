@@ -1,0 +1,170 @@
+{
+  "project_info": {
+    "project_number": "448652889990",
+    "project_id": "simple-56cab",
+    "storage_bucket": "simple-56cab.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:448652889990:android:c160b21d15afb7302aa607",
+        "android_client_info": {
+          "package_name": "com.example.flutter_simple"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "448652889990-937k4gtbd1cnfvqjgeij2qq8gdnuefop.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.flutter_simple",
+            "certificate_hash": "feafd312f602026ba0499692e735518fc6f5ba6a"
+          }
+        },
+        {
+          "client_id": "448652889990-vlkp8jpbdomp9hg586qrbbl3r17cu1su.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.flutter_simple",
+            "certificate_hash": "fb072845cd8915f47777a0b1d7288acd289381c4"
+          }
+        },
+        {
+          "client_id": "448652889990-fd2hak6h7ttd4mrh7i8sq2su9aainbb7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRGDa6h5upPtTcHRskrh8Aq17rEbiIL1U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "448652889990-fd2hak6h7ttd4mrh7i8sq2su9aainbb7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "448652889990-s6u6mbafo5j19r0f6fo5g7ab7nrb7nkr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterSimple"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:448652889990:android:3d545b756ed778392aa607",
+        "android_client_info": {
+          "package_name": "id.muhamadanjar.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "448652889990-fd2hak6h7ttd4mrh7i8sq2su9aainbb7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRGDa6h5upPtTcHRskrh8Aq17rEbiIL1U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "448652889990-fd2hak6h7ttd4mrh7i8sq2su9aainbb7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "448652889990-s6u6mbafo5j19r0f6fo5g7ab7nrb7nkr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterSimple"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:448652889990:android:da9b5bf7305ee1982aa607",
+        "android_client_info": {
+          "package_name": "id.sukabumikab.silentcenter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "448652889990-fd2hak6h7ttd4mrh7i8sq2su9aainbb7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRGDa6h5upPtTcHRskrh8Aq17rEbiIL1U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "448652889990-fd2hak6h7ttd4mrh7i8sq2su9aainbb7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "448652889990-s6u6mbafo5j19r0f6fo5g7ab7nrb7nkr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterSimple"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:448652889990:android:eaef78f5d3a336db2aa607",
+        "android_client_info": {
+          "package_name": "id.sukabumikab.silentcenter.silent_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "448652889990-fd2hak6h7ttd4mrh7i8sq2su9aainbb7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRGDa6h5upPtTcHRskrh8Aq17rEbiIL1U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "448652889990-fd2hak6h7ttd4mrh7i8sq2su9aainbb7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "448652889990-s6u6mbafo5j19r0f6fo5g7ab7nrb7nkr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterSimple"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
