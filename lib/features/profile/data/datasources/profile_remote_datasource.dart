@@ -1,5 +1,6 @@
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/dio_client.dart';
+import '../models/meta_update_request.dart';
 import '../models/profile_model.dart';
 
 abstract class ProfileRemoteDataSource {
@@ -10,6 +11,14 @@ abstract class ProfileRemoteDataSource {
     required String newPassword,
     required String confirmPassword,
   });
+
+  Future<Map<String, dynamic>> getMetas();
+
+  /// Upsert metadata (single or bulk)
+  ///
+  /// Single: updateMetas(SingleMetaUpdate(key: 'theme', value: 'dark'))
+  /// Bulk:   updateMetas(BulkMetaUpdate(items: [MetaItem(key: 'theme', value: 'dark'), ...]))
+  Future<dynamic> updateMetas(MetaUpdateRequest request);
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -37,10 +46,39 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     required String newPassword,
     required String confirmPassword,
   }) async {
-    await _dioClient.post(ApiConstants.changePassword, data: {
-      'current_password': currentPassword,
+    final response = await _dioClient.post(ApiConstants.changePassword, data: {
+      'old_password': currentPassword,
       'new_password': newPassword,
-      'new_password_confirmation': confirmPassword,
+      'confirm_password': confirmPassword,
     });
+
+  }
+
+  @override
+  Future<Map<String, dynamic>> getMetas() async {
+    final response = await _dioClient.get(ApiConstants.authMetas);
+    return response.data['data'] as Map<String, dynamic>;
+  }
+
+  @override
+  Future<dynamic> updateMetas(MetaUpdateRequest request) async {
+    final response = await _dioClient.post(
+      ApiConstants.authMetas,
+      data: request.toJson(),
+    );
+
+    final responseData = response.data['data'];
+
+    // Single: return Map
+    if (responseData is Map) {
+      return responseData as Map<String, dynamic>;
+    }
+
+    // Bulk: return List
+    if (responseData is List) {
+      return responseData.cast<Map<String, dynamic>>();
+    }
+
+    return responseData;
   }
 }

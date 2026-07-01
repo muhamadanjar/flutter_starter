@@ -35,8 +35,10 @@ class AuthRepositoryImpl implements AuthRepository {
         password: password,
       );
 
+      debugPrint("==[RESPONSE]== ${response}");
+
       final data = response['data'] as Map<String, dynamic>;
-      final token = data['token'] as String? ?? '';
+      final token = data['access_token'] as String? ?? '';
       final refreshToken = data['refresh_token'] as String? ?? '';
       final userModel = UserModel.fromJson(data['user'] as Map<String, dynamic>);
 

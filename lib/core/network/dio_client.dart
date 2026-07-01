@@ -7,13 +7,16 @@ import '../constants/api_constants.dart';
 import '../constants/app_constants.dart';
 import '../errors/exceptions.dart';
 import '../providers/config_provider.dart';
+import '../utils/mutex.dart';
 import 'network_info.dart';
+import 'retry_interceptor.dart';
 
 class DioClient {
   late final Dio _dio;
   final NetworkInfo _networkInfo;
   final Box<dynamic> _authBox;
   final AppConfig _config;
+  final Mutex _tokenMutex = Mutex();
 
   DioClient({
     required NetworkInfo networkInfo,
@@ -37,6 +40,11 @@ class DioClient {
     );
 
     _dio.interceptors.addAll([
+      RetryInterceptor(
+        maxRetries: 3,
+        initialDelay: const Duration(milliseconds: 500),
+        backoffFactor: 2.0,
+      ),
       _authInterceptor(),
       _logInterceptor(),
       _errorInterceptor(),
@@ -55,7 +63,8 @@ class DioClient {
       onError: (error, handler) async {
         if (error.response?.statusCode == 401) {
           try {
-            final newToken = await _refreshToken();
+            // Use mutex to prevent concurrent token refresh requests
+            final newToken = await _tokenMutex.lock(() => _refreshToken());
             if (newToken != null) {
               error.requestOptions.headers['Authorization'] = 'Bearer $newToken';
               final response = await _dio.fetch(error.requestOptions);
