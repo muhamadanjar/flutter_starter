@@ -1,0 +1,1297 @@
+{
+  "nodes": [
+    {
+      "id": "doc_agents",
+      "label": "Agents",
+      "type": "document",
+      "source_location": "AGENTS.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: AGENTS.md"
+      }
+    },
+    {
+      "id": "doc_changelog",
+      "label": "Changelog",
+      "type": "document",
+      "source_location": "CHANGELOG.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: CHANGELOG.md"
+      }
+    },
+    {
+      "id": "doc_context",
+      "label": "Context",
+      "type": "document",
+      "source_location": "CONTEXT.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: CONTEXT.md"
+      }
+    },
+    {
+      "id": "doc_readme",
+      "label": "Readme",
+      "type": "document",
+      "source_location": "README.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: README.md"
+      }
+    },
+    {
+      "id": "doc_analysis_options",
+      "label": "Analysis Options",
+      "type": "document",
+      "source_location": "analysis_options.yaml",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: analysis_options.yaml"
+      }
+    },
+    {
+      "id": "doc_adaptive_layouts",
+      "label": "Adaptive Layouts",
+      "type": "document",
+      "source_location": "docs/ADAPTIVE_LAYOUTS.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: docs/ADAPTIVE_LAYOUTS.md"
+      }
+    },
+    {
+      "id": "doc_clean_architecture",
+      "label": "Clean Architecture",
+      "type": "document",
+      "source_location": "docs/CLEAN_ARCHITECTURE.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: docs/CLEAN_ARCHITECTURE.md"
+      }
+    },
+    {
+      "id": "doc_dependency_audit",
+      "label": "Dependency Audit",
+      "type": "document",
+      "source_location": "docs/DEPENDENCY_AUDIT.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: docs/DEPENDENCY_AUDIT.md"
+      }
+    },
+    {
+      "id": "doc_environment_configuration",
+      "label": "Environment Configuration",
+      "type": "document",
+      "source_location": "docs/ENVIRONMENT_CONFIGURATION.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: docs/ENVIRONMENT_CONFIGURATION.md"
+      }
+    },
+    {
+      "id": "doc_environment_setup",
+      "label": "Environment Setup",
+      "type": "document",
+      "source_location": "docs/ENVIRONMENT_SETUP.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: docs/ENVIRONMENT_SETUP.md"
+      }
+    },
+    {
+      "id": "doc_firebase_quick_start",
+      "label": "Firebase Quick Start",
+      "type": "document",
+      "source_location": "docs/FIREBASE_QUICK_START.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: docs/FIREBASE_QUICK_START.md"
+      }
+    },
+    {
+      "id": "doc_firebase_setup",
+      "label": "Firebase Setup",
+      "type": "document",
+      "source_location": "docs/FIREBASE_SETUP.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: docs/FIREBASE_SETUP.md"
+      }
+    },
+    {
+      "id": "doc_localization",
+      "label": "Localization",
+      "type": "document",
+      "source_location": "docs/LOCALIZATION.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: docs/LOCALIZATION.md"
+      }
+    },
+    {
+      "id": "doc_logging_guide",
+      "label": "Logging Guide",
+      "type": "document",
+      "source_location": "docs/LOGGING_GUIDE.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: docs/LOGGING_GUIDE.md"
+      }
+    },
+    {
+      "id": "doc_package_upgrade_roadmap",
+      "label": "Package Upgrade Roadmap",
+      "type": "document",
+      "source_location": "docs/PACKAGE_UPGRADE_ROADMAP.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: docs/PACKAGE_UPGRADE_ROADMAP.md"
+      }
+    },
+    {
+      "id": "doc_preferences_guide",
+      "label": "Preferences Guide",
+      "type": "document",
+      "source_location": "docs/PREFERENCES_GUIDE.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: docs/PREFERENCES_GUIDE.md"
+      }
+    },
+    {
+      "id": "doc_priority1_updates",
+      "label": "Priority1 Updates",
+      "type": "document",
+      "source_location": "docs/PRIORITY1_UPDATES.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: docs/PRIORITY1_UPDATES.md"
+      }
+    },
+    {
+      "id": "doc_semantic_versioning",
+      "label": "Semantic Versioning",
+      "type": "document",
+      "source_location": "docs/SEMANTIC_VERSIONING.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: docs/SEMANTIC_VERSIONING.md"
+      }
+    },
+    {
+      "id": "doc_setup_guide",
+      "label": "Setup Guide",
+      "type": "document",
+      "source_location": "docs/SETUP_GUIDE.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: docs/SETUP_GUIDE.md"
+      }
+    },
+    {
+      "id": "doc_l10n",
+      "label": "L10N",
+      "type": "document",
+      "source_location": "l10n.yaml",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: l10n.yaml"
+      }
+    },
+    {
+      "id": "doc_pubspec",
+      "label": "Pubspec",
+      "type": "document",
+      "source_location": "pubspec.yaml",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: pubspec.yaml"
+      }
+    },
+    {
+      "id": "doc_index",
+      "label": "Index",
+      "type": "document",
+      "source_location": "web/index.html",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Document: web/index.html"
+      }
+    },
+    {
+      "id": "concept_clean_architecture",
+      "label": "Clean Architecture",
+      "type": "concept",
+      "source_location": "AGENTS.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Architecture pattern separating domain/data/presentation layers"
+      }
+    },
+    {
+      "id": "concept_riverpod_state",
+      "label": "Riverpod State Management",
+      "type": "concept",
+      "source_location": "AGENTS.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Global state management and dependency injection via flutter_riverpod"
+      }
+    },
+    {
+      "id": "concept_go_router",
+      "label": "Go Router Navigation",
+      "type": "concept",
+      "source_location": "AGENTS.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Declarative routing with deep linking via go_router"
+      }
+    },
+    {
+      "id": "concept_dio_http",
+      "label": "Dio HTTP Client",
+      "type": "concept",
+      "source_location": "AGENTS.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "HTTP client with interceptors for API communication"
+      }
+    },
+    {
+      "id": "concept_hive_storage",
+      "label": "Hive Local Storage",
+      "type": "concept",
+      "source_location": "AGENTS.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "NoSQL offline-first local storage"
+      }
+    },
+    {
+      "id": "concept_responsive_framework",
+      "label": "Responsive Framework",
+      "type": "concept",
+      "source_location": "AGENTS.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Adaptive layouts for mobile/tablet/desktop"
+      }
+    },
+    {
+      "id": "concept_firebase_messaging",
+      "label": "Firebase Push Notifications",
+      "type": "concept",
+      "source_location": "AGENTS.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "FCM push notification integration"
+      }
+    },
+    {
+      "id": "concept_freezed_models",
+      "label": "Freezed Code Generation",
+      "type": "concept",
+      "source_location": "AGENTS.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Immutable models with JSON serialization"
+      }
+    },
+    {
+      "id": "concept_flavor_config",
+      "label": "Environment Flavors",
+      "type": "concept",
+      "source_location": "AGENTS.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Dev/staging/production environment configuration"
+      }
+    },
+    {
+      "id": "concept_semantic_versioning",
+      "label": "Semantic Versioning",
+      "type": "concept",
+      "source_location": "docs/SEMANTIC_VERSIONING.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "SemVer 2.0 release management"
+      }
+    },
+    {
+      "id": "concept_conventional_commits",
+      "label": "Conventional Commits",
+      "type": "concept",
+      "source_location": "docs/SEMANTIC_VERSIONING.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Commit message convention for version bumping"
+      }
+    },
+    {
+      "id": "concept_adaptive_layouts",
+      "label": "Adaptive Layouts",
+      "type": "concept",
+      "source_location": "docs/ADAPTIVE_LAYOUTS.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Screen-size-aware UI components"
+      }
+    },
+    {
+      "id": "concept_feature_modules",
+      "label": "Feature Module Structure",
+      "type": "concept",
+      "source_location": "AGENTS.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Scalable feature organization with domain/data/presentation"
+      }
+    },
+    {
+      "id": "concept_localization",
+      "label": "App Localization",
+      "type": "concept",
+      "source_location": "docs/LOCALIZATION.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Multi-language support (English, Indonesian)"
+      }
+    },
+    {
+      "id": "concept_logging",
+      "label": "Logging System",
+      "type": "concept",
+      "source_location": "docs/LOGGING_GUIDE.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Structured logging management"
+      }
+    },
+    {
+      "id": "concept_preferences",
+      "label": "Preferences Storage",
+      "type": "concept",
+      "source_location": "docs/PREFERENCES_GUIDE.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "User preferences and settings system"
+      }
+    },
+    {
+      "id": "concept_dependency_audit",
+      "label": "Dependency Audit",
+      "type": "concept",
+      "source_location": "docs/DEPENDENCY_AUDIT.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Package migration and upgrade tracking"
+      }
+    },
+    {
+      "id": "concept_firebase_setup",
+      "label": "Firebase Configuration",
+      "type": "concept",
+      "source_location": "docs/FIREBASE_SETUP.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Platform-specific Firebase setup (Android/iOS/Web)"
+      }
+    },
+    {
+      "id": "concept_environment_setup",
+      "label": "Environment Configuration",
+      "type": "concept",
+      "source_location": "docs/ENVIRONMENT_SETUP.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Flavor-based dev/staging/prod setup"
+      }
+    },
+    {
+      "id": "concept_package_roadmap",
+      "label": "Package Upgrade Roadmap",
+      "type": "concept",
+      "source_location": "docs/PACKAGE_UPGRADE_ROADMAP.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Dependency upgrade strategy and priorities"
+      }
+    },
+    {
+      "id": "concept_setup_guide",
+      "label": "Project Setup",
+      "type": "concept",
+      "source_location": "docs/SETUP_GUIDE.md",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "First-time developer setup guide"
+      }
+    },
+    {
+      "id": "feature_auth",
+      "label": "Authentication Feature",
+      "type": "feature",
+      "source_location": "lib/features/auth",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Login, register, forgot password, token refresh"
+      }
+    },
+    {
+      "id": "feature_dashboard",
+      "label": "Dashboard Feature",
+      "type": "feature",
+      "source_location": "lib/features/dashboard",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Dashboard data, stats, charts, recent activity"
+      }
+    },
+    {
+      "id": "feature_profile",
+      "label": "Profile Feature",
+      "type": "feature",
+      "source_location": "lib/features/profile",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "User profile, meta updates, password change"
+      }
+    },
+    {
+      "id": "feature_settings",
+      "label": "Settings Feature",
+      "type": "feature",
+      "source_location": "lib/features/settings",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "App settings management"
+      }
+    },
+    {
+      "id": "feature_notifications",
+      "label": "Notifications Feature",
+      "type": "feature",
+      "source_location": "lib/features/notifications",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Push notification settings"
+      }
+    },
+    {
+      "id": "platform_android",
+      "label": "Android Platform",
+      "type": "module",
+      "source_location": "android/",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Android app target"
+      }
+    },
+    {
+      "id": "platform_ios",
+      "label": "iOS Platform",
+      "type": "module",
+      "source_location": "ios/",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "iOS app target"
+      }
+    },
+    {
+      "id": "platform_web",
+      "label": "Web Platform",
+      "type": "module",
+      "source_location": "web/",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Web app target"
+      }
+    },
+    {
+      "id": "platform_linux",
+      "label": "Linux Desktop Platform",
+      "type": "module",
+      "source_location": "linux/",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Linux desktop target"
+      }
+    },
+    {
+      "id": "platform_windows",
+      "label": "Windows Desktop Platform",
+      "type": "module",
+      "source_location": "windows/",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Windows desktop target"
+      }
+    },
+    {
+      "id": "platform_macos",
+      "label": "macOS Platform",
+      "type": "module",
+      "source_location": "macos/",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "macOS desktop target"
+      }
+    },
+    {
+      "id": "img_ic_launcher",
+      "label": "Launch Image (ic_launcher)",
+      "type": "asset_launch",
+      "source_location": "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: android/app/src/main/res/mipmap-hdpi/ic_launcher.png"
+      }
+    },
+    {
+      "id": "img_icon_app_1024x1024_at_1x",
+      "label": "App Icon (Icon_App_1024x1024_at_1x)",
+      "type": "asset_icon",
+      "source_location": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png"
+      }
+    },
+    {
+      "id": "img_icon_app_20x20_at_1x",
+      "label": "App Icon (Icon_App_20x20_at_1x)",
+      "type": "asset_icon",
+      "source_location": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png"
+      }
+    },
+    {
+      "id": "img_icon_app_20x20_at_2x",
+      "label": "App Icon (Icon_App_20x20_at_2x)",
+      "type": "asset_icon",
+      "source_location": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png"
+      }
+    },
+    {
+      "id": "img_icon_app_20x20_at_3x",
+      "label": "App Icon (Icon_App_20x20_at_3x)",
+      "type": "asset_icon",
+      "source_location": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png"
+      }
+    },
+    {
+      "id": "img_icon_app_29x29_at_1x",
+      "label": "App Icon (Icon_App_29x29_at_1x)",
+      "type": "asset_icon",
+      "source_location": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png"
+      }
+    },
+    {
+      "id": "img_icon_app_29x29_at_2x",
+      "label": "App Icon (Icon_App_29x29_at_2x)",
+      "type": "asset_icon",
+      "source_location": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png"
+      }
+    },
+    {
+      "id": "img_icon_app_29x29_at_3x",
+      "label": "App Icon (Icon_App_29x29_at_3x)",
+      "type": "asset_icon",
+      "source_location": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png"
+      }
+    },
+    {
+      "id": "img_icon_app_40x40_at_1x",
+      "label": "App Icon (Icon_App_40x40_at_1x)",
+      "type": "asset_icon",
+      "source_location": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png"
+      }
+    },
+    {
+      "id": "img_icon_app_40x40_at_2x",
+      "label": "App Icon (Icon_App_40x40_at_2x)",
+      "type": "asset_icon",
+      "source_location": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png"
+      }
+    },
+    {
+      "id": "img_icon_app_40x40_at_3x",
+      "label": "App Icon (Icon_App_40x40_at_3x)",
+      "type": "asset_icon",
+      "source_location": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png"
+      }
+    },
+    {
+      "id": "img_icon_app_60x60_at_2x",
+      "label": "App Icon (Icon_App_60x60_at_2x)",
+      "type": "asset_icon",
+      "source_location": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png"
+      }
+    },
+    {
+      "id": "img_icon_app_60x60_at_3x",
+      "label": "App Icon (Icon_App_60x60_at_3x)",
+      "type": "asset_icon",
+      "source_location": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png"
+      }
+    },
+    {
+      "id": "img_icon_app_76x76_at_1x",
+      "label": "App Icon (Icon_App_76x76_at_1x)",
+      "type": "asset_icon",
+      "source_location": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png"
+      }
+    },
+    {
+      "id": "img_icon_app_76x76_at_2x",
+      "label": "App Icon (Icon_App_76x76_at_2x)",
+      "type": "asset_icon",
+      "source_location": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png"
+      }
+    },
+    {
+      "id": "img_icon_app_83.5x83.5_at_2x",
+      "label": "App Icon (Icon_App_83.5x83.5_at_2x)",
+      "type": "asset_icon",
+      "source_location": "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png"
+      }
+    },
+    {
+      "id": "img_launchimage",
+      "label": "Launch Image (LaunchImage)",
+      "type": "asset_launch",
+      "source_location": "ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png"
+      }
+    },
+    {
+      "id": "img_launchimage_at_2x",
+      "label": "Launch Image (LaunchImage_at_2x)",
+      "type": "asset_launch",
+      "source_location": "ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@2x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@2x.png"
+      }
+    },
+    {
+      "id": "img_launchimage_at_3x",
+      "label": "Launch Image (LaunchImage_at_3x)",
+      "type": "asset_launch",
+      "source_location": "ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@3x.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@3x.png"
+      }
+    },
+    {
+      "id": "img_app_icon_1024",
+      "label": "App Icon (app_icon_1024)",
+      "type": "asset_icon",
+      "source_location": "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png"
+      }
+    },
+    {
+      "id": "img_app_icon_128",
+      "label": "App Icon (app_icon_128)",
+      "type": "asset_icon",
+      "source_location": "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_128.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_128.png"
+      }
+    },
+    {
+      "id": "img_app_icon_16",
+      "label": "App Icon (app_icon_16)",
+      "type": "asset_icon",
+      "source_location": "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_16.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_16.png"
+      }
+    },
+    {
+      "id": "img_app_icon_256",
+      "label": "App Icon (app_icon_256)",
+      "type": "asset_icon",
+      "source_location": "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png"
+      }
+    },
+    {
+      "id": "img_app_icon_32",
+      "label": "App Icon (app_icon_32)",
+      "type": "asset_icon",
+      "source_location": "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_32.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_32.png"
+      }
+    },
+    {
+      "id": "img_app_icon_512",
+      "label": "App Icon (app_icon_512)",
+      "type": "asset_icon",
+      "source_location": "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_512.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_512.png"
+      }
+    },
+    {
+      "id": "img_app_icon_64",
+      "label": "App Icon (app_icon_64)",
+      "type": "asset_icon",
+      "source_location": "macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_64.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_64.png"
+      }
+    },
+    {
+      "id": "img_favicon",
+      "label": "Favicon",
+      "type": "asset_image",
+      "source_location": "web/favicon.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: web/favicon.png"
+      }
+    },
+    {
+      "id": "img_icon_192",
+      "label": "Icon 192",
+      "type": "asset_image",
+      "source_location": "web/icons/Icon-192.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: web/icons/Icon-192.png"
+      }
+    },
+    {
+      "id": "img_icon_512",
+      "label": "Icon 512",
+      "type": "asset_image",
+      "source_location": "web/icons/Icon-512.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: web/icons/Icon-512.png"
+      }
+    },
+    {
+      "id": "img_icon_maskable_192",
+      "label": "Icon Maskable 192",
+      "type": "asset_image",
+      "source_location": "web/icons/Icon-maskable-192.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: web/icons/Icon-maskable-192.png"
+      }
+    },
+    {
+      "id": "img_icon_maskable_512",
+      "label": "Icon Maskable 512",
+      "type": "asset_image",
+      "source_location": "web/icons/Icon-maskable-512.png",
+      "confidence": "EXTRACTED",
+      "frontmatter": {
+        "summary": "Image asset: web/icons/Icon-maskable-512.png"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "doc_agents",
+      "target": "concept_clean_architecture",
+      "label": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_agents",
+      "target": "concept_riverpod_state",
+      "label": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_agents",
+      "target": "concept_go_router",
+      "label": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_agents",
+      "target": "concept_dio_http",
+      "label": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_agents",
+      "target": "concept_hive_storage",
+      "label": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_agents",
+      "target": "concept_responsive_framework",
+      "label": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_agents",
+      "target": "concept_firebase_messaging",
+      "label": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_agents",
+      "target": "concept_freezed_models",
+      "label": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_agents",
+      "target": "concept_flavor_config",
+      "label": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_agents",
+      "target": "concept_feature_modules",
+      "label": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_clean_architecture",
+      "target": "concept_clean_architecture",
+      "label": "explains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_adaptive_layouts",
+      "target": "concept_adaptive_layouts",
+      "label": "explains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_semantic_versioning",
+      "target": "concept_semantic_versioning",
+      "label": "explains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_semantic_versioning",
+      "target": "concept_conventional_commits",
+      "label": "explains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_firebase_setup",
+      "target": "concept_firebase_messaging",
+      "label": "explains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_firebase_setup",
+      "target": "concept_firebase_setup",
+      "label": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_environment_setup",
+      "target": "concept_flavor_config",
+      "label": "explains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_environment_setup",
+      "target": "concept_environment_setup",
+      "label": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_preferences_guide",
+      "target": "concept_preferences",
+      "label": "explains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_logging_guide",
+      "target": "concept_logging",
+      "label": "explains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_dependency_audit",
+      "target": "concept_dependency_audit",
+      "label": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_package_upgrade_roadmap",
+      "target": "concept_package_roadmap",
+      "label": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_setup_guide",
+      "target": "concept_setup_guide",
+      "label": "describes",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "doc_localization",
+      "target": "concept_localization",
+      "label": "explains",
+      "confidence": "EXTRACTED"
+    },
+    {
+      "source": "feature_auth",
+      "target": "concept_riverpod_state",
+      "label": "uses",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "feature_auth",
+      "target": "concept_dio_http",
+      "label": "uses",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "feature_auth",
+      "target": "concept_hive_storage",
+      "label": "uses",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "feature_auth",
+      "target": "concept_clean_architecture",
+      "label": "follows",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "feature_dashboard",
+      "target": "concept_riverpod_state",
+      "label": "uses",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "feature_dashboard",
+      "target": "concept_dio_http",
+      "label": "uses",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "feature_dashboard",
+      "target": "concept_responsive_framework",
+      "label": "uses",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "feature_dashboard",
+      "target": "concept_clean_architecture",
+      "label": "follows",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "feature_profile",
+      "target": "concept_clean_architecture",
+      "label": "follows",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "feature_profile",
+      "target": "concept_riverpod_state",
+      "label": "uses",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "feature_settings",
+      "target": "concept_clean_architecture",
+      "label": "follows",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "feature_settings",
+      "target": "concept_riverpod_state",
+      "label": "uses",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "feature_notifications",
+      "target": "concept_firebase_messaging",
+      "label": "uses",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "platform_android",
+      "target": "doc_firebase_setup",
+      "label": "configured_by",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "platform_ios",
+      "target": "doc_firebase_setup",
+      "label": "configured_by",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "platform_web",
+      "target": "doc_firebase_setup",
+      "label": "configured_by",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "platform_linux",
+      "target": "doc_linux_cmakelists",
+      "label": "built_by",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "platform_windows",
+      "target": "doc_windows_cmakelists",
+      "label": "built_by",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "platform_macos",
+      "target": "doc_macos_cmakelists",
+      "label": "built_by",
+      "confidence": "INFERRED"
+    },
+    {
+      "source": "feature_auth",
+      "target": "platform_android",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_auth",
+      "target": "platform_ios",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_auth",
+      "target": "platform_web",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_auth",
+      "target": "platform_linux",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_auth",
+      "target": "platform_windows",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_auth",
+      "target": "platform_macos",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_dashboard",
+      "target": "platform_android",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_dashboard",
+      "target": "platform_ios",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_dashboard",
+      "target": "platform_web",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_dashboard",
+      "target": "platform_linux",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_dashboard",
+      "target": "platform_windows",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_dashboard",
+      "target": "platform_macos",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_profile",
+      "target": "platform_android",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_profile",
+      "target": "platform_ios",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_profile",
+      "target": "platform_web",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_profile",
+      "target": "platform_linux",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_profile",
+      "target": "platform_windows",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_profile",
+      "target": "platform_macos",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_settings",
+      "target": "platform_android",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_settings",
+      "target": "platform_ios",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_settings",
+      "target": "platform_web",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_settings",
+      "target": "platform_linux",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_settings",
+      "target": "platform_windows",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_settings",
+      "target": "platform_macos",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_notifications",
+      "target": "platform_android",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_notifications",
+      "target": "platform_ios",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_notifications",
+      "target": "platform_web",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_notifications",
+      "target": "platform_linux",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_notifications",
+      "target": "platform_windows",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    },
+    {
+      "source": "feature_notifications",
+      "target": "platform_macos",
+      "label": "deploys_to",
+      "confidence": "AMBIGUOUS"
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

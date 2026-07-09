@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NotificationSettingsWidget extends ConsumerWidget {
-  const NotificationSettingsWidget({Key? key}) : super(key: key);
+  const NotificationSettingsWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final fcmTokenAsync = ref.watch(fcmTokenProvider);
 
     return Card(
-      margin: EdgeInsets.all(16),
+      margin: const EdgeInsets.all(16),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -20,13 +20,13 @@ class NotificationSettingsWidget extends ConsumerWidget {
               'Push Notifications',
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             // FCM Token display
             Text('FCM Token:', style: Theme.of(context).textTheme.labelMedium),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             fcmTokenAsync.when(
               data: (token) => _buildTokenDisplay(context, token),
-              loading: () => SizedBox(
+              loading: () => const SizedBox(
                 height: 20,
                 child: Center(child: SizedBox(
                   height: 16,
@@ -36,13 +36,13 @@ class NotificationSettingsWidget extends ConsumerWidget {
               ),
               error: (err, _) => Text(
                 'Failed to load token: $err',
-                style: TextStyle(color: Colors.red),
+                style: const TextStyle(color: Colors.red),
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             // Topic subscription
             Text('Subscriptions:', style: Theme.of(context).textTheme.labelMedium),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             _buildTopicButtons(context, ref),
           ],
         ),
@@ -52,7 +52,7 @@ class NotificationSettingsWidget extends ConsumerWidget {
 
   Widget _buildTokenDisplay(BuildContext context, String? token) {
     if (token == null) {
-      return Text('No token available', style: TextStyle(color: Colors.orange));
+      return const Text('No token available', style: TextStyle(color: Colors.orange));
     }
 
     return SelectableText(
@@ -90,16 +90,16 @@ class NotificationSettingsWidget extends ConsumerWidget {
 }
 
 class _TopicButton extends ConsumerWidget {
-  final String label;
-  final String topic;
-  final VoidCallback onPressed;
 
   const _TopicButton({
     required this.label,
     required this.topic,
     required this.onPressed,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
+  final String label;
+  final String topic;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

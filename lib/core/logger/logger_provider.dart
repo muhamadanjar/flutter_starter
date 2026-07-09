@@ -15,9 +15,9 @@ final setLogLevelProvider = Provider((ref) {
 
 /// Log notifier for imperative logging
 class LogNotifier extends StateNotifier<void> {
-  final LoggerManager _logger;
 
   LogNotifier(this._logger) : super(null);
+  final LoggerManager _logger;
 
   void v(String message, [dynamic error, StackTrace? stackTrace]) {
     _logger.v(message, error, stackTrace);
