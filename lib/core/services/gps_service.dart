@@ -119,10 +119,8 @@ class GpsService {
 
       // Get position
       final position = await Geolocator.getCurrentPosition(
-        locationSettings: LocationSettings(
-          accuracy: accuracy,
-          timeLimit: const Duration(seconds: 30),
-        ),
+        desiredAccuracy: accuracy,
+        timeLimit: const Duration(seconds: 30),
       );
 
       final location = LocationData.fromPosition(position);

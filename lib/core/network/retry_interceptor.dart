@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:dio/dio.dart';
 
 /// Retry interceptor with exponential backoff
@@ -14,13 +16,13 @@ class RetryInterceptor extends Interceptor {
 
   @override
   Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
-    if (_shouldRetry(err) && err.requestOptions.extras['retries'] == null) {
+    if (_shouldRetry(err) && err.requestOptions.extra['retries'] == null) {
       int retryCount = 0;
 
       while (retryCount < maxRetries) {
         try {
           // Calculate backoff delay
-          final delayMs = (initialDelay.inMilliseconds * (backoffFactor ^ retryCount)).toInt();
+          final delayMs = (initialDelay.inMilliseconds * math.pow(backoffFactor, retryCount)).toInt();
           await Future.delayed(Duration(milliseconds: delayMs));
 
           retryCount++;

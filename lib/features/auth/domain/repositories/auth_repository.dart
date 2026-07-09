@@ -18,6 +18,10 @@ abstract class AuthRepository {
 
   Future<Either<Failure, void>> logout();
 
+  /// Clear the on-device session without any server calls
+  /// (used when the session has already expired server-side).
+  Future<void> clearLocalSession();
+
   Future<Either<Failure, User>> getProfile();
 
   Future<bool> isLoggedIn();

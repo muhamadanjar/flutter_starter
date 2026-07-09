@@ -282,7 +282,7 @@ class _UniversalFilePickerWidgetState extends State<UniversalFilePickerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>() ?? AppColors.light;
+    final colors = context.colors;
     final isSelected = _selectedFile != null || widget.selectedFileName != null;
 
     return Column(

@@ -1,7 +1,8 @@
 sealed class MetaUpdateRequest {
   const MetaUpdateRequest();
 
-  Map<String, dynamic> toJson();
+  /// Single returns a Map, bulk returns a List — the API accepts both shapes.
+  dynamic toJson();
 }
 
 /// Single metadata update

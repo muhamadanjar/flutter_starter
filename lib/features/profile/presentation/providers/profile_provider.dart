@@ -170,8 +170,11 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
         MetaItem(key: 'location_accuracy', value: location.accuracy?.toString() ?? ''),
       ]);
 
-      await _profileRepository.updateMetas(metaUpdateRequest);
-      log.i('Location synced to auth/metas: ${location.latitude}, ${location.longitude}');
+      final result = await _profileRepository.updateMetas(metaUpdateRequest);
+      result.fold(
+        (failure) => throw Exception(failure.message),
+        (_) => log.i('Location synced to auth/metas: ${location.latitude}, ${location.longitude}'),
+      );
     } catch (e) {
       log.w('Failed to sync location to auth/metas: $e');
       rethrow;

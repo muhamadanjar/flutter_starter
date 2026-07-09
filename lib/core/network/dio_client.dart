@@ -10,9 +10,14 @@ import '../providers/config_provider.dart';
 import '../utils/mutex.dart';
 import 'network_info.dart';
 import 'retry_interceptor.dart';
+import 'session_events.dart';
 
 class DioClient {
   late final Dio _dio;
+  // Bare client for token refresh: no interceptors, so the refresh call never
+  // carries an expired Bearer, never re-enters the 401 handler, and is not
+  // retried by RetryInterceptor.
+  late final Dio _refreshDio;
   final NetworkInfo _networkInfo;
   final Box<dynamic> _authBox;
   final AppConfig _config;
@@ -26,6 +31,20 @@ class DioClient {
         _authBox = authBox,
         _config = config {
     _dio = Dio(
+      BaseOptions(
+        baseUrl: _config.baseUrl,
+        connectTimeout: _config.requestTimeout,
+        receiveTimeout: _config.requestTimeout,
+        sendTimeout: _config.requestTimeout,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-API-Version': _config.apiVersion,
+        },
+      ),
+    );
+
+    _refreshDio = Dio(
       BaseOptions(
         baseUrl: _config.baseUrl,
         connectTimeout: _config.requestTimeout,
@@ -61,18 +80,28 @@ class DioClient {
         handler.next(options);
       },
       onError: (error, handler) async {
-        if (error.response?.statusCode == 401) {
+        final hasRefreshToken = _authBox.get(AppConstants.refreshTokenKey) != null;
+        if (error.response?.statusCode == 401 && hasRefreshToken) {
           try {
             // Use mutex to prevent concurrent token refresh requests
-            final newToken = await _tokenMutex.lock(() => _refreshToken());
+            final failedAuth = error.requestOptions.headers['Authorization'];
+            final newToken = await _tokenMutex.lock(() async {
+              // Another request may have refreshed while we waited
+              final current = _authBox.get(AppConstants.tokenKey) as String?;
+              if (current != null && failedAuth != 'Bearer $current') {
+                return current;
+              }
+              return _refreshToken();
+            });
             if (newToken != null) {
               error.requestOptions.headers['Authorization'] = 'Bearer $newToken';
               final response = await _dio.fetch(error.requestOptions);
               handler.resolve(response);
               return;
             }
+            await _handleSessionExpired();
           } catch (_) {
-            // Refresh failed, proceed with original error
+            await _handleSessionExpired();
           }
         }
         handler.next(error);
@@ -82,20 +111,32 @@ class DioClient {
 
   Future<String?> _refreshToken() async {
     try {
-      final refreshToken = _authBox.get(AppConstants.refreshTokenKey);
-      if (refreshToken == null) return null;
+      final refreshToken = _authBox.get(AppConstants.refreshTokenKey) as String?;
+      if (refreshToken == null || refreshToken.isEmpty) return null;
 
-      final response = await _dio.post(
+      // /auth/refresh itself requires an Authorization header
+      final currentToken = _authBox.get(AppConstants.tokenKey) as String?;
+      final response = await _refreshDio.post(
         ApiConstants.refreshToken,
         data: {'refresh_token': refreshToken},
+        options: Options(
+          headers: {
+            if (currentToken != null) 'Authorization': 'Bearer $currentToken',
+          },
+        ),
       );
 
-      final newToken = response.data['data']['token'] as String?;
-      final newRefreshToken = response.data['data']['refresh_token'] as String?;
+      // Response: {data: {auth: {access_token, ...}, user: {...}}}
+      final body = response.data as Map<String, dynamic>;
+      final data = (body['data'] ?? body) as Map<String, dynamic>;
+      final auth = (data['auth'] ?? data) as Map<String, dynamic>;
+      final newToken = auth['access_token'] as String?;
+      final newRefreshToken = auth['refresh_token'] as String?;
 
       if (newToken != null) {
         await _authBox.put(AppConstants.tokenKey, newToken);
-        if (newRefreshToken != null) {
+        if (newRefreshToken != null && newRefreshToken.isNotEmpty) {
+          // Server may not rotate the refresh token; keep the old one if absent
           await _authBox.put(AppConstants.refreshTokenKey, newRefreshToken);
         }
         return newToken;
@@ -104,6 +145,12 @@ class DioClient {
     } catch (_) {
       return null;
     }
+  }
+
+  Future<void> _handleSessionExpired() async {
+    await _authBox.delete(AppConstants.tokenKey);
+    await _authBox.delete(AppConstants.refreshTokenKey);
+    SessionEvents.notifySessionExpired();
   }
 
   LogInterceptor _logInterceptor() {

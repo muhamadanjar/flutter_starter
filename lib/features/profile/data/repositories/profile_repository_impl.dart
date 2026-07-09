@@ -3,6 +3,7 @@ import 'package:fpdart/fpdart.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failures.dart';
 import '../../../../core/network/network_info.dart';
+import '../../domain/dtos/index.dart';
 import '../../domain/entities/profile.dart';
 import '../../domain/repositories/profile_repository.dart';
 import '../datasources/profile_local_datasource.dart';
@@ -99,6 +100,44 @@ class ProfileRepositoryImpl implements ProfileRepository {
       return left(ServerFailure(message: e.message ?? 'Server error'));
     } on ValidationException catch (e) {
       return left(ValidationFailure(message: e.message ?? 'Validation error', fieldErrors: e.fieldErrors));
+    } catch (e) {
+      return left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> getMetas() async {
+    if (!await networkInfo.isConnected) {
+      return left(NetworkFailure(message: 'No internet connection. Cannot load metadata.'));
+    }
+
+    try {
+      final metas = await remoteDataSource.getMetas();
+      return right(metas);
+    } on ServerException catch (e) {
+      return left(ServerFailure(message: e.message ?? 'Server error'));
+    } on UnauthorizedException catch (e) {
+      return left(UnauthorizedFailure(message: e.message ?? 'Unauthorized'));
+    } catch (e) {
+      return left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, dynamic>> updateMetas(MetaUpdateRequest request) async {
+    if (!await networkInfo.isConnected) {
+      return left(NetworkFailure(message: 'No internet connection. Cannot update metadata.'));
+    }
+
+    try {
+      final result = await remoteDataSource.updateMetas(request);
+      return right(result);
+    } on ServerException catch (e) {
+      return left(ServerFailure(message: e.message ?? 'Server error'));
+    } on ValidationException catch (e) {
+      return left(ValidationFailure(message: e.message ?? 'Validation error', fieldErrors: e.fieldErrors));
+    } on UnauthorizedException catch (e) {
+      return left(UnauthorizedFailure(message: e.message ?? 'Unauthorized'));
     } catch (e) {
       return left(UnknownFailure(message: e.toString()));
     }

@@ -109,7 +109,7 @@ class _AvatarUploadWidgetState extends State<AvatarUploadWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>() ?? AppColors.light;
+    final colors = context.colors;
 
     return Padding(
       padding: widget.padding,
@@ -199,7 +199,7 @@ class _AvatarUploadWidgetState extends State<AvatarUploadWidget> {
     );
   }
 
-  Widget _buildPlaceholder(AppColors colors) {
+  Widget _buildPlaceholder(AppColorScheme colors) {
     return Container(
       color: colors.surface,
       child: Icon(

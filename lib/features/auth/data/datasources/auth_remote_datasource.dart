@@ -18,8 +18,6 @@ abstract class AuthRemoteDataSource {
     required String confirmPassword,
   });
 
-  Future<void> logout();
-
   Future<UserModel> getProfile();
 }
 
@@ -70,11 +68,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       },
     );
     return response.data as Map<String, dynamic>;
-  }
-
-  @override
-  Future<void> logout() async {
-    await _dioClient.post(ApiConstants.logout);
   }
 
   @override

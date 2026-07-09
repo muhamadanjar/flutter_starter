@@ -35,16 +35,18 @@ class AuthRepositoryImpl implements AuthRepository {
         password: password,
       );
 
-      debugPrint("==[RESPONSE]== ${response}");
-
+      // Response: {data: {user: {...}, auth: {access_token, refresh_token, ...}}}
       final data = response['data'] as Map<String, dynamic>;
-      final token = data['access_token'] as String? ?? '';
-      final refreshToken = data['refresh_token'] as String? ?? '';
+      final auth = data['auth'] as Map<String, dynamic>? ?? const {};
+      final token = auth['access_token'] as String? ?? '';
+      final refreshToken = auth['refresh_token'] as String? ?? '';
       final userModel = UserModel.fromJson(data['user'] as Map<String, dynamic>);
 
       // Save to local storage
       await localDataSource.saveToken(token);
-      await localDataSource.saveRefreshToken(refreshToken);
+      if (refreshToken.isNotEmpty) {
+        await localDataSource.saveRefreshToken(refreshToken);
+      }
       await localDataSource.saveUserId(userModel.id);
       await localDataSource.saveUser(userModel);
       await localDataSource.setLoggedIn(true);
@@ -82,7 +84,7 @@ class AuthRepositoryImpl implements AuthRepository {
     }
 
     try {
-      final response = await remoteDataSource.register(
+      await remoteDataSource.register(
         username: username,
         name: name,
         email: email,
@@ -90,18 +92,8 @@ class AuthRepositoryImpl implements AuthRepository {
         confirmPassword: confirmPassword,
       );
 
-      final data = response['data'] as Map<String, dynamic>;
-      final token = data['token'] as String? ?? '';
-      final refreshToken = data['refresh_token'] as String? ?? '';
-      final userModel = UserModel.fromJson(data['user'] as Map<String, dynamic>);
-
-      await localDataSource.saveToken(token);
-      await localDataSource.saveRefreshToken(refreshToken);
-      await localDataSource.saveUserId(userModel.id);
-      await localDataSource.saveUser(userModel);
-      await localDataSource.setLoggedIn(true);
-
-      return right(userModel);
+      // Register returns the user only (no tokens); log in to get a session
+      return login(username: username, password: password);
     } on ServerException catch (e) {
       return left(ServerFailure(
         message: e.message ?? 'Server error occurred',
@@ -121,20 +113,18 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, void>> logout() async {
+    // The API has no logout endpoint; logout is a client-side operation.
     try {
-      if (await networkInfo.isConnected) {
-        await remoteDataSource.logout();
-      }
       await localDataSource.clearAll();
       return right(null);
-    } on ServerException catch (e) {
-      // Even if server logout fails, clear local data
-      await localDataSource.clearAll();
-      return left(ServerFailure(message: e.message ?? 'Server error'));
     } catch (e) {
-      await localDataSource.clearAll();
       return left(UnknownFailure(message: e.toString()));
     }
+  }
+
+  @override
+  Future<void> clearLocalSession() async {
+    await localDataSource.clearAll();
   }
 
   @override

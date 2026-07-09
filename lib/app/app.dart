@@ -4,14 +4,29 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../app/router/app_router.dart';
 import '../core/localization/localization_provider.dart';
 import '../core/theme/app_theme.dart';
+import '../features/auth/presentation/providers/auth_provider.dart';
 import '../features/settings/presentation/providers/settings_provider.dart';
 import '../l10n/app_localizations.dart';
 
-class App extends ConsumerWidget {
+class App extends ConsumerStatefulWidget {
   const App({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<App> createState() => _AppState();
+}
+
+class _AppState extends ConsumerState<App> {
+  @override
+  void initState() {
+    super.initState();
+    // Restore persisted session (and trigger FCM token sync) at startup
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(authProvider.notifier).checkAuthStatus();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
     final settingsState = ref.watch(settingsProvider);
     final isDarkMode = settingsState.settings?.darkMode ?? true;

@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/utils/date_formatter.dart';
-import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../../../../core/widgets/error_widget.dart' as err;
@@ -20,12 +19,10 @@ class ProfilePage extends ConsumerStatefulWidget {
 
 class _ProfilePageState extends ConsumerState<ProfilePage> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _bioController = TextEditingController();
-  final _addressController = TextEditingController();
-  final _cityController = TextEditingController();
-  final _countryController = TextEditingController();
 
   bool _isEditing = false;
 
@@ -39,37 +36,35 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _emailController.dispose();
     _phoneController.dispose();
-    _bioController.dispose();
-    _addressController.dispose();
-    _cityController.dispose();
-    _countryController.dispose();
     super.dispose();
   }
 
   void _populateControllers() {
     final profile = ref.read(profileProvider).profile;
     if (profile != null) {
-      _nameController.text = profile.name;
+      // API returns a single display name; split on the first space as a
+      // best-effort prefill for the first_name/last_name fields.
+      final nameParts = profile.name.trim().split(RegExp(r'\s+'));
+      _firstNameController.text = nameParts.isNotEmpty ? nameParts.first : '';
+      _lastNameController.text = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+      _emailController.text = profile.email;
       _phoneController.text = profile.phone ?? '';
-      _bioController.text = profile.bio ?? '';
-      _addressController.text = profile.address ?? '';
-      _cityController.text = profile.city ?? '';
-      _countryController.text = profile.country ?? '';
     }
   }
 
   Future<void> _onSave() async {
     if (!_formKey.currentState!.validate()) return;
 
+    // PUT /auth/profile only accepts these fields (ProfileUpdateRequest)
     await ref.read(profileProvider.notifier).updateProfile({
-      'name': _nameController.text.trim(),
+      'first_name': _firstNameController.text.trim(),
+      'last_name': _lastNameController.text.trim(),
+      'email': _emailController.text.trim(),
       'phone': _phoneController.text.trim(),
-      'bio': _bioController.text.trim(),
-      'address': _addressController.text.trim(),
-      'city': _cityController.text.trim(),
-      'country': _countryController.text.trim(),
     });
 
     setState(() => _isEditing = false);
@@ -209,13 +204,38 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               ),
               const SizedBox(height: 32),
 
-              // Form Fields
+              // Form Fields (PUT /auth/profile: first_name, last_name, email, phone)
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      label: 'First Name',
+                      hint: 'First name',
+                      controller: _firstNameController,
+                      enabled: _isEditing,
+                      prefixIcon: Icon(Icons.person_outline, color: context.colors.textHint, size: 20),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: CustomTextField(
+                      label: 'Last Name',
+                      hint: 'Last name',
+                      controller: _lastNameController,
+                      enabled: _isEditing,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
               CustomTextField(
-                label: 'Full Name',
-                hint: 'Enter your name',
-                controller: _nameController,
+                label: 'Email',
+                hint: 'Enter your email',
+                controller: _emailController,
                 enabled: _isEditing,
-                prefixIcon: Icon(Icons.person_outline, color: context.colors.textHint, size: 20),
+                keyboardType: TextInputType.emailAddress,
+                prefixIcon: Icon(Icons.email_outlined, color: context.colors.textHint, size: 20),
               ),
               const SizedBox(height: 20),
 
@@ -226,48 +246,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                 enabled: _isEditing,
                 keyboardType: TextInputType.phone,
                 prefixIcon: Icon(Icons.phone_outlined, color: context.colors.textHint, size: 20),
-              ),
-              const SizedBox(height: 20),
-
-              CustomTextField(
-                label: 'Bio',
-                hint: 'Tell us about yourself',
-                controller: _bioController,
-                enabled: _isEditing,
-                maxLines: 3,
-                prefixIcon: Icon(Icons.info_outline, color: context.colors.textHint, size: 20),
-              ),
-              const SizedBox(height: 20),
-
-              CustomTextField(
-                label: 'Address',
-                hint: 'Enter your address',
-                controller: _addressController,
-                enabled: _isEditing,
-                prefixIcon: Icon(Icons.location_on_outlined, color: context.colors.textHint, size: 20),
-              ),
-              const SizedBox(height: 20),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomTextField(
-                      label: 'City',
-                      hint: 'City',
-                      controller: _cityController,
-                      enabled: _isEditing,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: CustomTextField(
-                      label: 'Country',
-                      hint: 'Country',
-                      controller: _countryController,
-                      enabled: _isEditing,
-                    ),
-                  ),
-                ],
               ),
               const SizedBox(height: 32),
 

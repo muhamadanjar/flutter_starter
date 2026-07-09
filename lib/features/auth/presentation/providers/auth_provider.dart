@@ -1,9 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/network/network_info.dart';
+import '../../../../core/network/session_events.dart';
+import '../../../../core/providers/fcm_sync_provider.dart';
+import '../../../../core/services/fcm_sync_service.dart';
 import '../../data/datasources/auth_local_datasource.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
@@ -83,17 +88,43 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final RegisterUseCase _registerUseCase;
   final LogoutUseCase _logoutUseCase;
   final AuthRepositoryImpl _repository;
+  final FcmSyncService _fcmSync;
+  late final StreamSubscription<void> _sessionExpiredSub;
 
   AuthNotifier({
     required LoginUseCase loginUseCase,
     required RegisterUseCase registerUseCase,
     required LogoutUseCase logoutUseCase,
     required AuthRepositoryImpl repository,
+    required FcmSyncService fcmSync,
   })  : _loginUseCase = loginUseCase,
         _registerUseCase = registerUseCase,
         _logoutUseCase = logoutUseCase,
         _repository = repository,
-        super(const AuthState());
+        _fcmSync = fcmSync,
+        super(const AuthState()) {
+    _sessionExpiredSub =
+        SessionEvents.onSessionExpired.listen((_) => _handleSessionExpired());
+  }
+
+  Future<void> _handleSessionExpired() async {
+    await _repository.clearLocalSession();
+    state = const AuthState(
+      status: AuthStatus.unauthenticated,
+      errorMessage: 'Session expired. Please login again.',
+    );
+  }
+
+  void _onAuthenticated() {
+    unawaited(_fcmSync.sync());
+    _fcmSync.startTokenRefreshListener();
+  }
+
+  @override
+  void dispose() {
+    _sessionExpiredSub.cancel();
+    super.dispose();
+  }
 
   Future<void> checkAuthStatus() async {
     final isLoggedIn = await _repository.isLoggedIn();
@@ -101,7 +132,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final result = await _repository.getProfile();
       result.fold(
         (failure) => state = const AuthState(status: AuthStatus.unauthenticated),
-        (user) => state = AuthState(status: AuthStatus.authenticated, user: user),
+        (user) {
+          state = AuthState(status: AuthStatus.authenticated, user: user);
+          _onAuthenticated();
+        },
       );
     } else {
       state = const AuthState(status: AuthStatus.unauthenticated);
@@ -119,11 +153,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
         errorMessage: failure.message,
         status: AuthStatus.unauthenticated,
       ),
-      (user) => state = AuthState(
-        status: AuthStatus.authenticated,
-        user: user,
-        isLoading: false,
-      ),
+      (user) {
+        state = AuthState(
+          status: AuthStatus.authenticated,
+          user: user,
+          isLoading: false,
+        );
+        _onAuthenticated();
+      },
     );
   }
 
@@ -150,16 +187,21 @@ class AuthNotifier extends StateNotifier<AuthState> {
         errorMessage: failure.message,
         status: AuthStatus.unauthenticated,
       ),
-      (user) => state = AuthState(
-        status: AuthStatus.authenticated,
-        user: user,
-        isLoading: false,
-      ),
+      (user) {
+        state = AuthState(
+          status: AuthStatus.authenticated,
+          user: user,
+          isLoading: false,
+        );
+        _onAuthenticated();
+      },
     );
   }
 
   Future<void> logout() async {
     state = state.copyWith(isLoading: true);
+    // Detach device pushes while the session is still valid
+    await _fcmSync.detach();
     await _logoutUseCase();
     state = const AuthState(status: AuthStatus.unauthenticated);
   }
@@ -172,5 +214,6 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
     registerUseCase: ref.watch(registerUseCaseProvider),
     logoutUseCase: ref.watch(logoutUseCaseProvider),
     repository: ref.watch(authRepositoryProvider),
+    fcmSync: ref.watch(fcmSyncServiceProvider),
   );
 });

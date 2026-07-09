@@ -92,20 +92,23 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     final fileName = imageFile.path.split('/').last;
 
     final formData = FormData.fromMap({
-      'avatar': await MultipartFile.fromFile(
+      'file': await MultipartFile.fromFile(
         imageFile.path,
         filename: fileName,
       ),
     });
 
-    final response = await _dioClient.post(
+    await _dioClient.post(
       ApiConstants.uploadAvatar,
       data: formData,
     );
 
-    final imageUrl = response.data['data']['avatar_url'] as String?;
+    // Upload response shape is not part of the API contract;
+    // the profile endpoint is the source of truth for the avatar URL.
+    final profile = await getProfile();
+    final imageUrl = profile.avatarUrl;
     if (imageUrl == null) {
-      throw Exception('No avatar URL in response');
+      throw Exception('No avatar URL in profile after upload');
     }
 
     return imageUrl;
