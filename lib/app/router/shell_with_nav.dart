@@ -190,7 +190,6 @@ class ShellWithNavigation extends StatelessWidget {
                   ),
                 ),
               ),
-              labelType: NavigationRailLabelType.all,
               extended: true,
               minExtendedWidth: 200,
             ),
