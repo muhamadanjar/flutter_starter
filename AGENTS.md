@@ -329,15 +329,15 @@ See **[ADAPTIVE_LAYOUTS.md](docs/ADAPTIVE_LAYOUTS.md)** for complete guide.
 - `git status` — Check state
 - `git diff` — Review changes
 - `git show` — Inspect commits
-- `git add` — Stage files
-- `git commit` — Create commits
-- `git push` — Push to remote
 
 ### Forbidden ❌
 - `git reset --hard` — Destructive
 - `git rebase -i` — Interactive rebase
 - `git push --force` — Force overwrite
 - `git checkout .` — Discard changes (use `git diff` + manual edit instead)
+- `git commit` — Create commits
+- `git add` — Stage files
+- `git push` — Push to remote
 
 ## Code Quality
 

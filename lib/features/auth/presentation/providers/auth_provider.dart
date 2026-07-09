@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:enterprise_flutter_app/core/logger/logger_manager.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 
@@ -84,12 +85,6 @@ class AuthState {
 
 // Auth Notifier
 class AuthNotifier extends StateNotifier<AuthState> {
-  final LoginUseCase _loginUseCase;
-  final RegisterUseCase _registerUseCase;
-  final LogoutUseCase _logoutUseCase;
-  final AuthRepositoryImpl _repository;
-  final FcmSyncService _fcmSync;
-  late final StreamSubscription<void> _sessionExpiredSub;
 
   AuthNotifier({
     required LoginUseCase loginUseCase,
@@ -106,6 +101,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _sessionExpiredSub =
         SessionEvents.onSessionExpired.listen((_) => _handleSessionExpired());
   }
+  final LoginUseCase _loginUseCase;
+  final RegisterUseCase _registerUseCase;
+  final LogoutUseCase _logoutUseCase;
+  final AuthRepositoryImpl _repository;
+  final FcmSyncService _fcmSync;
+  late final StreamSubscription<void> _sessionExpiredSub;
 
   Future<void> _handleSessionExpired() async {
     await _repository.clearLocalSession();
@@ -116,6 +117,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   void _onAuthenticated() {
+    
+    log.i('[START][FCM] SYNC');
     unawaited(_fcmSync.sync());
     _fcmSync.startTokenRefreshListener();
   }

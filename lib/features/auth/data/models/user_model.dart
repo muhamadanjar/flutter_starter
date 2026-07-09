@@ -12,6 +12,23 @@ class UserModel extends User {
     super.updatedAt,
   });
 
+  factory UserModel.fromLocalJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'] as String? ?? '',
+      name: json['name'] as String? ?? '',
+      email: json['email'] as String? ?? '',
+      phone: json['phone'] as String?,
+      avatarUrl: json['avatarUrl'] as String?,
+      role: json['role'] as String?,
+      createdAt: json['createdAt'] != null
+          ? DateTime.tryParse(json['createdAt'].toString())
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.tryParse(json['updatedAt'].toString())
+          : null,
+    );
+  }
+
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       id: json['id'] as String? ?? '',
@@ -40,23 +57,6 @@ class UserModel extends User {
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
-  }
-
-  factory UserModel.fromLocalJson(Map<String, dynamic> json) {
-    return UserModel(
-      id: json['id'] as String? ?? '',
-      name: json['name'] as String? ?? '',
-      email: json['email'] as String? ?? '',
-      phone: json['phone'] as String?,
-      avatarUrl: json['avatarUrl'] as String?,
-      role: json['role'] as String?,
-      createdAt: json['createdAt'] != null
-          ? DateTime.tryParse(json['createdAt'].toString())
-          : null,
-      updatedAt: json['updatedAt'] != null
-          ? DateTime.tryParse(json['updatedAt'].toString())
-          : null,
-    );
   }
 
   Map<String, dynamic> toLocalJson() {

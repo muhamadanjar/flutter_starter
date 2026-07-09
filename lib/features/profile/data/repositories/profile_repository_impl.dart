@@ -43,7 +43,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, UserProfile>> updateProfile(Map<String, dynamic> data) async {
     if (!await networkInfo.isConnected) {
-      return left(NetworkFailure(message: 'No internet connection. Cannot update profile.'));
+      return left(const NetworkFailure(message: 'No internet connection. Cannot update profile.'));
     }
 
     try {
@@ -66,7 +66,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
     required String confirmPassword,
   }) async {
     if (!await networkInfo.isConnected) {
-      return left(NetworkFailure(message: 'No internet connection. Cannot change password.'));
+      return left(const NetworkFailure(message: 'No internet connection. Cannot change password.'));
     }
 
     try {
@@ -90,7 +90,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, String>> uploadAvatar(File imageFile) async {
     if (!await networkInfo.isConnected) {
-      return left(NetworkFailure(message: 'No internet connection. Cannot upload avatar.'));
+      return left(const NetworkFailure(message: 'No internet connection. Cannot upload avatar.'));
     }
 
     try {
@@ -108,7 +108,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, Map<String, dynamic>>> getMetas() async {
     if (!await networkInfo.isConnected) {
-      return left(NetworkFailure(message: 'No internet connection. Cannot load metadata.'));
+      return left(const NetworkFailure(message: 'No internet connection. Cannot load metadata.'));
     }
 
     try {
@@ -126,7 +126,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, dynamic>> updateMetas(MetaUpdateRequest request) async {
     if (!await networkInfo.isConnected) {
-      return left(NetworkFailure(message: 'No internet connection. Cannot update metadata.'));
+      return left(const NetworkFailure(message: 'No internet connection. Cannot update metadata.'));
     }
 
     try {
@@ -147,7 +147,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
     try {
       final cached = await localDataSource.getCachedProfile();
       if (cached != null) return right(cached);
-      return left(CacheFailure(message: 'No cached profile data found'));
+      return left(const CacheFailure(message: 'No cached profile data found'));
     } on CacheException catch (e) {
       return left(CacheFailure(message: e.message ?? 'Cache error'));
     }

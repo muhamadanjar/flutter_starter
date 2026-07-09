@@ -80,7 +80,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String confirmPassword,
   }) async {
     if (!await networkInfo.isConnected) {
-      return left(NetworkFailure(message: 'No internet connection. Please check your network.'));
+      return left(const NetworkFailure(message: 'No internet connection. Please check your network.'));
     }
 
     try {
@@ -113,8 +113,16 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<Either<Failure, void>> logout() async {
-    // The API has no logout endpoint; logout is a client-side operation.
     try {
+      // Notify server to invalidate token
+      if (await networkInfo.isConnected) {
+        try {
+          await remoteDataSource.logout();
+        } catch (_) {
+          // Server logout failure is non-blocking; proceed to clear local
+        }
+      }
+      // Clear local session
       await localDataSource.clearAll();
       return right(null);
     } catch (e) {

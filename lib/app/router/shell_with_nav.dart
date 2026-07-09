@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/responsive_builder.dart';
+import '../../features/auth/presentation/providers/auth_provider.dart';
 
 class ShellWithNavigation extends StatelessWidget {
-  final int currentIndex;
-  final Widget child;
 
   const ShellWithNavigation({
     super.key,
     required this.currentIndex,
     required this.child,
   });
+  final int currentIndex;
+  final Widget child;
 
   static const List<NavigationDestination> _destinations = [
     NavigationDestination(
@@ -103,7 +105,7 @@ class ShellWithNavigation extends StatelessWidget {
                 );
               }).toList(),
               backgroundColor: context.colors.surface,
-              indicatorColor: context.colors.primary.withOpacity(0.15),
+              indicatorColor: context.colors.primary.withValues(alpha: 0.15),
               selectedIconTheme: IconThemeData(color: context.colors.primary),
               unselectedIconTheme: IconThemeData(color: context.colors.textHint),
               selectedLabelTextStyle: AppTypography.labelSmall.copyWith(color: context.colors.primary),
@@ -181,10 +183,14 @@ class ShellWithNavigation extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      IconButton(
-                        icon: Icon(Icons.logout_rounded, color: context.colors.textHint),
-                        onPressed: () {/* TODO: Logout */},
-                        tooltip: 'Sign Out',
+                      Consumer(
+                        builder: (context, ref, child) => IconButton(
+                          icon: Icon(Icons.logout_rounded, color: context.colors.textHint),
+                          onPressed: () {
+                            ref.read(authProvider.notifier).logout();
+                          },
+                          tooltip: 'Sign Out',
+                        ),
                       ),
                     ],
                   ),
