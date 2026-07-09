@@ -7,13 +7,16 @@ class FirebaseService {
   static final FirebaseService _instance = FirebaseService._internal();
   static final logger = Logger();
 
-  late FirebaseMessaging _messaging;
+  FirebaseMessaging? _messaging;
+  bool _isInitialized = false;
 
   factory FirebaseService() {
     return _instance;
   }
 
   FirebaseService._internal();
+
+  bool get isInitialized => _isInitialized;
 
   // Initialize Firebase
   Future<void> initialize() async {
@@ -25,7 +28,7 @@ class FirebaseService {
       await _requestNotificationPermission();
 
       // Set foreground notification presentation options
-      await _messaging.setForegroundNotificationPresentationOptions(
+      await _messaging!.setForegroundNotificationPresentationOptions(
         alert: true,
         badge: true,
         sound: true,
@@ -41,7 +44,9 @@ class FirebaseService {
       FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
 
       debugPrint('[Firebase] Initialized successfully');
+      _isInitialized = true;
     } catch (e) {
+      _isInitialized = false;
       logger.e('[Firebase] Initialization failed: $e');
       rethrow;
     }
@@ -49,7 +54,7 @@ class FirebaseService {
 
   // Request notification permissions
   Future<void> _requestNotificationPermission() async {
-    final settings = await _messaging.requestPermission(
+    final settings = await _messaging!.requestPermission(
       alert: true,
       announcement: false,
       badge: true,
@@ -64,8 +69,9 @@ class FirebaseService {
 
   // Get FCM token
   Future<String?> getToken() async {
+    if (!_isInitialized || _messaging == null) return null;
     try {
-      final token = await _messaging.getToken();
+      final token = await _messaging!.getToken();
       debugPrint('[Firebase] FCM Token: $token');
       return token;
     } catch (e) {
@@ -76,8 +82,9 @@ class FirebaseService {
 
   // Refresh FCM token
   Future<String?> refreshToken() async {
+    if (!_isInitialized || _messaging == null) return null;
     try {
-      final token = await _messaging.getToken();
+      final token = await _messaging!.getToken();
       debugPrint('[Firebase] FCM Token refreshed: $token');
       return token;
     } catch (e) {
@@ -88,7 +95,10 @@ class FirebaseService {
 
   // Listen to token refresh
   Stream<String> get onTokenRefresh {
-    return _messaging.onTokenRefresh;
+    if (!_isInitialized || _messaging == null) {
+      return const Stream<String>.empty();
+    }
+    return _messaging!.onTokenRefresh;
   }
 
   // Handle foreground messages
@@ -126,8 +136,9 @@ class FirebaseService {
 
   // Subscribe to topic
   Future<void> subscribeToTopic(String topic) async {
+    if (!_isInitialized || _messaging == null) return;
     try {
-      await _messaging.subscribeToTopic(topic);
+      await _messaging!.subscribeToTopic(topic);
       debugPrint('[Firebase] Subscribed to topic: $topic');
     } catch (e) {
       logger.e('[Firebase] Failed to subscribe to topic: $e');
@@ -136,8 +147,9 @@ class FirebaseService {
 
   // Unsubscribe from topic
   Future<void> unsubscribeFromTopic(String topic) async {
+    if (!_isInitialized || _messaging == null) return;
     try {
-      await _messaging.unsubscribeFromTopic(topic);
+      await _messaging!.unsubscribeFromTopic(topic);
       debugPrint('[Firebase] Unsubscribed from topic: $topic');
     } catch (e) {
       logger.e('[Firebase] Failed to unsubscribe from topic: $e');
@@ -146,6 +158,7 @@ class FirebaseService {
 
   // Get initial message (when app is opened from terminated state)
   Future<RemoteMessage?> getInitialMessage() async {
-    return _messaging.getInitialMessage();
+    if (!_isInitialized || _messaging == null) return null;
+    return _messaging!.getInitialMessage();
   }
 }
