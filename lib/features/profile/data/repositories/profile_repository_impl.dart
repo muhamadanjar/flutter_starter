@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:cross_file/cross_file.dart';
 import 'package:fpdart/fpdart.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/errors/failures.dart';
@@ -88,7 +88,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @override
-  Future<Either<Failure, String>> uploadAvatar(File imageFile) async {
+  Future<Either<Failure, String>> uploadAvatar(XFile imageFile) async {
     if (!await networkInfo.isConnected) {
       return left(const NetworkFailure(message: 'No internet connection. Cannot upload avatar.'));
     }

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/utils/date_formatter.dart';
+import '../../../../core/widgets/avatar_upload_widget.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../core/widgets/loading_widget.dart';
 import '../../../../core/widgets/error_widget.dart' as err;
@@ -150,30 +151,14 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
               Center(
                 child: Column(
                   children: [
-                    Container(
-                      width: 96,
-                      height: 96,
-                      decoration: BoxDecoration(
-                        gradient: AppColors.primaryGradient,
-                        borderRadius: BorderRadius.circular(28),
-                        boxShadow: [
-                          BoxShadow(
-                            color: context.colors.primary.withOpacity(0.3),
-                            blurRadius: 20,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: profile.avatarUrl != null
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(28),
-                              child: Image.network(
-                                profile.avatarUrl!,
-                                fit: BoxFit.cover,
-                                errorBuilder: (_, __, ___) => const Icon(Icons.person, color: Colors.white, size: 40),
-                              ),
-                            )
-                          : const Icon(Icons.person, color: Colors.white, size: 40),
+                    AvatarUploadWidget(
+                      currentAvatarUrl: profile.avatarUrl,
+                      size: 96,
+                      padding: EdgeInsets.zero,
+                      // Backend has no avatar-delete endpoint
+                      showRemoveButton: false,
+                      isLoading: state.isLoading,
+                      onImagePicked: (file) => ref.read(profileProvider.notifier).uploadAvatar(file),
                     ),
                     const SizedBox(height: 12),
                     Text(

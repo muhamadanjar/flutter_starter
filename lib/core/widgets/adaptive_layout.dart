@@ -3,13 +3,6 @@ import 'responsive_builder.dart';
 
 /// Responsive grid that adapts column count based on screen size
 class AdaptiveGrid extends StatelessWidget {
-  final List<Widget> children;
-  final double spacing;
-  final double runSpacing;
-  final int? mobileColumns;
-  final int? tabletColumns;
-  final int? desktopColumns;
-  final EdgeInsets padding;
 
   const AdaptiveGrid({
     required this.children,
@@ -21,6 +14,13 @@ class AdaptiveGrid extends StatelessWidget {
     this.padding = const EdgeInsets.all(16),
     Key? key,
   }) : super(key: key);
+  final List<Widget> children;
+  final double spacing;
+  final double runSpacing;
+  final int? mobileColumns;
+  final int? tabletColumns;
+  final int? desktopColumns;
+  final EdgeInsets padding;
 
   @override
   Widget build(BuildContext context) {
@@ -58,13 +58,6 @@ class AdaptiveGrid extends StatelessWidget {
 
 /// Responsive sliver grid
 class AdaptiveSliverGrid extends StatelessWidget {
-  final List<Widget> children;
-  final double spacing;
-  final double runSpacing;
-  final int? mobileColumns;
-  final int? tabletColumns;
-  final int? desktopColumns;
-  final double? childAspectRatio;
 
   const AdaptiveSliverGrid({
     required this.children,
@@ -76,6 +69,13 @@ class AdaptiveSliverGrid extends StatelessWidget {
     this.childAspectRatio = 1.4,
     Key? key,
   }) : super(key: key);
+  final List<Widget> children;
+  final double spacing;
+  final double runSpacing;
+  final int? mobileColumns;
+  final int? tabletColumns;
+  final int? desktopColumns;
+  final double? childAspectRatio;
 
   @override
   Widget build(BuildContext context) {
@@ -112,11 +112,7 @@ class AdaptiveSliverGrid extends StatelessWidget {
 }
 
 /// Responsive row/column that switches based on screen size
-class AdaptiveWrap extends StatelessWidget {
-  final List<Widget> children;
-  final double spacing;
-  final double runSpacing;
-  final bool forceColumn; // Force column layout on tablet/desktop
+class AdaptiveWrap extends StatelessWidget { // Force column layout on tablet/desktop
 
   const AdaptiveWrap({
     required this.children,
@@ -125,6 +121,10 @@ class AdaptiveWrap extends StatelessWidget {
     this.forceColumn = false,
     Key? key,
   }) : super(key: key);
+  final List<Widget> children;
+  final double spacing;
+  final double runSpacing;
+  final bool forceColumn;
 
   @override
   Widget build(BuildContext context) {
@@ -154,10 +154,6 @@ class AdaptiveWrap extends StatelessWidget {
 
 /// Adaptive padding based on screen size
 class AdaptivePadding extends StatelessWidget {
-  final Widget child;
-  final EdgeInsets mobilePadding;
-  final EdgeInsets tabletPadding;
-  final EdgeInsets desktopPadding;
 
   const AdaptivePadding({
     required this.child,
@@ -166,6 +162,10 @@ class AdaptivePadding extends StatelessWidget {
     this.desktopPadding = const EdgeInsets.all(24),
     Key? key,
   }) : super(key: key);
+  final Widget child;
+  final EdgeInsets mobilePadding;
+  final EdgeInsets tabletPadding;
+  final EdgeInsets desktopPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -192,9 +192,6 @@ class AdaptivePadding extends StatelessWidget {
 
 /// Adaptive container width (constrain content on desktop)
 class AdaptiveContainer extends StatelessWidget {
-  final Widget child;
-  final double maxWidth;
-  final MainAxisAlignment alignment;
 
   const AdaptiveContainer({
     required this.child,
@@ -202,6 +199,9 @@ class AdaptiveContainer extends StatelessWidget {
     this.alignment = MainAxisAlignment.center,
     Key? key,
   }) : super(key: key);
+  final Widget child;
+  final double maxWidth;
+  final MainAxisAlignment alignment;
 
   @override
   Widget build(BuildContext context) {
@@ -226,14 +226,6 @@ class AdaptiveContainer extends StatelessWidget {
 
 /// Adaptive font size
 class AdaptiveText extends StatelessWidget {
-  final String text;
-  final TextStyle? baseStyle;
-  final double mobileScaleFactor;
-  final double tabletScaleFactor;
-  final double desktopScaleFactor;
-  final TextAlign? textAlign;
-  final int? maxLines;
-  final TextOverflow? overflow;
 
   const AdaptiveText(
     this.text, {
@@ -246,6 +238,14 @@ class AdaptiveText extends StatelessWidget {
     this.overflow,
     Key? key,
   }) : super(key: key);
+  final String text;
+  final TextStyle? baseStyle;
+  final double mobileScaleFactor;
+  final double tabletScaleFactor;
+  final double desktopScaleFactor;
+  final TextAlign? textAlign;
+  final int? maxLines;
+  final TextOverflow? overflow;
 
   @override
   Widget build(BuildContext context) {
@@ -282,10 +282,6 @@ class AdaptiveText extends StatelessWidget {
 
 /// Show content only on specific screen sizes
 class ScreenSizeVisibility extends StatelessWidget {
-  final Widget child;
-  final bool showOnMobile;
-  final bool showOnTablet;
-  final bool showOnDesktop;
 
   const ScreenSizeVisibility({
     required this.child,
@@ -294,6 +290,10 @@ class ScreenSizeVisibility extends StatelessWidget {
     this.showOnDesktop = true,
     Key? key,
   }) : super(key: key);
+  final Widget child;
+  final bool showOnMobile;
+  final bool showOnTablet;
+  final bool showOnDesktop;
 
   @override
   Widget build(BuildContext context) {

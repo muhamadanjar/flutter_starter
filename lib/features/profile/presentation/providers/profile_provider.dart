@@ -1,3 +1,5 @@
+import 'package:cross_file/cross_file.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import '../../../../core/constants/app_constants.dart';
@@ -157,6 +159,24 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
         isLoading: false,
         successMessage: 'Password changed successfully',
       ),
+    );
+  }
+
+  Future<void> uploadAvatar(XFile imageFile) async {
+    state = state.copyWith(isLoading: true, errorMessage: null, successMessage: null);
+
+    final result = await _profileRepository.uploadAvatar(imageFile);
+
+    await result.fold(
+      (failure) async => state = state.copyWith(
+        isLoading: false,
+        errorMessage: failure.message,
+      ),
+      (_) async {
+        // Refresh profile so the new avatarUrl is reflected in state
+        await loadProfile();
+        state = state.copyWith(successMessage: 'Avatar updated successfully');
+      },
     );
   }
 

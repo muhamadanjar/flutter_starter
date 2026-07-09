@@ -62,10 +62,10 @@ class Password extends FormzInput<String, PasswordValidationError> {
 enum ConfirmedPasswordValidationError { mismatch }
 
 class ConfirmedPassword extends FormzInput<String, ConfirmedPasswordValidationError> {
-  final String password;
+  const ConfirmedPassword.dirty({required this.password, String value = ''}) : super.dirty(value);
 
   const ConfirmedPassword.pure({this.password = ''}) : super.pure('');
-  const ConfirmedPassword.dirty({required this.password, String value = ''}) : super.dirty(value);
+  final String password;
 
   @override
   ConfirmedPasswordValidationError? validator(String value) {

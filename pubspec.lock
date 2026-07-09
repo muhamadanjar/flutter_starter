@@ -242,7 +242,7 @@ packages:
     source: hosted
     version: "3.1.2"
   cross_file:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: cross_file
       sha256: d687bec93342bf6a764a116d15c8694ebeff10e633dc28a39dd3144f7195024e

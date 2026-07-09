@@ -39,6 +39,7 @@ class FcmSyncService {
       if (!await _isLoggedIn()) return;
 
       final token = await _firebaseService.getToken();
+      log.i('[FCM][TOKEN] $token');
       if (token == null || token.isEmpty) return;
       if (token == _userPref.fcmToken.get()) return;
 

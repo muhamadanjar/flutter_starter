@@ -9,15 +9,15 @@ import '../datasources/dashboard_remote_datasource.dart';
 import '../models/dashboard_model.dart';
 
 class DashboardRepositoryImpl implements DashboardRepository {
-  final DashboardRemoteDataSource remoteDataSource;
-  final DashboardLocalDataSource localDataSource;
-  final NetworkInfo networkInfo;
 
   DashboardRepositoryImpl({
     required this.remoteDataSource,
     required this.localDataSource,
     required this.networkInfo,
   });
+  final DashboardRemoteDataSource remoteDataSource;
+  final DashboardLocalDataSource localDataSource;
+  final NetworkInfo networkInfo;
 
   @override
   Future<Either<Failure, DashboardData>> getDashboardData({bool forceRefresh = false}) async {

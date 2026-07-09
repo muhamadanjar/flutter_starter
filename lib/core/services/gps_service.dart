@@ -2,12 +2,6 @@ import 'package:geolocator/geolocator.dart';
 import '../logger/index.dart';
 
 class LocationData {
-  final double latitude;
-  final double longitude;
-  final double? accuracy;
-  final double? altitude;
-  final double? speed;
-  final DateTime timestamp;
 
   const LocationData({
     required this.latitude,
@@ -29,15 +23,6 @@ class LocationData {
     );
   }
 
-  Map<String, dynamic> toJson() => {
-    'latitude': latitude,
-    'longitude': longitude,
-    'accuracy': accuracy,
-    'altitude': altitude,
-    'speed': speed,
-    'timestamp': timestamp.toIso8601String(),
-  };
-
   factory LocationData.fromJson(Map<String, dynamic> json) {
     return LocationData(
       latitude: (json['latitude'] as num).toDouble(),
@@ -48,6 +33,21 @@ class LocationData {
       timestamp: DateTime.parse(json['timestamp'] as String),
     );
   }
+  final double latitude;
+  final double longitude;
+  final double? accuracy;
+  final double? altitude;
+  final double? speed;
+  final DateTime timestamp;
+
+  Map<String, dynamic> toJson() => {
+    'latitude': latitude,
+    'longitude': longitude,
+    'accuracy': accuracy,
+    'altitude': altitude,
+    'speed': speed,
+    'timestamp': timestamp.toIso8601String(),
+  };
 
   @override
   String toString() =>
@@ -55,13 +55,13 @@ class LocationData {
 }
 
 class GpsService {
-  static final GpsService _instance = GpsService._internal();
 
   factory GpsService() {
     return _instance;
   }
 
   GpsService._internal();
+  static final GpsService _instance = GpsService._internal();
 
   /// Check if location services are enabled
   Future<bool> isLocationServiceEnabled() async {
@@ -189,18 +189,18 @@ class GpsService {
 }
 
 class LocationServiceDisabledException implements Exception {
-  final String message;
 
   LocationServiceDisabledException(this.message);
+  final String message;
 
   @override
   String toString() => message;
 }
 
 class PermissionException implements Exception {
-  final String message;
 
   PermissionException(this.message);
+  final String message;
 
   @override
   String toString() => message;

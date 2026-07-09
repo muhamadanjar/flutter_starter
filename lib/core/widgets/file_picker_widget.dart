@@ -1,11 +1,10 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../logger/index.dart';
 import '../services/file_upload_service.dart';
 import '../theme/app_colors.dart';
 
-typedef OnFilePicked = void Function(File file);
+typedef OnFilePicked = void Function(XFile file);
 typedef OnFileRemoved = void Function();
 
 class FilePickerWidget extends StatefulWidget {
@@ -39,16 +38,20 @@ class FilePickerWidget extends StatefulWidget {
 }
 
 class _FilePickerWidgetState extends State<FilePickerWidget> {
-  File? _selectedFile;
+  XFile? _selectedFile;
+  // Cached because XFile.length() is async (web has no sync file IO)
+  double? _selectedFileSizeMB;
   final _fileUploadService = FileUploadService();
 
   Future<void> _pickImage(ImageSource source) async {
     try {
       final file = await _fileUploadService.pickImage(source: source);
       if (file != null) {
+        final sizeMB = await _fileUploadService.getFileSizeInMB(file);
+
         // Validate file size
-        if (!_fileUploadService.isFileSizeValid(file, widget.maxFileSizeMB)) {
-          log.w('File too large: ${_fileUploadService.getFileSizeInMB(file)}MB');
+        if (sizeMB > widget.maxFileSizeMB) {
+          log.w('File too large: ${sizeMB}MB');
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -61,9 +64,13 @@ class _FilePickerWidgetState extends State<FilePickerWidget> {
           return;
         }
 
-        setState(() => _selectedFile = file);
+        if (!mounted) return;
+        setState(() {
+          _selectedFile = file;
+          _selectedFileSizeMB = sizeMB;
+        });
         widget.onFilePicked(file);
-        log.d('File picked: ${file.path} (${_fileUploadService.getFileSizeInMB(file)}MB)');
+        log.d('File picked: ${file.name} (${sizeMB}MB)');
       }
     } catch (e) {
       log.e('Error picking file', e);
@@ -76,7 +83,10 @@ class _FilePickerWidgetState extends State<FilePickerWidget> {
   }
 
   void _removeFile() {
-    setState(() => _selectedFile = null);
+    setState(() {
+      _selectedFile = null;
+      _selectedFileSizeMB = null;
+    });
     widget.onFileRemoved?.call();
     log.d('File removed');
   }
@@ -135,9 +145,8 @@ class _FilePickerWidgetState extends State<FilePickerWidget> {
   }
 
   String _getFileSizeText() {
-    if (_selectedFile == null) return '';
-    final sizeMB = _fileUploadService.getFileSizeInMB(_selectedFile!);
-    return '(${sizeMB.toStringAsFixed(2)}MB)';
+    if (_selectedFileSizeMB == null) return '';
+    return '(${_selectedFileSizeMB!.toStringAsFixed(2)}MB)';
   }
 
   @override

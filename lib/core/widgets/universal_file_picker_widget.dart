@@ -1,5 +1,5 @@
-import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../logger/index.dart';
@@ -14,7 +14,7 @@ enum FilePickerType {
   mixed,      // Camera/Gallery + File picker
 }
 
-typedef OnFilePicked = void Function(File file);
+typedef OnFilePicked = void Function(XFile file);
 typedef OnFileRemoved = void Function();
 
 class UniversalFilePickerWidget extends StatefulWidget {
@@ -48,7 +48,9 @@ class UniversalFilePickerWidget extends StatefulWidget {
 }
 
 class _UniversalFilePickerWidgetState extends State<UniversalFilePickerWidget> {
-  File? _selectedFile;
+  XFile? _selectedFile;
+  // Cached because XFile.length() is async (web has no sync file IO)
+  double? _selectedFileSizeMB;
   final _fileUploadService = FileUploadService();
 
   Future<void> _pickImageFromCamera() async {
@@ -73,7 +75,7 @@ class _UniversalFilePickerWidgetState extends State<UniversalFilePickerWidget> {
     try {
       final picker = ImagePicker();
       final video = await picker.pickVideo(source: ImageSource.gallery);
-      if (video != null) _handleFilePicked(File(video.path));
+      if (video != null) await _handleFilePicked(video);
     } catch (e) {
       _handleError('Error picking video', e);
     }
@@ -83,7 +85,7 @@ class _UniversalFilePickerWidgetState extends State<UniversalFilePickerWidget> {
     try {
       final picker = ImagePicker();
       final video = await picker.pickVideo(source: ImageSource.camera);
-      if (video != null) _handleFilePicked(File(video.path));
+      if (video != null) await _handleFilePicked(video);
     } catch (e) {
       _handleError('Error recording video', e);
     }
@@ -96,11 +98,11 @@ class _UniversalFilePickerWidgetState extends State<UniversalFilePickerWidget> {
         allowedExtensions: widget.customAllowedExtensions ??
             _getDefaultExtensions(widget.pickerType),
         allowMultiple: false,
+        withData: kIsWeb,
       );
 
       if (result != null && result.files.isNotEmpty) {
-        final file = File(result.files.single.path!);
-        _handleFilePicked(file);
+        await _handleFilePicked(_toXFile(result.files.single));
       }
     } catch (e) {
       _handleError('Error picking file', e);
@@ -109,27 +111,40 @@ class _UniversalFilePickerWidgetState extends State<UniversalFilePickerWidget> {
 
   Future<void> _pickFile() async {
     try {
-      final result = await FilePicker.platform.pickFiles();
+      final result = await FilePicker.platform.pickFiles(withData: kIsWeb);
       if (result != null && result.files.isNotEmpty) {
-        final file = File(result.files.single.path!);
-        _handleFilePicked(file);
+        await _handleFilePicked(_toXFile(result.files.single));
       }
     } catch (e) {
       _handleError('Error picking file', e);
     }
   }
 
-  void _handleFilePicked(File file) {
+  /// file_picker gives no path on web, only bytes — wrap either into XFile
+  XFile _toXFile(PlatformFile file) {
+    if (file.path != null) {
+      return XFile(file.path!, name: file.name);
+    }
+    return XFile.fromData(file.bytes!, name: file.name);
+  }
+
+  Future<void> _handleFilePicked(XFile file) async {
+    final sizeMB = await _fileUploadService.getFileSizeInMB(file);
+
     // Validate file size
-    if (!_fileUploadService.isFileSizeValid(file, widget.maxFileSizeMB)) {
-      log.w('File too large: ${_fileUploadService.getFileSizeInMB(file)}MB');
+    if (sizeMB > widget.maxFileSizeMB) {
+      log.w('File too large: ${sizeMB}MB');
       _showError('File too large. Max: ${widget.maxFileSizeMB}MB');
       return;
     }
 
-    setState(() => _selectedFile = file);
+    if (!mounted) return;
+    setState(() {
+      _selectedFile = file;
+      _selectedFileSizeMB = sizeMB;
+    });
     widget.onFilePicked(file);
-    log.d('File picked: ${file.path} (${_fileUploadService.getFileSizeInMB(file)}MB)');
+    log.d('File picked: ${file.name} (${sizeMB}MB)');
   }
 
   void _handleError(String message, Object error) {
@@ -146,7 +161,10 @@ class _UniversalFilePickerWidgetState extends State<UniversalFilePickerWidget> {
   }
 
   void _removeFile() {
-    setState(() => _selectedFile = null);
+    setState(() {
+      _selectedFile = null;
+      _selectedFileSizeMB = null;
+    });
     widget.onFileRemoved?.call();
     log.d('File removed');
   }
@@ -255,15 +273,14 @@ class _UniversalFilePickerWidgetState extends State<UniversalFilePickerWidget> {
   }
 
   String _getFileSizeText() {
-    if (_selectedFile == null) return '';
-    final sizeMB = _fileUploadService.getFileSizeInMB(_selectedFile!);
-    return '(${sizeMB.toStringAsFixed(2)}MB)';
+    if (_selectedFileSizeMB == null) return '';
+    return '(${_selectedFileSizeMB!.toStringAsFixed(2)}MB)';
   }
 
   IconData _getIconForFile() {
     if (_selectedFile == null) return Icons.cloud_upload;
 
-    final extension = _selectedFile!.path.split('.').last.toLowerCase();
+    final extension = _selectedFile!.name.split('.').last.toLowerCase();
 
     if (['png', 'jpg', 'jpeg', 'gif', 'webp'].contains(extension)) {
       return Icons.image;

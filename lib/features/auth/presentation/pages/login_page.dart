@@ -1,3 +1,4 @@
+import 'package:enterprise_flutter_app/core/logger/logger_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -67,6 +68,10 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
       username: _emailController.text.trim(),
       password: _passwordController.text,
     );
+  }
+
+  void _onHandleLogin() {
+    log.i('handle login google');
   }
 
   @override
@@ -146,7 +151,9 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () {/* TODO: Navigate to forgot password */},
+                          onPressed: () {
+                            context.go('/change-password');
+                          },
                           child: Text(
                             'Forgot Password?',
                             style: AppTypography.labelMedium.copyWith(color: context.colors.primary),
@@ -171,7 +178,7 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
                       // Social Login (Placeholder)
                       CustomButton(
                         label: 'Continue with Google',
-                        onPressed: () {/* TODO: Google Sign In */},
+                        onPressed: _onHandleLogin,
                         variant: ButtonVariant.outline,
                         icon: Icons.g_mobiledata,
                       ),
@@ -216,7 +223,7 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: context.colors.primary.withOpacity(0.3),
+                color: context.colors.primary.withValues(alpha: 0.3),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),

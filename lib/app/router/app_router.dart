@@ -1,3 +1,4 @@
+import 'package:enterprise_flutter_app/features/auth/presentation/pages/forgot_password_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -46,6 +47,10 @@ GoRouter createRouter(Ref ref) {
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterPage(),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        builder: (context, state) => const ForgotPasswordPage(),
       ),
 
       // Shell Routes (with bottom navigation)
@@ -106,19 +111,19 @@ final routerProvider = Provider<GoRouter>((ref) {
 });
 
 class _AuthNotifierListenable extends ChangeNotifier {
-  final Ref _ref;
 
   _AuthNotifierListenable(this._ref) {
     _ref.listen(authProvider, (prev, next) {
       notifyListeners();
     });
   }
+  final Ref _ref;
 }
 
 class _ErrorPage extends StatelessWidget {
-  final GoException? error;
 
   const _ErrorPage({this.error});
+  final GoException? error;
 
   @override
   Widget build(BuildContext context) {

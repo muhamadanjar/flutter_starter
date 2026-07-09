@@ -1,11 +1,11 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../logger/index.dart';
 import '../services/file_upload_service.dart';
 import '../theme/app_colors.dart';
 
-typedef OnImagePicked = void Function(File file);
+typedef OnImagePicked = void Function(XFile file);
 typedef OnImageRemoved = void Function();
 
 class AvatarUploadWidget extends StatefulWidget {
@@ -35,16 +35,24 @@ class AvatarUploadWidget extends StatefulWidget {
 }
 
 class _AvatarUploadWidgetState extends State<AvatarUploadWidget> {
-  File? _selectedFile;
+  XFile? _selectedFile;
+  // Preview bytes: Image.file is unsupported on Flutter web, so we
+  // read the picked file into memory and render with Image.memory.
+  Uint8List? _selectedBytes;
   final _fileUploadService = FileUploadService();
 
   Future<void> _pickImage(ImageSource source) async {
     try {
       final file = await _fileUploadService.pickImage(source: source);
       if (file != null) {
-        setState(() => _selectedFile = file);
+        final bytes = await file.readAsBytes();
+        if (!mounted) return;
+        setState(() {
+          _selectedFile = file;
+          _selectedBytes = bytes;
+        });
         widget.onImagePicked(file);
-        log.d('Image picked: ${file.path}');
+        log.d('Image picked: ${file.name}');
       }
     } catch (e) {
       log.e('Error picking image', e);
@@ -57,7 +65,10 @@ class _AvatarUploadWidgetState extends State<AvatarUploadWidget> {
   }
 
   void _removeImage() {
-    setState(() => _selectedFile = null);
+    setState(() {
+      _selectedFile = null;
+      _selectedBytes = null;
+    });
     widget.onImageRemoved?.call();
     log.d('Image removed');
   }
@@ -132,9 +143,9 @@ class _AvatarUploadWidgetState extends State<AvatarUploadWidget> {
                     color: colors.surface,
                   ),
                   child: ClipOval(
-                    child: _selectedFile != null
-                        ? Image.file(
-                            _selectedFile!,
+                    child: _selectedBytes != null
+                        ? Image.memory(
+                            _selectedBytes!,
                             fit: BoxFit.cover,
                           )
                         : widget.currentAvatarUrl != null

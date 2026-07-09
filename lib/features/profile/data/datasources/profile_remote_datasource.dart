@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:cross_file/cross_file.dart';
 import 'package:dio/dio.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/dio_client.dart';
@@ -23,7 +23,7 @@ abstract class ProfileRemoteDataSource {
   Future<dynamic> updateMetas(MetaUpdateRequest request);
 
   /// Upload avatar image, returns image URL
-  Future<String> uploadAvatar(File imageFile);
+  Future<String> uploadAvatar(XFile imageFile);
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
@@ -88,13 +88,15 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   }
 
   @override
-  Future<String> uploadAvatar(File imageFile) async {
-    final fileName = imageFile.path.split('/').last;
+  Future<String> uploadAvatar(XFile imageFile) async {
+    // Bytes-based upload: MultipartFile.fromFile needs a real file path,
+    // which does not exist on Flutter web.
+    final bytes = await imageFile.readAsBytes();
 
     final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(
-        imageFile.path,
-        filename: fileName,
+      'file': MultipartFile.fromBytes(
+        bytes,
+        filename: imageFile.name,
       ),
     });
 
