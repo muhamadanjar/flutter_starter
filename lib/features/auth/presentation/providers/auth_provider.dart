@@ -9,7 +9,9 @@ import '../../../../core/network/dio_client.dart';
 import '../../../../core/network/network_info.dart';
 import '../../../../core/network/session_events.dart';
 import '../../../../core/providers/fcm_sync_provider.dart';
+import '../../../../core/providers/location_sync_provider.dart';
 import '../../../../core/services/fcm_sync_service.dart';
+import '../../../../core/services/location_sync_service.dart';
 import '../../data/datasources/auth_local_datasource.dart';
 import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
@@ -92,11 +94,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required LogoutUseCase logoutUseCase,
     required AuthRepositoryImpl repository,
     required FcmSyncService fcmSync,
+    required LocationSyncService locationSync,
   })  : _loginUseCase = loginUseCase,
         _registerUseCase = registerUseCase,
         _logoutUseCase = logoutUseCase,
         _repository = repository,
         _fcmSync = fcmSync,
+        _locationSync = locationSync,
         super(const AuthState()) {
     _sessionExpiredSub =
         SessionEvents.onSessionExpired.listen((_) => _handleSessionExpired());
@@ -106,6 +110,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   final LogoutUseCase _logoutUseCase;
   final AuthRepositoryImpl _repository;
   final FcmSyncService _fcmSync;
+  final LocationSyncService _locationSync;
   late final StreamSubscription<void> _sessionExpiredSub;
 
   Future<void> _handleSessionExpired() async {
@@ -121,6 +126,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     log.i('[START][FCM] SYNC');
     unawaited(_fcmSync.sync());
     _fcmSync.startTokenRefreshListener();
+
+    log.i('[START][LOCATION] SYNC');
+    unawaited(_locationSync.sync());
   }
 
   @override
@@ -218,5 +226,6 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
     logoutUseCase: ref.watch(logoutUseCaseProvider),
     repository: ref.watch(authRepositoryProvider),
     fcmSync: ref.watch(fcmSyncServiceProvider),
+    locationSync: ref.watch(locationSyncServiceProvider),
   );
 });
