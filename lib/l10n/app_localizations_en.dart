@@ -18,9 +18,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navigationHome => 'Home';
 
   @override
-  String get navigationDashboard => 'Dashboard';
-
-  @override
   String get navigationProfile => 'Profile';
 
   @override
@@ -115,18 +112,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileCancel => 'Cancel';
-
-  @override
-  String get dashboardTitle => 'Dashboard';
-
-  @override
-  String get dashboardWelcome => 'Welcome';
-
-  @override
-  String get dashboardStats => 'Statistics';
-
-  @override
-  String get dashboardActivity => 'Recent Activity';
 
   @override
   String get commonOk => 'OK';

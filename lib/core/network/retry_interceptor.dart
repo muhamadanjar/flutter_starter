@@ -4,15 +4,15 @@ import 'package:dio/dio.dart';
 
 /// Retry interceptor with exponential backoff
 class RetryInterceptor extends Interceptor {
-  final int maxRetries;
-  final Duration initialDelay;
-  final double backoffFactor;
 
   RetryInterceptor({
     this.maxRetries = 3,
     this.initialDelay = const Duration(milliseconds: 500),
     this.backoffFactor = 2.0,
   });
+  final int maxRetries;
+  final Duration initialDelay;
+  final double backoffFactor;
 
   @override
   Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {

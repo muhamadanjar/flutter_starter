@@ -116,12 +116,6 @@ abstract class AppLocalizations {
   /// **'Home'**
   String get navigationHome;
 
-  /// No description provided for @navigationDashboard.
-  ///
-  /// In en, this message translates to:
-  /// **'Dashboard'**
-  String get navigationDashboard;
-
   /// No description provided for @navigationProfile.
   ///
   /// In en, this message translates to:
@@ -313,30 +307,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get profileCancel;
-
-  /// No description provided for @dashboardTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Dashboard'**
-  String get dashboardTitle;
-
-  /// No description provided for @dashboardWelcome.
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome'**
-  String get dashboardWelcome;
-
-  /// No description provided for @dashboardStats.
-  ///
-  /// In en, this message translates to:
-  /// **'Statistics'**
-  String get dashboardStats;
-
-  /// No description provided for @dashboardActivity.
-  ///
-  /// In en, this message translates to:
-  /// **'Recent Activity'**
-  String get dashboardActivity;
 
   /// No description provided for @commonOk.
   ///

@@ -18,9 +18,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get navigationHome => 'Beranda';
 
   @override
-  String get navigationDashboard => 'Dasbor';
-
-  @override
   String get navigationProfile => 'Profil';
 
   @override
@@ -115,18 +112,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get profileCancel => 'Batal';
-
-  @override
-  String get dashboardTitle => 'Dasbor';
-
-  @override
-  String get dashboardWelcome => 'Selamat Datang';
-
-  @override
-  String get dashboardStats => 'Statistik';
-
-  @override
-  String get dashboardActivity => 'Aktivitas Terbaru';
 
   @override
   String get commonOk => 'OK';

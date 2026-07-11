@@ -206,7 +206,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     iconColor: context.colors.textSecondary,
                     title: 'About',
                     subtitle: 'App version and information',
-                    onTap: () => _showAboutDialog(context),
+                    onTap: () => context.go('/dev/form-gallery'), //_showAboutDialog(context),
                   ),
                   const _SettingsDivider(),
                   _SettingsTile(

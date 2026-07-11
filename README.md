@@ -438,13 +438,14 @@ flutter pub run build_runner build
 
 ### Allowed Operations
 ✅ `git log`, `git status`, `git diff`, `git show`
-✅ `git add`, `git commit`, `git push`
 
 ### Forbidden Operations
 ❌ `git reset --hard` (destructive)
 ❌ `git push --force` (overwrites remote)
 ❌ `git rebase -i` (interactive)
 ❌ `git checkout .` (discard changes)
+❌ `git add .` (discard changes)
+❌ `git commit` (discard changes)
 
 See [AGENTS.md](docs/AGENTS.md) for rules.
 

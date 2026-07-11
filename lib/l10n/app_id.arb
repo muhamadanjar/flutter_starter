@@ -4,7 +4,6 @@
   "appDescription": "Aplikasi Flutter tingkat enterprise",
 
   "navigationHome": "Beranda",
-  "navigationDashboard": "Dasbor",
   "navigationProfile": "Profil",
   "navigationSettings": "Pengaturan",
 
@@ -40,11 +39,6 @@
   "profileBio": "Bio",
   "profileSave": "Simpan",
   "profileCancel": "Batal",
-
-  "dashboardTitle": "Dasbor",
-  "dashboardWelcome": "Selamat Datang",
-  "dashboardStats": "Statistik",
-  "dashboardActivity": "Aktivitas Terbaru",
 
   "commonOk": "OK",
   "commonCancel": "Batal",

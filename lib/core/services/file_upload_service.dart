@@ -3,14 +3,14 @@ import 'package:image_picker/image_picker.dart';
 /// Uses XFile (cross_file) instead of dart:io File so pickers and
 /// previews work on Flutter web as well as mobile/desktop.
 class FileUploadService {
-  static final FileUploadService _instance = FileUploadService._internal();
-  final ImagePicker _picker = ImagePicker();
 
   factory FileUploadService() {
     return _instance;
   }
 
   FileUploadService._internal();
+  static final FileUploadService _instance = FileUploadService._internal();
+  final ImagePicker _picker = ImagePicker();
 
   /// Pick image from gallery or camera
   Future<XFile?> pickImage({
@@ -107,9 +107,9 @@ class FileUploadService {
 }
 
 class FilePickerException implements Exception {
-  final String message;
 
   FilePickerException(this.message);
+  final String message;
 
   @override
   String toString() => message;

@@ -4,7 +4,6 @@
   "appDescription": "Enterprise-grade Flutter application",
 
   "navigationHome": "Home",
-  "navigationDashboard": "Dashboard",
   "navigationProfile": "Profile",
   "navigationSettings": "Settings",
 
@@ -40,11 +39,6 @@
   "profileBio": "Bio",
   "profileSave": "Save",
   "profileCancel": "Cancel",
-
-  "dashboardTitle": "Dashboard",
-  "dashboardWelcome": "Welcome",
-  "dashboardStats": "Statistics",
-  "dashboardActivity": "Recent Activity",
 
   "commonOk": "OK",
   "commonCancel": "Cancel",

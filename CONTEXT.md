@@ -1,6 +1,6 @@
 # Enterprise Flutter App
 
-Mobile client for the User Management API (localhost:8070 in dev). Clean-architecture Flutter app with feature modules (auth, profile, dashboard, notifications, settings).
+Mobile client for the User Management API (localhost:8070 in dev). Clean-architecture Flutter app with feature modules (auth, profile, home, notifications, settings).
 
 ## Language
 
@@ -39,6 +39,22 @@ _Avoid_: metadata, settings (device-local settings live in Hive)
 
 **FCM Token Sync**:
 Keeping the `fcm_token` User Meta current: posted on app startup (if logged in), after login, and on FCM token rotation; skipped when unchanged from the locally cached value; blanked on Logout (POST /auth/metas with empty value). Failures are silent and non-blocking.
+
+### Navigation
+
+**Home**:
+Landing screen after login. Pure composition of existing features — Profile greeting, Notification summary (unread count + recent items), and quick-action shortcuts. Owns no domain data and calls no dedicated endpoint.
+_Avoid_: dashboard (removed — the `/dashboard` endpoint never existed on the backend)
+
+**Banner Carousel**:
+Permanent auto-playing slider on Home that highlights existing features; each slide navigates to its feature on tap. Purely static content owned by the caller — the shared widget knows nothing about routes.
+_Avoid_: onboarding slider (this is not a first-run onboarding flow; it never disappears)
+
+### Forms
+
+**Form Field Family**:
+The `App*`-prefixed controlled form widgets (radio group, checkbox, checkbox group, dropdown, date picker, datetime picker, file picker form field). Controlled means the parent owns the value and receives changes via `onChanged`; the widgets themselves hold no selection state. All share one visual chrome (label above, error below) and one option type for list-based fields.
+_Avoid_: `Custom*` prefix for new form widgets (legacy prefix; only `CustomTextField`/`CustomButton` keep it)
 
 ### Implementation Notes
 

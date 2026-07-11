@@ -130,8 +130,8 @@ class FirebaseService {
     debugPrint('Data: ${message.data}');
 
     // Navigate to specific screen based on message data
-    // Example: If message.data['screen'] == 'dashboard'
-    //   Navigator.pushNamed(context, '/dashboard')
+    // Example: If message.data['screen'] == 'notifications'
+    //   context.go('/notifications')
   }
 
   // Subscribe to topic

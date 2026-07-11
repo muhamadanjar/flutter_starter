@@ -9,9 +9,10 @@ class ApiConstants {
   static const String updateProfile = '/auth/profile';
   static const String uploadAvatar = '/auth/update-avatar';
   static const String changePassword = '/auth/change-password';
-  static const String dashboard = '/dashboard';
   static const String refreshToken = '/auth/refresh';
   static const String authMetas = '/auth/metas';
+  static const String notifications = '/notifications';
+  static const String notificationsReadAll = '/notifications/read-all';
 
   static Duration connectTimeout = const Duration(seconds: 30);
   static Duration receiveTimeout = const Duration(seconds: 30);

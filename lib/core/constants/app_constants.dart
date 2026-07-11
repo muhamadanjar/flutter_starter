@@ -12,7 +12,6 @@ class AppConstants {
   static const String isLoggedInKey = 'is_logged_in';
   static const String userProfileKey = 'user_profile';
   static const String appSettingsKey = 'app_settings';
-  static const String dashboardCacheKey = 'dashboard_cache';
   static const String lastSyncKey = 'last_sync';
 
   // Hive Box Names

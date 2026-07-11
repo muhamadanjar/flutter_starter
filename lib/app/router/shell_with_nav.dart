@@ -19,14 +19,9 @@ class ShellWithNavigation extends StatelessWidget {
 
   static const List<NavigationDestination> _destinations = [
     NavigationDestination(
-      icon: Icon(Icons.dashboard_outlined),
-      selectedIcon: Icon(Icons.dashboard_rounded),
-      label: 'Dashboard',
-    ),
-    NavigationDestination(
-      icon: Icon(Icons.analytics_outlined),
-      selectedIcon: Icon(Icons.analytics_rounded),
-      label: 'Analytics',
+      icon: Icon(Icons.home_outlined),
+      selectedIcon: Icon(Icons.home_rounded),
+      label: 'Home',
     ),
     NavigationDestination(
       icon: Icon(Icons.person_outline),
@@ -43,16 +38,12 @@ class ShellWithNavigation extends StatelessWidget {
   void _onDestinationSelected(BuildContext context, int index) {
     switch (index) {
       case 0:
-        context.go('/dashboard');
+        context.go('/home');
         break;
       case 1:
-        // Analytics placeholder - navigate to dashboard for now
-        context.go('/dashboard');
-        break;
-      case 2:
         context.go('/profile');
         break;
-      case 3:
+      case 2:
         context.go('/settings');
         break;
     }

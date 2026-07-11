@@ -7,7 +7,9 @@ import '../../core/widgets/offline_banner.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
-import '../../features/dashboard/presentation/pages/dashboard_page.dart';
+import '../../features/dev/presentation/pages/form_gallery_page.dart';
+import '../../features/home/presentation/pages/home_page.dart';
+import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/profile/presentation/pages/change_password_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
@@ -19,7 +21,7 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>();
 GoRouter createRouter(Ref ref) {
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/dashboard',
+    initialLocation: '/home',
     debugLogDiagnostics: true,
     redirect: (context, state) {
       final authState = ref.read(authProvider);
@@ -32,7 +34,7 @@ GoRouter createRouter(Ref ref) {
       }
 
       if (isAuthenticated && isAuthRoute) {
-        return '/dashboard';
+        return '/home';
       }
 
       return null;
@@ -52,6 +54,17 @@ GoRouter createRouter(Ref ref) {
         path: '/forgot-password',
         builder: (context, state) => const ForgotPasswordPage(),
       ),
+      // Dev-only: form field family gallery, unlisted in navigation
+      GoRoute(
+        path: '/dev/form-gallery',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const FormGalleryPage(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const NotificationsPage(),
+      ),
 
       // Shell Routes (with bottom navigation)
       ShellRoute(
@@ -66,9 +79,9 @@ GoRouter createRouter(Ref ref) {
         },
         routes: [
           GoRoute(
-            path: '/dashboard',
+            path: '/home',
             pageBuilder: (context, state) => const NoTransitionPage(
-              child: DashboardPage(),
+              child: HomePage(),
             ),
           ),
           GoRoute(
@@ -98,9 +111,8 @@ GoRouter createRouter(Ref ref) {
 
 int _calculateIndex(GoRouterState state) {
   final path = state.matchedLocation;
-  if (path.startsWith('/profile') || path.startsWith('/change-password')) return 2;
-  if (path.startsWith('/settings')) return 3;
-  if (path.startsWith('/dashboard')) return 0;
+  if (path.startsWith('/profile') || path.startsWith('/change-password')) return 1;
+  if (path.startsWith('/settings')) return 2;
   return 0;
 }
 
@@ -152,7 +164,7 @@ class _ErrorPage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () => context.go('/dashboard'),
+                onPressed: () => context.go('/home'),
                 child: const Text('Go Home'),
               ),
             ],
