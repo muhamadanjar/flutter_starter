@@ -26,9 +26,9 @@ abstract class AuthRemoteDataSource {
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final DioClient _dioClient;
 
   AuthRemoteDataSourceImpl(this._dioClient);
+  final DioClient _dioClient;
 
   @override
   Future<Map<String, dynamic>> login({

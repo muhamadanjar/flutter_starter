@@ -36,10 +36,10 @@ Future<void> mainCommon(AppConfig config) async {
 Future<void> _initializeHive() async {
   // initFlutter() handles both web and mobile platforms automatically
   await Hive.initFlutter();
-  final userPref = UserPref();
 
-  // Open all required Hive boxes
-  await userPref.initBox();
+  // Open all required Hive boxes. UserPref instances resolve the box
+  // lazily from Hive's cache, so opening it once here is enough.
+  await UserPref().initBox();
   await Hive.openBox(AppConstants.authBox);
   await Hive.openBox(AppConstants.userBox);
   await Hive.openBox(AppConstants.settingsBox);

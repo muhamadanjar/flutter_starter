@@ -5,12 +5,24 @@ import 'pref.dart';
 abstract class PrefGroup {
   String get boxName;
 
-  late Box box;
+  Box? _box;
+
+  /// Resolves the box lazily: any instance of this group works as long as
+  /// the box was opened once (e.g. via initBox() in main), since Hive
+  /// caches open boxes by name.
+  Box get box {
+    final cached = _box;
+    if (cached != null && cached.isOpen) return cached;
+    if (Hive.isBoxOpen(boxName)) return _box = Hive.box(boxName);
+    throw StateError(
+      'Hive box "$boxName" is not open. Call initBox() during app startup.',
+    );
+  }
 
   /// Initialize Hive box
   Future<void> initBox() async {
     try {
-      box = await Hive.openBox(boxName);
+      _box = await Hive.openBox(boxName);
     } catch (e) {
       throw Exception('Failed to initialize box $boxName: $e');
     }

@@ -6,13 +6,6 @@ final userPrefProvider = Provider<UserPref>((ref) {
   return UserPref();
 });
 
-/// Initialize user preferences (run in main)
-final initUserPrefProvider = FutureProvider<UserPref>((ref) async {
-  final userPref = ref.watch(userPrefProvider);
-  await userPref.initBox();
-  return userPref;
-});
-
 // Auth streams
 final userIdStreamProvider = StreamProvider<String>((ref) {
   final userPref = ref.watch(userPrefProvider);

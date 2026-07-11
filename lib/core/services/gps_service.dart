@@ -108,12 +108,19 @@ class GpsService {
         );
       }
 
-      // Check permission
-      final permission = await checkPermission();
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
+      // Check permission, request it via the OS dialog if not yet granted
+      var permission = await checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await requestPermission();
+      }
+      if (permission == LocationPermission.denied) {
         throw PermissionException(
-          'Location permission denied. Grant permission in settings.',
+          'Location permission denied.',
+        );
+      }
+      if (permission == LocationPermission.deniedForever) {
+        throw PermissionException(
+          'Location permission permanently denied. Grant permission in app settings.',
         );
       }
 
