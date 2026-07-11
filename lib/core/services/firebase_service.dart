@@ -4,17 +4,17 @@ import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
 class FirebaseService {
-  static final FirebaseService _instance = FirebaseService._internal();
-  static final logger = Logger();
-
-  FirebaseMessaging? _messaging;
-  bool _isInitialized = false;
 
   factory FirebaseService() {
     return _instance;
   }
 
   FirebaseService._internal();
+  static final FirebaseService _instance = FirebaseService._internal();
+  static final logger = Logger();
+
+  FirebaseMessaging? _messaging;
+  bool _isInitialized = false;
 
   bool get isInitialized => _isInitialized;
 

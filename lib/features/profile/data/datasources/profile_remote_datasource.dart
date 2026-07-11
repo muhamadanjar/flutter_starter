@@ -1,5 +1,6 @@
 import 'package:cross_file/cross_file.dart';
 import 'package:dio/dio.dart';
+import 'package:enterprise_flutter_app/core/logger/index.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../domain/dtos/meta_update_request.dart';
@@ -27,9 +28,9 @@ abstract class ProfileRemoteDataSource {
 }
 
 class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
-  final DioClient _dioClient;
 
   ProfileRemoteDataSourceImpl(this._dioClient);
+  final DioClient _dioClient;
 
   @override
   Future<UserProfileModel> getProfile() async {
@@ -42,6 +43,7 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   Future<UserProfileModel> updateProfile(Map<String, dynamic> data) async {
     final response = await _dioClient.put(ApiConstants.updateProfile, data: data);
     final responseData = response.data['data'] as Map<String, dynamic>;
+    log.w('Response Update $responseData');
     return UserProfileModel.fromJson(responseData);
   }
 

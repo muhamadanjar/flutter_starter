@@ -1,12 +1,12 @@
 /// Login request DTO
 class LoginRequestDto {
-  final String username;
-  final String password;
 
   const LoginRequestDto({
     required this.username,
     required this.password,
   });
+  final String username;
+  final String password;
 
   Map<String, dynamic> toJson() => {
     'username': username,

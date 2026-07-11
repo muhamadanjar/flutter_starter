@@ -10,15 +10,6 @@ import 'gps_service.dart';
 /// All failures are silent: location registration must never block auth
 /// flows (permission denied, GPS off, timeout, etc).
 class LocationSyncService {
-  static const String latitudeKey = 'latitude';
-  static const String longitudeKey = 'longitude';
-  static const String timestampKey = 'location_timestamp';
-  static const String accuracyKey = 'location_accuracy';
-
-  final GpsService _gpsService;
-  final ProfileRepository _profileRepository;
-  final UserPref _userPref;
-  final Future<bool> Function() _isLoggedIn;
 
   LocationSyncService({
     required GpsService gpsService,
@@ -29,6 +20,15 @@ class LocationSyncService {
         _profileRepository = profileRepository,
         _userPref = userPref,
         _isLoggedIn = isLoggedIn;
+  static const String latitudeKey = 'latitude';
+  static const String longitudeKey = 'longitude';
+  static const String timestampKey = 'location_timestamp';
+  static const String accuracyKey = 'location_accuracy';
+
+  final GpsService _gpsService;
+  final ProfileRepository _profileRepository;
+  final UserPref _userPref;
+  final Future<bool> Function() _isLoggedIn;
 
   /// Upsert the current device location to auth/metas.
   ///

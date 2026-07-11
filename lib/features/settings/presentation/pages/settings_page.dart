@@ -49,7 +49,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Appearance Section
-              _SectionHeader(title: 'Appearance'),
+              const _SectionHeader(title: 'Appearance'),
               const SizedBox(height: 8),
               _SettingsCard(
                 children: [
@@ -73,7 +73,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     trailing: DropdownButton<String>(
                       value: settings.fontSize,
                       underline: const SizedBox(),
-                      items: [
+                      items: const [
                         DropdownMenuItem(value: 'small', child: Text('Small')),
                         DropdownMenuItem(value: 'medium', child: Text('Medium')),
                         DropdownMenuItem(value: 'large', child: Text('Large')),
@@ -109,7 +109,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               const SizedBox(height: 24),
 
               // Security Section
-              _SectionHeader(title: 'Security'),
+              const _SectionHeader(title: 'Security'),
               const SizedBox(height: 8),
               _SettingsCard(
                 children: [
@@ -137,7 +137,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               const SizedBox(height: 24),
 
               // Notifications Section
-              _SectionHeader(title: 'Notifications'),
+              const _SectionHeader(title: 'Notifications'),
               const SizedBox(height: 8),
               _SettingsCard(
                 children: [
@@ -157,7 +157,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               const SizedBox(height: 24),
 
               // Data & Privacy Section
-              _SectionHeader(title: 'Data & Privacy'),
+              const _SectionHeader(title: 'Data & Privacy'),
               const SizedBox(height: 8),
               _SettingsCard(
                 children: [
@@ -189,7 +189,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
               const SizedBox(height: 24),
 
               // Account Section
-              _SectionHeader(title: 'Account'),
+              const _SectionHeader(title: 'Account'),
               const SizedBox(height: 8),
               _SettingsCard(
                 children: [
@@ -291,9 +291,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 // UI Components
 
 class _SectionHeader extends StatelessWidget {
-  final String title;
 
   const _SectionHeader({required this.title});
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -311,9 +311,9 @@ class _SectionHeader extends StatelessWidget {
 }
 
 class _SettingsCard extends StatelessWidget {
-  final List<Widget> children;
 
   const _SettingsCard({required this.children});
+  final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
@@ -341,13 +341,6 @@ class _SettingsDivider extends StatelessWidget {
 }
 
 class _SettingsTile extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String title;
-  final String? subtitle;
-  final Color? titleColor;
-  final Widget? trailing;
-  final VoidCallback? onTap;
 
   const _SettingsTile({
     required this.icon,
@@ -358,6 +351,13 @@ class _SettingsTile extends StatelessWidget {
     this.trailing,
     this.onTap,
   });
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String? subtitle;
+  final Color? titleColor;
+  final Widget? trailing;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

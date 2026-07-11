@@ -243,9 +243,9 @@ class _ChangePasswordPageState extends ConsumerState<ChangePasswordPage> {
 }
 
 class _PasswordStrengthIndicator extends StatelessWidget {
-  final String password;
 
   const _PasswordStrengthIndicator({required this.password});
+  final String password;
 
   int get _strength {
     int score = 0;

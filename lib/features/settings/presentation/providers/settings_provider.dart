@@ -29,15 +29,15 @@ final updateSettingsUseCaseProvider = Provider<UpdateSettingsUseCase>((ref) {
 
 // Settings State
 class SettingsState {
-  final AppSettings? settings;
-  final bool isLoading;
-  final String? errorMessage;
 
   const SettingsState({
     this.settings,
     this.isLoading = false,
     this.errorMessage,
   });
+  final AppSettings? settings;
+  final bool isLoading;
+  final String? errorMessage;
 
   SettingsState copyWith({
     AppSettings? settings,
@@ -54,8 +54,6 @@ class SettingsState {
 
 // Settings Notifier
 class SettingsNotifier extends StateNotifier<SettingsState> {
-  final GetSettingsUseCase _getSettingsUseCase;
-  final UpdateSettingsUseCase _updateSettingsUseCase;
 
   SettingsNotifier({
     required GetSettingsUseCase getSettingsUseCase,
@@ -63,6 +61,8 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
   })  : _getSettingsUseCase = getSettingsUseCase,
         _updateSettingsUseCase = updateSettingsUseCase,
         super(const SettingsState());
+  final GetSettingsUseCase _getSettingsUseCase;
+  final UpdateSettingsUseCase _updateSettingsUseCase;
 
   Future<void> loadSettings() async {
     state = state.copyWith(isLoading: true, errorMessage: null);

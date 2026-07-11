@@ -236,8 +236,8 @@ class AdaptiveText extends StatelessWidget {
     this.textAlign,
     this.maxLines,
     this.overflow,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
   final String text;
   final TextStyle? baseStyle;
   final double mobileScaleFactor;

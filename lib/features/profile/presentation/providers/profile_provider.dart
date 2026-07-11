@@ -51,11 +51,6 @@ final changePasswordUseCaseProvider = Provider<ChangePasswordUseCase>((ref) {
 
 // Profile State
 class ProfileState {
-  final UserProfile? profile;
-  final bool isLoading;
-  final String? errorMessage;
-  final String? successMessage;
-  final bool isOffline;
 
   const ProfileState({
     this.profile,
@@ -64,6 +59,11 @@ class ProfileState {
     this.successMessage,
     this.isOffline = false,
   });
+  final UserProfile? profile;
+  final bool isLoading;
+  final String? errorMessage;
+  final String? successMessage;
+  final bool isOffline;
 
   ProfileState copyWith({
     UserProfile? profile,
@@ -84,10 +84,6 @@ class ProfileState {
 
 // Profile Notifier
 class ProfileNotifier extends StateNotifier<ProfileState> {
-  final GetProfileUseCase _getProfileUseCase;
-  final UpdateProfileUseCase _updateProfileUseCase;
-  final ChangePasswordUseCase _changePasswordUseCase;
-  final ProfileRepository _profileRepository;
 
   ProfileNotifier({
     required GetProfileUseCase getProfileUseCase,
@@ -99,11 +95,16 @@ class ProfileNotifier extends StateNotifier<ProfileState> {
         _changePasswordUseCase = changePasswordUseCase,
         _profileRepository = profileRepository,
         super(const ProfileState());
+  final GetProfileUseCase _getProfileUseCase;
+  final UpdateProfileUseCase _updateProfileUseCase;
+  final ChangePasswordUseCase _changePasswordUseCase;
+  final ProfileRepository _profileRepository;
 
   Future<void> loadProfile() async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     final result = await _getProfileUseCase();
+
 
     result.fold(
       (failure) => state = state.copyWith(

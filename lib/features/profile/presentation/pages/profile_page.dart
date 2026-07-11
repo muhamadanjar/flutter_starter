@@ -175,7 +175,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
-                          color: context.colors.warning.withOpacity(0.15),
+                          color: context.colors.warning.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
@@ -241,7 +241,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: context.colors.warning.withOpacity(0.15),
+                    color: context.colors.warning.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(Icons.lock_outline, color: context.colors.warning, size: 22),

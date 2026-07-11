@@ -9,9 +9,9 @@ abstract class ProfileLocalDataSource {
 }
 
 class ProfileLocalDataSourceImpl implements ProfileLocalDataSource {
-  final Box<dynamic> _userBox;
 
   ProfileLocalDataSourceImpl({required Box<dynamic> userBox}) : _userBox = userBox;
+  final Box<dynamic> _userBox;
 
   @override
   Future<void> cacheProfile(UserProfileModel profile) async {

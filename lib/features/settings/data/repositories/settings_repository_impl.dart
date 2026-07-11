@@ -6,9 +6,9 @@ import '../../domain/repositories/settings_repository.dart';
 import '../datasources/settings_local_datasource.dart';
 
 class SettingsRepositoryImpl implements SettingsRepository {
-  final SettingsLocalDataSource localDataSource;
 
   SettingsRepositoryImpl({required this.localDataSource});
+  final SettingsLocalDataSource localDataSource;
 
   @override
   Future<Either<Failure, AppSettings>> getSettings() async {

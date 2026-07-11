@@ -11,15 +11,15 @@ import '../datasources/profile_remote_datasource.dart';
 import '../models/profile_model.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
-  final ProfileRemoteDataSource remoteDataSource;
-  final ProfileLocalDataSource localDataSource;
-  final NetworkInfo networkInfo;
 
   ProfileRepositoryImpl({
     required this.remoteDataSource,
     required this.localDataSource,
     required this.networkInfo,
   });
+  final ProfileRemoteDataSource remoteDataSource;
+  final ProfileLocalDataSource localDataSource;
+  final NetworkInfo networkInfo;
 
   @override
   Future<Either<Failure, UserProfile>> getProfile() async {

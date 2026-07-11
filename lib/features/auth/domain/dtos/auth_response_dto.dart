@@ -1,8 +1,5 @@
 /// Auth response DTO (from login/register)
 class AuthResponseDto {
-  final String token;
-  final String? refreshToken;
-  final Map<String, dynamic>? user;
 
   const AuthResponseDto({
     required this.token,
@@ -17,6 +14,9 @@ class AuthResponseDto {
       user: json['user'] as Map<String, dynamic>?,
     );
   }
+  final String token;
+  final String? refreshToken;
+  final Map<String, dynamic>? user;
 
   Map<String, dynamic> toJson() => {
     'token': token,

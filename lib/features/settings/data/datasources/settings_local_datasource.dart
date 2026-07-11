@@ -8,9 +8,9 @@ abstract class SettingsLocalDataSource {
 }
 
 class SettingsLocalDataSourceImpl implements SettingsLocalDataSource {
-  final Box<dynamic> _settingsBox;
 
   SettingsLocalDataSourceImpl({required Box<dynamic> settingsBox}) : _settingsBox = settingsBox;
+  final Box<dynamic> _settingsBox;
 
   @override
   Future<Map<String, dynamic>> getSettings() async {

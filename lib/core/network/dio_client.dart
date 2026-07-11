@@ -13,15 +13,6 @@ import 'retry_interceptor.dart';
 import 'session_events.dart';
 
 class DioClient {
-  late final Dio _dio;
-  // Bare client for token refresh: no interceptors, so the refresh call never
-  // carries an expired Bearer, never re-enters the 401 handler, and is not
-  // retried by RetryInterceptor.
-  late final Dio _refreshDio;
-  final NetworkInfo _networkInfo;
-  final Box<dynamic> _authBox;
-  final AppConfig _config;
-  final Mutex _tokenMutex = Mutex();
 
   DioClient({
     required NetworkInfo networkInfo,
@@ -69,6 +60,15 @@ class DioClient {
       _errorInterceptor(),
     ]);
   }
+  late final Dio _dio;
+  // Bare client for token refresh: no interceptors, so the refresh call never
+  // carries an expired Bearer, never re-enters the 401 handler, and is not
+  // retried by RetryInterceptor.
+  late final Dio _refreshDio;
+  final NetworkInfo _networkInfo;
+  final Box<dynamic> _authBox;
+  final AppConfig _config;
+  final Mutex _tokenMutex = Mutex();
 
   InterceptorsWrapper _authInterceptor() {
     return InterceptorsWrapper(

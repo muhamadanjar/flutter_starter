@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final class LocalizationState {
-  final Locale locale;
 
   const LocalizationState({required this.locale});
+  final Locale locale;
 
   LocalizationState copyWith({Locale? locale}) {
     return LocalizationState(locale: locale ?? this.locale);
@@ -12,10 +12,10 @@ final class LocalizationState {
 }
 
 class LocalizationNotifier extends StateNotifier<LocalizationState> {
-  static const defaultLocale = Locale('en');
-  static const supportedLocales = [Locale('en'), Locale('id')];
 
   LocalizationNotifier() : super(const LocalizationState(locale: defaultLocale));
+  static const defaultLocale = Locale('en');
+  static const supportedLocales = [Locale('en'), Locale('id')];
 
   void setLocale(String languageCode) {
     final locale = Locale(languageCode);
