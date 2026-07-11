@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:enterprise_flutter_app/core/logger/index.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/dio_client.dart';
@@ -74,7 +76,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<void> logout() async {
-    await _dioClient.get(ApiConstants.logout);
+    final response = await _dioClient.get(ApiConstants.logout);
+    debugPrint(response.data);
   }
 
   @override

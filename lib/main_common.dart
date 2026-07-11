@@ -5,6 +5,7 @@ import 'package:enterprise_flutter_app/core/constants/app_constants.dart';
 import 'package:enterprise_flutter_app/core/network/network_info.dart';
 import 'package:enterprise_flutter_app/core/providers/config_provider.dart';
 import 'package:enterprise_flutter_app/core/services/firebase_service.dart';
+import 'package:enterprise_flutter_app/core/storage/preferences/index.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -35,8 +36,10 @@ Future<void> mainCommon(AppConfig config) async {
 Future<void> _initializeHive() async {
   // initFlutter() handles both web and mobile platforms automatically
   await Hive.initFlutter();
+  final userPref = UserPref();
 
   // Open all required Hive boxes
+  await userPref.initBox();
   await Hive.openBox(AppConstants.authBox);
   await Hive.openBox(AppConstants.userBox);
   await Hive.openBox(AppConstants.settingsBox);

@@ -164,7 +164,7 @@ class AuthRepositoryImpl implements AuthRepository {
       if (cachedUser != null) {
         return right(cachedUser);
       }
-      return left(CacheFailure(message: 'No cached user data found'));
+      return left(const CacheFailure(message: 'No cached user data found'));
     } on CacheException catch (e) {
       return left(CacheFailure(message: e.message ?? 'Cache error'));
     }

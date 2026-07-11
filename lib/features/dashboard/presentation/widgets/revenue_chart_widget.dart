@@ -5,9 +5,9 @@ import '../../../../core/theme/app_typography.dart';
 import '../../domain/entities/dashboard.dart';
 
 class RevenueChartWidget extends StatelessWidget {
-  final List<ChartDataPoint> data;
 
   const RevenueChartWidget({super.key, required this.data});
+  final List<ChartDataPoint> data;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class RevenueChartWidget extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: context.colors.primary.withOpacity(0.15),
+                  color: context.colors.primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -58,7 +58,7 @@ class RevenueChartWidget extends StatelessWidget {
                         drawVerticalLine: false,
                         horizontalInterval: 1,
                         getDrawingHorizontalLine: (value) => FlLine(
-                          color: context.colors.divider.withOpacity(0.3),
+                          color: context.colors.divider.withValues(alpha: 0.3),
                           strokeWidth: 1,
                         ),
                       ),
@@ -104,7 +104,7 @@ class RevenueChartWidget extends StatelessWidget {
                           belowBarData: BarAreaData(
                             show: true,
                             gradient: LinearGradient(
-                              colors: [context.colors.primary.withOpacity(0.3), context.colors.primary.withOpacity(0.0)],
+                              colors: [context.colors.primary.withValues(alpha: 0.3), context.colors.primary.withValues(alpha: 0.0)],
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                             ),

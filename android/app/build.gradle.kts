@@ -4,11 +4,25 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
     id("com.google.gms.google-services")
 }
+import java.util.Properties
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.reader(Charsets.UTF_8).use { reader ->
+        localProperties.load(reader)
+    }
+}
+
+val myCompileSdk: Int = localProperties.getProperty("local.compileSdk")?.toInt() ?: flutter.compileSdkVersion
+val myNdkVersion: String = localProperties.getProperty("local.ndkVersion") ?: flutter.ndkVersion
+val myMinSdk: Int = localProperties.getProperty("local.minSdk")?.toInt() ?: flutter.minSdkVersion
 
 android {
     namespace = "id.muhamadanjar.app"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    compileSdk = myCompileSdk
+    //ndkVersion = flutter.ndkVersion
+    ndkVersion = myNdkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

@@ -35,10 +35,6 @@ final getDashboardUseCaseProvider = Provider<GetDashboardUseCase>((ref) {
 
 // Dashboard State
 class DashboardState {
-  final DashboardData? data;
-  final bool isLoading;
-  final String? errorMessage;
-  final bool isOffline;
 
   const DashboardState({
     this.data,
@@ -46,6 +42,10 @@ class DashboardState {
     this.errorMessage,
     this.isOffline = false,
   });
+  final DashboardData? data;
+  final bool isLoading;
+  final String? errorMessage;
+  final bool isOffline;
 
   DashboardState copyWith({
     DashboardData? data,
@@ -64,9 +64,9 @@ class DashboardState {
 
 // Dashboard Notifier
 class DashboardNotifier extends StateNotifier<DashboardState> {
-  final GetDashboardUseCase _getDashboardUseCase;
 
   DashboardNotifier(this._getDashboardUseCase) : super(const DashboardState());
+  final GetDashboardUseCase _getDashboardUseCase;
 
   Future<void> loadDashboard({bool forceRefresh = false}) async {
     state = state.copyWith(isLoading: true, errorMessage: null);

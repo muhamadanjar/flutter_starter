@@ -5,9 +5,9 @@ import '../../../../core/utils/date_formatter.dart';
 import '../../domain/entities/dashboard.dart';
 
 class RecentActivityWidget extends StatelessWidget {
-  final List<RecentActivity> activities;
 
   const RecentActivityWidget({super.key, required this.activities});
+  final List<RecentActivity> activities;
 
   @override
   Widget build(BuildContext context) {
@@ -57,9 +57,9 @@ class RecentActivityWidget extends StatelessWidget {
 }
 
 class _ActivityItem extends StatelessWidget {
-  final RecentActivity activity;
 
   const _ActivityItem({required this.activity});
+  final RecentActivity activity;
 
   Color _getTypeColor(BuildContext context) {
     switch (activity.type) {
@@ -101,7 +101,7 @@ class _ActivityItem extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: _getTypeColor(context).withOpacity(0.15),
+              color: _getTypeColor(context).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Icon(_getTypeIcon(), color: _getTypeColor(context), size: 20),

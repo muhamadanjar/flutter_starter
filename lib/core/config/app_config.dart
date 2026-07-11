@@ -23,7 +23,7 @@ class AppConfig {
 
   /// Staging environment
   static const staging = AppConfig(
-    baseUrl: 'https://staging-api.example.com/api',
+    baseUrl: 'http://192.168.1.3:8070',
     apiVersion: 'v1',
     environment: 'staging',
     debugMode: false,
