@@ -314,7 +314,7 @@ class _QuickActions extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               _ActionButton(
-                icon: Icons.lock_outline_rounded,
+                icon: Icons.map,
                 label: 'Map',
                 onTap: () => context.push('/map'),
               ),
