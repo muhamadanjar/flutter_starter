@@ -1,12 +1,14 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
     id("com.google.gms.google-services")
 }
-import java.util.Properties
 
 val localProperties = Properties()
+
 val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
     localPropertiesFile.reader(Charsets.UTF_8).use { reader ->
@@ -14,9 +16,26 @@ if (localPropertiesFile.exists()) {
     }
 }
 
+val keystoreProperties = Properties()
+
+val keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.reader(Charsets.UTF_8).use { reader ->
+        keystoreProperties.load(reader)
+    }
+}
+
+val hasReleaseKeystore = keystoreProperties.getProperty("storeFile") != null
+
+/** Expands a leading `~` (Gradle's file() does not). */
+fun expandHome(path: String): String =
+    if (path.startsWith("~")) System.getProperty("user.home") + path.substring(1) else path
+
+
 val myCompileSdk: Int = localProperties.getProperty("local.compileSdk")?.toInt() ?: flutter.compileSdkVersion
 val myNdkVersion: String = localProperties.getProperty("local.ndkVersion") ?: flutter.ndkVersion
 val myMinSdk: Int = localProperties.getProperty("local.minSdk")?.toInt() ?: flutter.minSdkVersion
+val myTargetSdk: Int = localProperties.getProperty("local.targetSdk")?.toInt() ?: flutter.targetSdkVersion
 
 android {
     namespace = "id.muhamadanjar.app"
@@ -35,16 +54,31 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = myMinSdk
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = myTargetSdk
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (hasReleaseKeystore) {
+            create("release") {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = file(expandHome(keystoreProperties.getProperty("storeFile")))
+                storePassword = keystoreProperties.getProperty("storePassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Falls back to debug signing when key.properties is absent,
+            // so `flutter run --release` still works on machines without the keystore.
+            signingConfig = if (hasReleaseKeystore) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 }

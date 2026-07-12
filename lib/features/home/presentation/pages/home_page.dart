@@ -135,6 +135,12 @@ class _HomeBanner extends StatelessWidget {
             onTap: () => context.push('/notifications'),
           ),
           BannerItem(
+            title: 'Map',
+            subtitle: 'Explore layers around your current location.',
+            icon: Icons.map_outlined,
+            onTap: () => context.push('/map'),
+          ),
+          BannerItem(
             title: 'Your Profile',
             subtitle: 'Keep your personal info and avatar up to date.',
             icon: Icons.person_outline_rounded,
@@ -305,6 +311,12 @@ class _QuickActions extends StatelessWidget {
                 icon: Icons.lock_outline_rounded,
                 label: 'Password',
                 onTap: () => context.go('/change-password'),
+              ),
+              const SizedBox(width: 12),
+              _ActionButton(
+                icon: Icons.lock_outline_rounded,
+                label: 'Map',
+                onTap: () => context.push('/map'),
               ),
             ],
           ),

@@ -9,6 +9,7 @@ import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/dev/presentation/pages/form_gallery_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
+import '../../features/map/presentation/pages/map_page.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/profile/presentation/pages/change_password_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
@@ -59,6 +60,11 @@ GoRouter createRouter(Ref ref) {
         path: '/dev/form-gallery',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const FormGalleryPage(),
+      ),
+      GoRoute(
+        path: '/map',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const MapPage(),
       ),
       GoRoute(
         path: '/notifications',

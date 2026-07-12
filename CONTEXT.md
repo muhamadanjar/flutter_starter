@@ -62,6 +62,24 @@ _Avoid_: `Custom*` prefix for new form widgets (legacy prefix; only `CustomTextF
 `ExternalDioClient` — the Dio client for third-party APIs, one instance per external API with its own base URL and headers. Carries no app auth (no Bearer token, no refresh) and no AppConfig coupling, but maps errors to the same app exceptions as the internal client. The internal API keeps using `DioClient`.
 _Avoid_: reusing `DioClient` for third-party hosts (it attaches the app Bearer token and refresh flow)
 
+### Map
+
+**MapView**:
+The shared, reusable map widget (`features/map`). Renders the selected Basemap plus visible Overlay Layers, and handles Get-Info taps. Pages embed it; `MapPage` is just the full-screen route wrapper around it.
+
+**Basemap**:
+The built-in background tile layer (OSM, Esri Imagery, Esri Streets, Carto Light). Exactly one is active; the choice persists across sessions. Not part of the Layer Catalog.
+
+**Layer Catalog**:
+The list of overlay layers served by the tile server (`GET /api/v1/layers`). Each entry has a `layer_type` (raster tile, MVT vector tile, WMS, esri MapServer); unknown types are listed but not renderable.
+_Avoid_: treating basemaps as catalog layers
+
+**Overlay Layer**:
+A catalog layer currently toggled visible on top of the Basemap. Visibility is session-only.
+
+**Get-Info**:
+Tap-to-identify. A map tap queries every visible Overlay Layer at that point via the tile server (`/features?lon&lat`, which also proxies esri identify) and shows attributes grouped per layer.
+
 ### Implementation Notes
 
 **Token Refresh Mutex**:

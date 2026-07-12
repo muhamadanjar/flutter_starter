@@ -5,9 +5,9 @@ import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 
 class OfflineBanner extends ConsumerWidget {
-  final Widget child;
 
   const OfflineBanner({super.key, required this.child});
+  final Widget child;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

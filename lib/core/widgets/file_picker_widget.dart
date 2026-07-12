@@ -8,19 +8,9 @@ typedef OnFilePicked = void Function(XFile file);
 typedef OnFileRemoved = void Function();
 
 class FilePickerWidget extends StatefulWidget {
-  final String label;
-  final String? hint;
-  final OnFilePicked onFilePicked;
-  final OnFileRemoved? onFileRemoved;
-  final double maxFileSizeMB;
-  final bool allowCamera;
-  final bool allowGallery;
-  final bool isLoading;
-  final String? errorMessage;
-  final String? selectedFileName;
 
   const FilePickerWidget({
-    Key? key,
+    super.key,
     required this.label,
     this.hint,
     required this.onFilePicked,
@@ -31,7 +21,17 @@ class FilePickerWidget extends StatefulWidget {
     this.isLoading = false,
     this.errorMessage,
     this.selectedFileName,
-  }) : super(key: key);
+  });
+  final String label;
+  final String? hint;
+  final OnFilePicked onFilePicked;
+  final OnFileRemoved? onFileRemoved;
+  final double maxFileSizeMB;
+  final bool allowCamera;
+  final bool allowGallery;
+  final bool isLoading;
+  final String? errorMessage;
+  final String? selectedFileName;
 
   @override
   State<FilePickerWidget> createState() => _FilePickerWidgetState();

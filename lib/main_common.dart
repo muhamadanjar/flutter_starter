@@ -7,12 +7,16 @@ import 'package:enterprise_flutter_app/core/providers/config_provider.dart';
 import 'package:enterprise_flutter_app/core/services/firebase_service.dart';
 import 'package:enterprise_flutter_app/core/storage/preferences/index.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 /// Common initialization logic for all flavors
 Future<void> mainCommon(AppConfig config) async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load .env (optional; providers fall back to defaults when absent)
+  await _loadEnv();
 
   // Initialize Hive for local storage
   await _initializeHive();
@@ -31,6 +35,14 @@ Future<void> mainCommon(AppConfig config) async {
       child: const App(),
     ),
   );
+}
+
+Future<void> _loadEnv() async {
+  try {
+    await dotenv.load();
+  } catch (_) {
+    // .env missing (e.g. CI) — dotenv stays empty, defaults apply.
+  }
 }
 
 Future<void> _initializeHive() async {

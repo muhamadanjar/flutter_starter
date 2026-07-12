@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="enterprise_flutter_app"
+        android:label="Flutter App"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -30,6 +30,10 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Required by vector_map_tiles v10 (MVT layers render via Flutter GPU) -->
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableFlutterGPU"
+            android:value="true" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

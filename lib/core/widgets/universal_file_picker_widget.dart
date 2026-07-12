@@ -18,16 +18,6 @@ typedef OnFilePicked = void Function(XFile file);
 typedef OnFileRemoved = void Function();
 
 class UniversalFilePickerWidget extends StatefulWidget {
-  final String label;
-  final String? hint;
-  final OnFilePicked onFilePicked;
-  final OnFileRemoved? onFileRemoved;
-  final FilePickerType pickerType;
-  final double maxFileSizeMB;
-  final bool isLoading;
-  final String? errorMessage;
-  final String? selectedFileName;
-  final List<String>? customAllowedExtensions;
 
   const UniversalFilePickerWidget({
     Key? key,
@@ -42,6 +32,16 @@ class UniversalFilePickerWidget extends StatefulWidget {
     this.selectedFileName,
     this.customAllowedExtensions,
   }) : super(key: key);
+  final String label;
+  final String? hint;
+  final OnFilePicked onFilePicked;
+  final OnFileRemoved? onFileRemoved;
+  final FilePickerType pickerType;
+  final double maxFileSizeMB;
+  final bool isLoading;
+  final String? errorMessage;
+  final String? selectedFileName;
+  final List<String>? customAllowedExtensions;
 
   @override
   State<UniversalFilePickerWidget> createState() => _UniversalFilePickerWidgetState();

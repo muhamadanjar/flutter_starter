@@ -35,6 +35,9 @@ class UserPref extends PrefGroup {
   late final Pref<String> longitude = pref<String>('longitude', '');
   late final Pref<int> locationTimestamp = pref<int>('location_timestamp', 0);
 
+  // Map preferences
+  late final Pref<String> basemap = pref<String>('basemap', 'osm');
+
   /// Clear auth data (logout)
   Future<void> clearAuth() async {
     await userId.delete();

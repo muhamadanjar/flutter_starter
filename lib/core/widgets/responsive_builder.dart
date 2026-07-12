@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 enum ScreenSize { mobile, tablet, desktop }
 
 class ResponsiveBuilder extends StatelessWidget {
-  final Widget Function(BuildContext context, ScreenSize screenSize) builder;
 
   const ResponsiveBuilder({super.key, required this.builder});
+  final Widget Function(BuildContext context, ScreenSize screenSize) builder;
 
   static ScreenSize getScreenSize(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
