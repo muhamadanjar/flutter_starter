@@ -22,6 +22,8 @@ class _FormGalleryPageState extends State<FormGalleryPage> {
   bool _agreed = false;
   List<String> _channels = [];
   String? _country;
+  AppFormOption<String>? _city;
+  AppFormOption<int>? _user;
   DateTime? _birthDate;
   DateTime? _appointment;
   XFile? _attachment;
@@ -43,6 +45,28 @@ class _FormGalleryPageState extends State<FormGalleryPage> {
     AppFormOption(value: 'sg', label: 'Singapore'),
     AppFormOption(value: 'my', label: 'Malaysia'),
   ];
+
+  static const _cityOptions = [
+    AppFormOption(value: 'jkt', label: 'Jakarta'),
+    AppFormOption(value: 'bdg', label: 'Bandung'),
+    AppFormOption(value: 'sby', label: 'Surabaya'),
+    AppFormOption(value: 'mdn', label: 'Medan'),
+    AppFormOption(value: 'dps', label: 'Denpasar'),
+    AppFormOption(value: 'yog', label: 'Yogyakarta'),
+    AppFormOption(value: 'smg', label: 'Semarang'),
+    AppFormOption(value: 'mks', label: 'Makassar'),
+  ];
+
+  // Simulated server-side search; replace with a real API call in features.
+  Future<List<AppFormOption<int>>> _searchUsers(String query) async {
+    await Future.delayed(const Duration(milliseconds: 600));
+    final all = List.generate(
+      50,
+      (i) => AppFormOption(value: i, label: 'User ${i + 1}'),
+    );
+    final lower = query.toLowerCase();
+    return all.where((o) => o.label.toLowerCase().contains(lower)).toList();
+  }
 
   void _submit() {
     final valid = _formKey.currentState!.validate();
@@ -89,6 +113,23 @@ class _FormGalleryPageState extends State<FormGalleryPage> {
               options: _countryOptions,
               onChanged: (v) => setState(() => _country = v),
               validator: (v) => v == null ? 'Country is required' : null,
+            ),
+            const SizedBox(height: 24),
+            AppSearchableDropdown<String>(
+              label: 'City (searchable, local)',
+              hint: 'Search city',
+              value: _city,
+              options: _cityOptions,
+              onChanged: (v) => setState(() => _city = v),
+              validator: (v) => v == null ? 'City is required' : null,
+            ),
+            const SizedBox(height: 24),
+            AppSearchableDropdown<int>(
+              label: 'User (searchable, server-side)',
+              hint: 'Search user',
+              value: _user,
+              onSearch: _searchUsers,
+              onChanged: (v) => setState(() => _user = v),
             ),
             const SizedBox(height: 24),
             AppDatePicker(

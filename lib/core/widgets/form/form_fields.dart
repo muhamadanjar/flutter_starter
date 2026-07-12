@@ -11,3 +11,4 @@ export 'app_file_picker_form_field.dart';
 export 'app_form_field_scaffold.dart';
 export 'app_form_option.dart';
 export 'app_radio_group.dart';
+export 'app_searchable_dropdown.dart';

@@ -15,4 +15,16 @@ class AppFormOption<T> {
   final String label;
   final bool enabled;
   final Widget? icon;
+
+  // Value-based equality so controlled fields recognize a re-created option
+  // (e.g. rebuilt from server results) as the same selection.
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AppFormOption<T> &&
+          other.value == value &&
+          other.label == label;
+
+  @override
+  int get hashCode => Object.hash(value, label);
 }
