@@ -53,8 +53,14 @@ _Avoid_: onboarding slider (this is not a first-run onboarding flow; it never di
 ### Forms
 
 **Form Field Family**:
-The `App*`-prefixed controlled form widgets (radio group, checkbox, checkbox group, dropdown, date picker, datetime picker, file picker form field). Controlled means the parent owns the value and receives changes via `onChanged`; the widgets themselves hold no selection state. All share one visual chrome (label above, error below) and one option type for list-based fields.
+The `App*`-prefixed controlled form widgets (radio group, checkbox, checkbox group, dropdown, searchable dropdown, date picker, datetime picker, file picker form field). Controlled means the parent owns the value and receives changes via `onChanged`; the widgets themselves hold no selection state. All share one visual chrome (label above, error below) and one option type for list-based fields.
 _Avoid_: `Custom*` prefix for new form widgets (legacy prefix; only `CustomTextField`/`CustomButton` keep it)
+
+### Networking
+
+**External API Client**:
+`ExternalDioClient` — the Dio client for third-party APIs, one instance per external API with its own base URL and headers. Carries no app auth (no Bearer token, no refresh) and no AppConfig coupling, but maps errors to the same app exceptions as the internal client. The internal API keeps using `DioClient`.
+_Avoid_: reusing `DioClient` for third-party hosts (it attaches the app Bearer token and refresh flow)
 
 ### Implementation Notes
 
