@@ -1,3 +1,4 @@
+import 'package:enterprise_flutter_app/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -75,6 +76,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   Widget build(BuildContext context) {
     final state = ref.watch(profileProvider);
 
+    final t = AppLocalizations.of(context);
+
     ref.listen<ProfileState>(profileProvider, (prev, next) {
       if (next.successMessage != null && next.successMessage != prev?.successMessage) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -104,7 +107,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(t.profileName),
         actions: [
           if (!_isEditing)
             TextButton.icon(

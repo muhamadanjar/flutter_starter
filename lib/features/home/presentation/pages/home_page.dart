@@ -6,6 +6,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/widgets/app_banner_carousel.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../auth/domain/entities/user.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../notifications/presentation/providers/notification_provider.dart';
@@ -29,6 +30,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authProvider).user;
+    final t = AppLocalizations.of(context);
 
     return Scaffold(
       body: RefreshIndicator(
@@ -46,7 +48,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               flexibleSpace: FlexibleSpaceBar(
                 titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
                 title: Text(
-                  'Home',
+                  t.navigationHome,
                   style: AppTypography.headlineSmall.copyWith(color: context.colors.textPrimary),
                 ),
               ),
