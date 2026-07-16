@@ -373,6 +373,7 @@ flutter pub run build_runner build --delete-conflicting-outputs
 | Dependencies | `PACKAGE_UPGRADE_ROADMAP.md` | Dependency strategy |
 | Firebase | `FIREBASE_SETUP.md` | Push notifications |
 | Integration | `DEPENDENCY_AUDIT.md` | Migration history |
+| Track Record | `TRACK_RECORD_GUIDE.md` | Offline GPS tracking + sync outbox |
 
 ### Documentation Checklist
 
@@ -432,6 +433,7 @@ Links
 - PACKAGE_UPGRADE_ROADMAP.md - Upgrade strategy
 - DEPENDENCY_AUDIT.md - Package migrations
 - PRIORITY1_UPDATES.md - Completed updates
+- TRACK_RECORD_GUIDE.md - Offline GPS tracking & sync outbox
 
 ## Known Issues & Fixes
 
