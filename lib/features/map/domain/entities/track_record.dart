@@ -1,5 +1,12 @@
 import 'dart:math';
 
+/// Sync state of a track record in the local outbox.
+///
+/// `pending`  — created/updated locally, not yet pushed to the server.
+/// `synced`   — successfully delivered to the server.
+/// `failed`   — a sync attempt failed and should be retried.
+enum SyncStatus { pending, synced, failed }
+
 /// A single GPS sample captured during a tracking session (SW Maps-style).
 class TrackPoint {
   const TrackPoint({
@@ -28,6 +35,8 @@ class TrackRecord {
     required this.createdAt,
     this.updatedAt,
     required this.points,
+    this.syncStatus = SyncStatus.pending,
+    this.syncedAt,
   });
 
   final String id;
@@ -36,6 +45,11 @@ class TrackRecord {
   final DateTime createdAt;
   final DateTime? updatedAt;
   final List<TrackPoint> points;
+
+  /// Local outbox state. New records default to [SyncStatus.pending] so they
+  /// are picked up by the sync queue once the device is online.
+  final SyncStatus syncStatus;
+  final DateTime? syncedAt;
 
   /// Total distance in meters, summed between consecutive points
   /// using the haversine formula.
@@ -66,6 +80,8 @@ class TrackRecord {
     DateTime? createdAt,
     DateTime? updatedAt,
     List<TrackPoint>? points,
+    SyncStatus? syncStatus,
+    DateTime? syncedAt,
   }) {
     return TrackRecord(
       id: id ?? this.id,
@@ -74,6 +90,8 @@ class TrackRecord {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       points: points ?? this.points,
+      syncStatus: syncStatus ?? this.syncStatus,
+      syncedAt: syncedAt ?? this.syncedAt,
     );
   }
 }

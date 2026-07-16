@@ -7,6 +7,7 @@ import '../../../../core/logger/index.dart';
 import '../providers/map_providers.dart';
 import 'feature_info_sheet.dart';
 import 'layer_panel_sheet.dart';
+import 'map_zoom_controls.dart';
 import 'overlay_layers.dart';
 
 /// Shared, reusable map widget.
@@ -158,6 +159,7 @@ class _MapViewState extends ConsumerState<MapView> {
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
           ),
+        MapZoomControls(controller: _mapController),
       ],
     );
   }

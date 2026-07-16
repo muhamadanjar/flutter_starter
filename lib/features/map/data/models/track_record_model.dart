@@ -39,6 +39,8 @@ class TrackRecordModel extends TrackRecord {
     required super.createdAt,
     super.updatedAt,
     required super.points,
+    super.syncStatus,
+    super.syncedAt,
   });
 
   factory TrackRecordModel.fromJson(Map<String, dynamic> json) {
@@ -54,6 +56,10 @@ class TrackRecordModel extends TrackRecord {
       points: rawPoints
           .map((e) => TrackPointModel.fromJson(Map<String, dynamic>.from(e)))
           .toList(),
+      syncStatus: _parseStatus(json['syncStatus']),
+      syncedAt: json['syncedAt'] == null
+          ? null
+          : DateTime.parse(json['syncedAt'] as String),
     );
   }
 
@@ -74,6 +80,8 @@ class TrackRecordModel extends TrackRecord {
                 timestamp: p.timestamp,
               ))
           .toList(),
+      syncStatus: record.syncStatus,
+      syncedAt: record.syncedAt,
     );
   }
 
@@ -84,6 +92,8 @@ class TrackRecordModel extends TrackRecord {
         'createdAt': createdAt.toIso8601String(),
         'updatedAt': updatedAt?.toIso8601String(),
         'points': points.map((p) => (p as TrackPointModel).toJson()).toList(),
+        'syncStatus': syncStatus.name,
+        'syncedAt': syncedAt?.toIso8601String(),
       };
 
   TrackRecord toEntity() => TrackRecord(
@@ -93,5 +103,17 @@ class TrackRecordModel extends TrackRecord {
         createdAt: createdAt,
         updatedAt: updatedAt,
         points: points,
+        syncStatus: syncStatus,
+        syncedAt: syncedAt,
       );
+
+  static SyncStatus _parseStatus(dynamic raw) {
+    if (raw is String) {
+      return SyncStatus.values.firstWhere(
+        (s) => s.name == raw,
+        orElse: () => SyncStatus.pending,
+      );
+    }
+    return SyncStatus.pending;
+  }
 }

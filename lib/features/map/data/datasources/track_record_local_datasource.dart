@@ -28,6 +28,15 @@ abstract class TrackRecordLocalDataSource {
   Future<void> saveTrack(TrackRecord track);
   Future<void> deleteTrack(String trackId);
   Future<void> clear();
+
+  /// Mark a record as successfully delivered to the server.
+  Future<void> markSynced(String trackId);
+
+  /// Mark a record whose sync attempt failed (will be retried later).
+  Future<void> markFailed(String trackId);
+
+  /// Records waiting to be pushed to the server (pending or failed).
+  Future<List<TrackRecord>> getPending();
 }
 
 class TrackRecordLocalDataSourceImpl implements TrackRecordLocalDataSource {
@@ -128,7 +137,10 @@ class TrackRecordLocalDataSourceImpl implements TrackRecordLocalDataSource {
 
   @override
   Future<void> saveTrack(TrackRecord track) async {
-    final model = TrackRecordModel.fromEntity(track);
+    // Any local edit re-queues the record for sync.
+    final model = TrackRecordModel.fromEntity(
+      track.copyWith(syncStatus: SyncStatus.pending, syncedAt: null),
+    );
     final tracks = List<TrackRecordModel>.from(_readAll());
     final idx = tracks.indexWhere((t) => t.id == model.id);
     if (idx == -1) {
@@ -137,6 +149,41 @@ class TrackRecordLocalDataSourceImpl implements TrackRecordLocalDataSource {
       tracks[idx] = model;
     }
     await _writeAll(tracks);
+  }
+
+  /// Mark a record as successfully delivered to the server.
+  @override
+  Future<void> markSynced(String trackId) async {
+    final tracks = List<TrackRecordModel>.from(_readAll());
+    final idx = tracks.indexWhere((t) => t.id == trackId);
+    if (idx == -1) return;
+    tracks[idx] = tracks[idx].copyWith(
+      syncStatus: SyncStatus.synced,
+      syncedAt: DateTime.now(),
+    ) as TrackRecordModel;
+    await _writeAll(tracks);
+  }
+
+  /// Mark a record whose sync attempt failed (will be retried later).
+  @override
+  Future<void> markFailed(String trackId) async {
+    final tracks = List<TrackRecordModel>.from(_readAll());
+    final idx = tracks.indexWhere((t) => t.id == trackId);
+    if (idx == -1) return;
+    tracks[idx] = tracks[idx].copyWith(
+      syncStatus: SyncStatus.failed,
+    ) as TrackRecordModel;
+    await _writeAll(tracks);
+  }
+
+  /// Records waiting to be pushed to the server (pending or failed).
+  @override
+  Future<List<TrackRecord>> getPending() async {
+    final pending = _readAll()
+        .where((m) => m.syncStatus != SyncStatus.synced)
+        .toList()
+      ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
+    return pending.map((m) => m.toEntity()).toList();
   }
 
   @override
