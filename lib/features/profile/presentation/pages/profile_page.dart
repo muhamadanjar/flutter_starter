@@ -7,9 +7,9 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/widgets/avatar_upload_widget.dart';
-import '../../../../core/widgets/custom_text_field.dart';
-import '../../../../core/widgets/loading_widget.dart';
 import '../../../../core/widgets/error_widget.dart' as err;
+import '../../../../core/widgets/loading_widget.dart';
+import '../../domain/entities/profile.dart';
 import '../providers/profile_provider.dart';
 
 class ProfilePage extends ConsumerStatefulWidget {
@@ -20,14 +20,6 @@ class ProfilePage extends ConsumerStatefulWidget {
 }
 
 class _ProfilePageState extends ConsumerState<ProfilePage> {
-  final _formKey = GlobalKey<FormState>();
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
-
-  bool _isEditing = false;
-
   @override
   void initState() {
     super.initState();
@@ -37,45 +29,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   }
 
   @override
-  void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    super.dispose();
-  }
-
-  void _populateControllers() {
-    final profile = ref.read(profileProvider).profile;
-    if (profile != null) {
-      // API returns a single display name; split on the first space as a
-      // best-effort prefill for the first_name/last_name fields.
-      final nameParts = profile.name.trim().split(RegExp(r'\s+'));
-      _firstNameController.text = nameParts.isNotEmpty ? nameParts.first : '';
-      _lastNameController.text = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
-      _emailController.text = profile.email;
-      _phoneController.text = profile.phone ?? '';
-    }
-  }
-
-  Future<void> _onSave() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    // PUT /auth/profile only accepts these fields (ProfileUpdateRequest)
-    await ref.read(profileProvider.notifier).updateProfile({
-      'first_name': _firstNameController.text.trim(),
-      'last_name': _lastNameController.text.trim(),
-      'email': _emailController.text.trim(),
-      'phone': _phoneController.text.trim(),
-    });
-
-    setState(() => _isEditing = false);
-  }
-
-  @override
   Widget build(BuildContext context) {
     final state = ref.watch(profileProvider);
-
     final t = AppLocalizations.of(context);
 
     ref.listen<ProfileState>(profileProvider, (prev, next) {
@@ -99,30 +54,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           ),
         );
       }
-      // Populate controllers when profile loads
-      if (next.profile != null && prev?.profile == null) {
-        _populateControllers();
-      }
     });
 
     return Scaffold(
       appBar: AppBar(
         title: Text(t.profileName),
         actions: [
-          if (!_isEditing)
-            TextButton.icon(
-              onPressed: () {
-                _populateControllers();
-                setState(() => _isEditing = true);
-              },
-              icon: const Icon(Icons.edit_rounded, size: 18),
-              label: const Text('Edit'),
-            )
-          else
-            TextButton.icon(
-              onPressed: _onSave,
-              icon: const Icon(Icons.check_rounded, size: 18),
-              label: const Text('Save'),
+          if (state.profile != null)
+            IconButton(
+              tooltip: t.profileEdit,
+              onPressed: () => context.go('/edit-profile'),
+              icon: const Icon(Icons.edit_rounded, size: 20),
             ),
         ],
       ),
@@ -145,101 +87,203 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 600),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Avatar Section
-              Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header Card
+            Card(
+              elevation: 0,
+              color: context.colors.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(color: context.colors.divider),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   children: [
-                    AvatarUploadWidget(
-                      currentAvatarUrl: profile.avatarUrl,
-                      size: 96,
-                      padding: EdgeInsets.zero,
-                      // Backend has no avatar-delete endpoint
-                      showRemoveButton: false,
-                      isLoading: state.isLoading,
-                      onImagePicked: (file) => ref.read(profileProvider.notifier).uploadAvatar(file),
+                    Stack(
+                      alignment: Alignment.bottomRight,
+                      children: [
+                        AvatarUploadWidget(
+                          currentAvatarUrl: profile.avatarUrl,
+                          size: 96,
+                          padding: EdgeInsets.zero,
+                          // Backend has no avatar-delete endpoint
+                          showRemoveButton: false,
+                          isLoading: state.isLoading,
+                          onImagePicked: (file) =>
+                              ref.read(profileProvider.notifier).uploadAvatar(file),
+                        ),
+                        if (state.isOffline)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: context.colors.warning.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              'Offline',
+                              style: AppTypography.labelSmall
+                                  .copyWith(color: context.colors.warning),
+                            ),
+                          ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     Text(
                       profile.name,
-                      style: AppTypography.headlineSmall.copyWith(color: context.colors.textPrimary),
+                      style: AppTypography.headlineSmall
+                          .copyWith(color: context.colors.textPrimary),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       profile.email,
-                      style: AppTypography.bodyMedium.copyWith(color: context.colors.textSecondary),
+                      style: AppTypography.bodyMedium
+                          .copyWith(color: context.colors.textSecondary),
                     ),
-                    if (state.isOffline) ...[
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: context.colors.warning.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          'Offline - Cached Data',
-                          style: AppTypography.labelSmall.copyWith(color: context.colors.warning),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
+            ),
+            const SizedBox(height: 24),
 
-              // Form Fields (PUT /auth/profile: first_name, last_name, email, phone)
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomTextField(
-                      label: 'First Name',
-                      hint: 'First name',
-                      controller: _firstNameController,
-                      enabled: _isEditing,
-                      prefixIcon: Icon(Icons.person_outline, color: context.colors.textHint, size: 20),
-                    ),
+            // Bio
+            if (profile.bio != null && profile.bio!.trim().isNotEmpty) ...[
+              const _SectionTitle(label: 'About'),
+              Card(
+                elevation: 0,
+                color: context.colors.surface,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(color: context.colors.divider),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Text(
+                    profile.bio!,
+                    style: AppTypography.bodyMedium
+                        .copyWith(color: context.colors.textSecondary),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: CustomTextField(
-                      label: 'Last Name',
-                      hint: 'Last name',
-                      controller: _lastNameController,
-                      enabled: _isEditing,
-                    ),
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+
+            // Personal Information
+            const _SectionTitle(label: 'Personal Information'),
+            Card(
+              elevation: 0,
+              color: context.colors.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: context.colors.divider),
+              ),
+              child: Column(
+                children: [
+                  _InfoTile(
+                    icon: Icons.phone_outlined,
+                    label: 'Phone',
+                    value: profile.phone ?? '-',
+                  ),
+                  _InfoTile(
+                    icon: Icons.cake_outlined,
+                    label: 'Date of Birth',
+                    value: profile.dateOfBirth != null
+                        ? DateFormatter.formatDate(profile.dateOfBirth!)
+                        : '-',
+                  ),
+                  _InfoTile(
+                    icon: Icons.wc_outlined,
+                    label: 'Gender',
+                    value: profile.gender ?? '-',
+                    isLast: true,
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+            ),
+            const SizedBox(height: 24),
 
-              CustomTextField(
-                label: 'Email',
-                hint: 'Enter your email',
-                controller: _emailController,
-                enabled: _isEditing,
-                keyboardType: TextInputType.emailAddress,
-                prefixIcon: Icon(Icons.email_outlined, color: context.colors.textHint, size: 20),
+            // Address
+            if (_hasAddress(profile)) ...[
+              const _SectionTitle(label: 'Address'),
+              Card(
+                elevation: 0,
+                color: context.colors.surface,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(color: context.colors.divider),
+                ),
+                child: Column(
+                  children: [
+                    if (profile.address != null && profile.address!.trim().isNotEmpty)
+                      _InfoTile(
+                        icon: Icons.location_on_outlined,
+                        label: 'Street',
+                        value: profile.address!,
+                      ),
+                    if (profile.city != null && profile.city!.trim().isNotEmpty)
+                      _InfoTile(
+                        icon: Icons.location_city_outlined,
+                        label: 'City',
+                        value: profile.city!,
+                      ),
+                    if (profile.country != null && profile.country!.trim().isNotEmpty)
+                      _InfoTile(
+                        icon: Icons.public_outlined,
+                        label: 'Country',
+                        value: profile.country!,
+                      ),
+                    if (profile.postalCode != null && profile.postalCode!.trim().isNotEmpty)
+                      _InfoTile(
+                        icon: Icons.markunread_mailbox_outlined,
+                        label: 'Postal Code',
+                        value: profile.postalCode!,
+                        isLast: true,
+                      ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
+            ],
 
-              CustomTextField(
-                label: 'Phone',
-                hint: 'Enter your phone number',
-                controller: _phoneController,
-                enabled: _isEditing,
-                keyboardType: TextInputType.phone,
-                prefixIcon: Icon(Icons.phone_outlined, color: context.colors.textHint, size: 20),
+            // Account
+            const _SectionTitle(label: 'Account'),
+            Card(
+              elevation: 0,
+              color: context.colors.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: context.colors.divider),
               ),
-              const SizedBox(height: 32),
+              child: Column(
+                children: [
+                  _InfoTile(
+                    icon: Icons.badge_outlined,
+                    label: 'User ID',
+                    value: profile.id,
+                  ),
+                  if (profile.createdAt != null)
+                    _InfoTile(
+                      icon: Icons.event_available_outlined,
+                      label: 'Member Since',
+                      value: DateFormatter.formatDate(profile.createdAt!),
+                      isLast: true,
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
 
-              // Change Password
-              ListTile(
-                contentPadding: EdgeInsets.zero,
+            // Change Password
+            Card(
+              elevation: 0,
+              color: context.colors.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: context.colors.divider),
+              ),
+              child: ListTile(
                 leading: Container(
                   width: 44,
                   height: 44,
@@ -249,27 +293,101 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                   ),
                   child: Icon(Icons.lock_outline, color: context.colors.warning, size: 22),
                 ),
-                title: Text('Change Password', style: AppTypography.labelLarge.copyWith(color: context.colors.textPrimary)),
-                subtitle: Text('Update your password', style: AppTypography.bodySmall.copyWith(color: context.colors.textSecondary)),
+                title: Text(
+                  'Change Password',
+                  style: AppTypography.labelLarge
+                      .copyWith(color: context.colors.textPrimary),
+                ),
+                subtitle: Text(
+                  'Update your password',
+                  style: AppTypography.bodySmall
+                      .copyWith(color: context.colors.textSecondary),
+                ),
                 trailing: Icon(Icons.chevron_right, color: context.colors.textHint),
                 onTap: () => context.go('/change-password'),
               ),
-              const SizedBox(height: 16),
+            ),
+            const SizedBox(height: 32),
+          ],
+        ),
+      ),
+    );
+  }
 
-              // Member Since
-              if (profile.createdAt != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    'Member since ${DateFormatter.formatDate(profile.createdAt!)}',
-                    style: AppTypography.bodySmall.copyWith(color: context.colors.textHint),
-                  ),
+  bool _hasAddress(UserProfile p) {
+    return (p.address?.trim().isNotEmpty ?? false) ||
+        (p.city?.trim().isNotEmpty ?? false) ||
+        (p.country?.trim().isNotEmpty ?? false) ||
+        (p.postalCode?.trim().isNotEmpty ?? false);
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.label});
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 12),
+      child: Text(
+        label.toUpperCase(),
+        style: AppTypography.labelSmall.copyWith(
+          color: context.colors.textHint,
+          letterSpacing: 1.2,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoTile extends StatelessWidget {
+  const _InfoTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.isLast = false,
+  });
+  final IconData icon;
+  final String label;
+  final String value;
+  final bool isLast;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Icon(icon, color: context.colors.textHint, size: 20),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: AppTypography.bodySmall
+                          .copyWith(color: context.colors.textSecondary),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      value,
+                      style: AppTypography.bodyMedium
+                          .copyWith(color: context.colors.textPrimary),
+                    ),
+                  ],
                 ),
-              const SizedBox(height: 32),
+              ),
             ],
           ),
         ),
-      ),
+        if (!isLast)
+          Divider(height: 1, thickness: 1, color: context.colors.divider, indent: 52),
+      ],
     );
   }
 }

@@ -12,6 +12,7 @@ import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/map/presentation/pages/map_page.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/profile/presentation/pages/change_password_page.dart';
+import '../../features/profile/presentation/pages/edit_profile_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 import 'shell_with_nav.dart';
@@ -97,6 +98,12 @@ GoRouter createRouter(Ref ref) {
             ),
           ),
           GoRoute(
+            path: '/edit-profile',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: EditProfilePage(),
+            ),
+          ),
+          GoRoute(
             path: '/change-password',
             pageBuilder: (context, state) => const NoTransitionPage(
               child: ChangePasswordPage(),
@@ -117,7 +124,11 @@ GoRouter createRouter(Ref ref) {
 
 int _calculateIndex(GoRouterState state) {
   final path = state.matchedLocation;
-  if (path.startsWith('/profile') || path.startsWith('/change-password')) return 1;
+  if (path.startsWith('/profile') ||
+      path.startsWith('/change-password') ||
+      path.startsWith('/edit-profile')) {
+    return 1;
+  }
   if (path.startsWith('/settings')) return 2;
   return 0;
 }
