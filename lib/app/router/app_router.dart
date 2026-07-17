@@ -62,16 +62,6 @@ GoRouter createRouter(Ref ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const FormGalleryPage(),
       ),
-      GoRoute(
-        path: '/map',
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const MapPage(),
-      ),
-      GoRoute(
-        path: '/notifications',
-        parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const NotificationsPage(),
-      ),
 
       // Shell Routes (with bottom navigation)
       ShellRoute(
@@ -89,6 +79,18 @@ GoRouter createRouter(Ref ref) {
             path: '/home',
             pageBuilder: (context, state) => const NoTransitionPage(
               child: HomePage(),
+            ),
+          ),
+          GoRoute(
+            path: '/map',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: MapPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/notifications',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: NotificationsPage(),
             ),
           ),
           GoRoute(
@@ -124,12 +126,14 @@ GoRouter createRouter(Ref ref) {
 
 int _calculateIndex(GoRouterState state) {
   final path = state.matchedLocation;
+  if (path.startsWith('/map')) return 1;
+  if (path.startsWith('/notifications')) return 2;
   if (path.startsWith('/profile') ||
       path.startsWith('/change-password') ||
       path.startsWith('/edit-profile')) {
-    return 1;
+    return 3;
   }
-  if (path.startsWith('/settings')) return 2;
+  if (path.startsWith('/settings')) return 4;
   return 0;
 }
 
