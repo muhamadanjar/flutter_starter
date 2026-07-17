@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../../core/logger/index.dart';
+import '../../domain/entities/track_record.dart';
 import '../providers/map_providers.dart';
 import 'feature_info_sheet.dart';
 import 'layer_panel_sheet.dart';
@@ -33,6 +34,7 @@ class MapView extends ConsumerStatefulWidget {
     this.controller,
     this.showLayerButton = true,
     this.enableIdentify = true,
+    this.trackPoints = const [],
   });
 
   final LatLng initialCenter;
@@ -45,6 +47,9 @@ class MapView extends ConsumerStatefulWidget {
   final MapController? controller;
   final bool showLayerButton;
   final bool enableIdentify;
+
+  /// GPS samples to draw as a route polyline (track recording playback).
+  final List<TrackPoint> trackPoints;
 
   @override
   ConsumerState<MapView> createState() => _MapViewState();
@@ -125,6 +130,19 @@ class _MapViewState extends ConsumerState<MapView> {
               userAgentPackageName: 'com.enterprise.flutter_app',
             ),
             ...overlays,
+            if (widget.trackPoints.length > 1)
+              PolylineLayer(
+                polylines: [
+                  Polyline(
+                    points: [
+                      for (final p in widget.trackPoints)
+                        LatLng(p.latitude, p.longitude),
+                    ],
+                    strokeWidth: 4,
+                    color: Colors.green,
+                  ),
+                ],
+              ),
             if (widget.myLocation != null)
               MarkerLayer(
                 markers: [

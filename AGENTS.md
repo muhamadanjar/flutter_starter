@@ -282,7 +282,17 @@ See **[ADAPTIVE_LAYOUTS.md](docs/ADAPTIVE_LAYOUTS.md)** for complete guide.
 
 ## Architecture
 
-**Clean Architecture** separates code into Domain (business logic), Data (sources), and Presentation (UI). See **[CLEAN_ARCHITECTURE.md](docs/CLEAN_ARCHITECTURE.md)** for detailed guide.
+**System Design (MANDATORY — do not change):** This project consistently uses **Clean Architecture + Domain-Driven Design (DDD)**. This is the fixed standard for every feature; do not switch to another pattern (MVC, MVP, pure BLoC, database-driven, etc.) without explicit approval.
+
+- **Clean Architecture** separates code into 3 layers per feature:
+  - `domain/` — entities, repository interfaces, usecases (business rules, must **not** depend on DB/API/UI)
+  - `data/` — models, datasources, repository implementations
+  - `presentation/` — pages, widgets, providers (UI)
+- **Domain-Driven Design (DDD)** fills the domain layer: entities are rich in behavior (not anemic/empty data classes), repositories are interfaces defined in the domain, implemented in the data layer.
+- **NOT data-driven:** the architecture is guided by business rules in the domain, not by database table structure. Do not place business logic in controllers/UI or create behavior-less entities.
+
+Dependency rule: Presentation → Domain ← Data (the Domain must not depend on any other layer).
+See **[CLEAN_ARCHITECTURE.md](docs/CLEAN_ARCHITECTURE.md)** for the detailed guide.
 
 ---
 

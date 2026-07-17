@@ -6,7 +6,10 @@ import 'package:latlong2/latlong.dart';
 import '../../../../core/logger/index.dart';
 import '../../../../core/services/gps_service.dart';
 import '../../../../core/storage/preferences/pref_providers.dart';
+import '../../domain/entities/track_record.dart';
 import '../widgets/map_view.dart';
+import '../widgets/track_list_sheet.dart';
+import '../widgets/track_record_fab.dart';
 
 /// Full-screen map page. Initial camera resolution, 3 tiers:
 /// 1. cached location from UserPref (written by LocationSyncService),
@@ -31,6 +34,7 @@ class _MapPageState extends ConsumerState<MapPage> {
   late double _initialZoom;
   LatLng? _myLocation;
   bool _locating = false;
+  List<TrackPoint> _trackPoints = const [];
 
   @override
   void initState() {
@@ -82,25 +86,49 @@ class _MapPageState extends ConsumerState<MapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Map')),
+      appBar: AppBar(
+        title: const Text('Map'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.route_outlined),
+            tooltip: 'Track records',
+            onPressed: () => showTrackListSheet(
+              context,
+              onSelected: (track) =>
+                  setState(() => _trackPoints = track.points),
+            ),
+          ),
+        ],
+      ),
       body: MapView(
         controller: _mapController,
         initialCenter: _initialCenter,
         initialZoom: _initialZoom,
         myLocation: _myLocation,
+        trackPoints: _trackPoints,
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'map-recenter',
-        tooltip: 'My location',
-        onPressed:
-            _locating ? null : () => _acquireGpsFix(userRequested: true),
-        child: _locating
-            ? const SizedBox(
-                width: 22,
-                height: 22,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : const Icon(Icons.my_location),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          TrackRecordFab(
+            onPointsChanged: (pts) => setState(() => _trackPoints = pts),
+          ),
+          const SizedBox(height: 12),
+          FloatingActionButton(
+            heroTag: 'map-recenter',
+            tooltip: 'My location',
+            onPressed:
+                _locating ? null : () => _acquireGpsFix(userRequested: true),
+            child: _locating
+                ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Icon(Icons.my_location),
+          ),
+        ],
       ),
     );
   }
