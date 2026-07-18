@@ -9,6 +9,8 @@ import '../../../../core/widgets/app_banner_carousel.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/domain/entities/user.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../news/presentation/providers/article_provider.dart';
+import '../../../news/presentation/widgets/article_card.dart';
 import '../../../notifications/presentation/providers/notification_provider.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -24,6 +26,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(notificationListProvider.notifier).loadInitial();
+      ref.read(articleListProvider.notifier).loadInitial();
     });
   }
 
@@ -56,6 +59,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             SliverToBoxAdapter(child: _GreetingHeader(user: user)),
             const SliverToBoxAdapter(child: _HomeBanner()),
             const SliverToBoxAdapter(child: _NotificationCard()),
+            const SliverToBoxAdapter(child: _NewsSection()),
             const SliverToBoxAdapter(child: _QuickActions()),
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],
@@ -275,6 +279,76 @@ class _NotificationCard extends ConsumerWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _NewsSection extends ConsumerWidget {
+  const _NewsSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(articleListProvider);
+    final colors = context.colors;
+    final recent = state.items.take(5).toList();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Icon(Icons.article_outlined, color: colors.primary, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'News',
+                    style: AppTypography.labelLarge
+                        .copyWith(color: colors.textPrimary),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => context.push('/news'),
+                  child: Text(
+                    'See all',
+                    style: AppTypography.labelSmall
+                        .copyWith(color: colors.primary),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          if (state.isLoading && state.items.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            )
+          else if (recent.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                'No articles yet.',
+                style: AppTypography.bodySmall.copyWith(color: colors.textHint),
+              ),
+            )
+          else
+            SizedBox(
+              height: 250,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                itemCount: recent.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 12),
+                itemBuilder: (context, index) =>
+                    SizedBox(width: 280, child: ArticleCard(article: recent[index])),
+              ),
+            ),
+        ],
       ),
     );
   }

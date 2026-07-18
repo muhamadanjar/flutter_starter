@@ -13,6 +13,7 @@ class ApiConstants {
   static const String authMetas = '/auth/metas';
   static const String notifications = '/notifications';
   static const String notificationsReadAll = '/notifications/read-all';
+  static const String news = '/news';
 
   static Duration connectTimeout = const Duration(seconds: 30);
   static Duration receiveTimeout = const Duration(seconds: 30);

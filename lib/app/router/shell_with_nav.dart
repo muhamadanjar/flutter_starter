@@ -44,6 +44,12 @@ final List<_NavItem> _destinations = [
     label: 'Map',
   ),
   _NavItem(
+    route: '/news',
+    icon: Icons.article_outlined,
+    selectedIcon: Icons.article_rounded,
+    label: 'News',
+  ),
+  _NavItem(
     route: '/notifications',
     icon: Icons.notifications_outlined,
     selectedIcon: Icons.notifications_rounded,
@@ -83,6 +89,13 @@ class ShellWithNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final location = GoRouterState.of(context).matchedLocation;
+    final isMobile = ResponsiveBuilder.isMobile(context);
+    // Hide the floating menu button when a permanent rail is shown
+    // (tablet/desktop) or when the page already has a back button (profile
+    // sub-pages) to avoid overlapping the AppBar leading control.
+    final showMenuButton = isMobile && !_hasBackButton(location);
+
     final layout = ResponsiveBuilder(
       builder: (context, screenSize) {
         if (screenSize == ScreenSize.desktop) {
@@ -104,25 +117,33 @@ class ShellWithNavigation extends StatelessWidget {
       body: Stack(
         children: [
           layout,
-          // Top-left menu button opens the navigation drawer on all layouts.
-          Positioned(
-            top: 12,
-            left: 12,
-            child: SafeArea(
-              child: FloatingActionButton.small(
-                heroTag: 'shell-menu',
-                tooltip: 'Menu',
-                backgroundColor: context.colors.surface,
-                foregroundColor: context.colors.textPrimary,
-                elevation: 2,
-                onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-                child: const Icon(Icons.menu_rounded),
+          if (showMenuButton)
+            // Top-left menu button opens the navigation drawer (mobile only).
+            Positioned(
+              top: 12,
+              left: 12,
+              child: SafeArea(
+                child: FloatingActionButton.small(
+                  heroTag: 'shell-menu',
+                  tooltip: 'Menu',
+                  backgroundColor: context.colors.surface,
+                  foregroundColor: context.colors.textPrimary,
+                  elevation: 2,
+                  onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+                  child: const Icon(Icons.menu_rounded),
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
+  }
+
+  /// Routes that render their own AppBar back button (left-aligned leading).
+  bool _hasBackButton(String location) {
+    return location.startsWith('/profile') ||
+        location.startsWith('/edit-profile') ||
+        location.startsWith('/change-password');
   }
 
   Widget _buildMobileLayout(BuildContext context) {

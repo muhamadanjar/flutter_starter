@@ -137,12 +137,13 @@ class _MapPageState extends ConsumerState<MapPage> {
             trackPoints: _trackPoints,
           ),
 
-          // Top status chips — minimal, non-intrusive.
+          // Top status chips — sit below the top-left menu button on mobile
+          // to avoid overlap; safe offset on all layouts.
           SafeArea(
             child: Align(
               alignment: Alignment.topLeft,
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.only(top: 64, left: 12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

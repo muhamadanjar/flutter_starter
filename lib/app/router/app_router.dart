@@ -9,6 +9,8 @@ import '../../features/auth/presentation/pages/register_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/dev/presentation/pages/form_gallery_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
+import '../../features/news/presentation/pages/article_list_page.dart';
+import '../../features/news/presentation/pages/article_detail_page.dart';
 import '../../features/map/presentation/pages/map_page.dart';
 import '../../features/notifications/presentation/pages/notifications_page.dart';
 import '../../features/profile/presentation/pages/change_password_page.dart';
@@ -94,6 +96,20 @@ GoRouter createRouter(Ref ref) {
             ),
           ),
           GoRoute(
+            path: '/news',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: ArticleListPage(),
+            ),
+          ),
+          GoRoute(
+            path: '/news/:id',
+            pageBuilder: (context, state) => NoTransitionPage(
+              child: ArticleDetailPage(
+                articleId: state.pathParameters['id'] ?? '',
+              ),
+            ),
+          ),
+          GoRoute(
             path: '/profile',
             pageBuilder: (context, state) => const NoTransitionPage(
               child: ProfilePage(),
@@ -127,13 +143,14 @@ GoRouter createRouter(Ref ref) {
 int _calculateIndex(GoRouterState state) {
   final path = state.matchedLocation;
   if (path.startsWith('/map')) return 1;
-  if (path.startsWith('/notifications')) return 2;
+  if (path.startsWith('/news')) return 2;
+  if (path.startsWith('/notifications')) return 3;
   if (path.startsWith('/profile') ||
       path.startsWith('/change-password') ||
       path.startsWith('/edit-profile')) {
-    return 3;
+    return 4;
   }
-  if (path.startsWith('/settings')) return 4;
+  if (path.startsWith('/settings')) return 5;
   return 0;
 }
 
