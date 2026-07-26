@@ -54,11 +54,28 @@ class DioErrorMapper {
         }
         if (statusCode == 422) {
           final fieldErrors = <String, String>{};
-          final errors = error.response?.data?['errors'];
-          if (errors is Map) {
-            errors.forEach((key, value) {
-              fieldErrors[key.toString()] = value.toString();
-            });
+          final data = error.response?.data;
+          if (data is Map) {
+            final errors = data['errors'];
+            if (errors is Map) {
+              errors.forEach((key, value) {
+                fieldErrors[key.toString()] = value.toString();
+              });
+            } else {
+              final detail = data['detail'];
+              if (detail is List) {
+                for (final item in detail) {
+                  if (item is Map) {
+                    final loc = item['loc'];
+                    final field = (loc is List && loc.isNotEmpty)
+                        ? loc.last.toString()
+                        : 'field';
+                    fieldErrors[field] =
+                        item['msg']?.toString() ?? 'Invalid value';
+                  }
+                }
+              }
+            }
           }
           return ValidationException(message: message, fieldErrors: fieldErrors);
         }
