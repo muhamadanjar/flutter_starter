@@ -80,6 +80,40 @@ A catalog layer currently toggled visible on top of the Basemap. Visibility is s
 **Get-Info**:
 Tap-to-identify. A map tap queries every visible Overlay Layer at that point via the tile server (`/features?lon&lat`, which also proxies esri identify) and shows attributes grouped per layer.
 
+### Layer Upload
+
+**LayerUpload**:
+Aggregate root for transferring one source file (raster or vector) to the tile server in chunks, from selection through to a usable map layer. Identified by server-issued `upload_id`. The process, not the thing produced.
+_Avoid_: conflating with Layer (the process vs. the artifact it produces)
+
+**Layer** (upload context):
+The map-layer identity (`layer_id`) issued by the tile server at init time, before any bytes are transferred. One LayerUpload always targets exactly one Layer. The Layer becomes usable (has a tile URL template) only once its LayerUpload reaches Ready.
+_Avoid_: Layer Catalog entry (that's a published, listed layer — a Layer here may not be published yet)
+
+**Chunk**:
+A byte-range slice of the source file, identified by a zero-based `chunk_index`. Boundaries are fixed by the server-provided `chunk_size` from init — the client does not choose chunk size.
+
+**Upload Status**:
+LayerUpload lifecycle: Pending (initiated, no chunks sent) → Uploading (some chunks sent) → Uploaded (all bytes received, confirmed server string) → Processing (finalization running, string unconfirmed — never observed, see ADR 0002) → Done (finalization succeeded, tile URL/bbox available; confirmed server string — matches the existing `MapLayer.isReady => status == 'done'` check in the Layer Catalog) or Failed (finalization failed, `error_message` set, string unconfirmed — never observed live) or Cancelled (confirmed server string).
+_Avoid_: "Ready" as the terminal-success term — the server's real string is `done`.
+
+**Finalization**:
+Telling the server "all chunks are in, build the layer" — `/tile` for raster, `/save` for vector. Triggered automatically once Upload Status reaches Uploaded; the endpoint choice is driven by the Layer's output format, not a user choice.
+_Avoid_: Publish (a separate, later, manual step)
+
+**Publish**:
+The separate, manual, user-triggered act of pushing a Ready layer to Geoserver (`/geoserver`). A layer can be Ready (tiled/saved) without being Published.
+
+**Resume**:
+Continuing a Pending/Uploading LayerUpload from a prior app session by re-attaching to the existing `upload_id` and skipping chunk indices the server already has (from its `chunk_map`). Meaningless once Uploaded — nothing left to send.
+
+**Cancel** (upload context):
+User-initiated abandonment of a LayerUpload before Ready. A Cancel is considered successful once a status check reports Cancelled, regardless of the HTTP status the cancel call itself returned (the tile server's cancel endpoint always answers 500 even on success — see ADR 0002).
+_Avoid_: treating a 500 from this endpoint as failure
+
+**Retry** (upload context):
+Re-attempting Finalization for a Failed LayerUpload, acting on the existing `upload_id`/`layer_id`. Does not re-send chunks, only re-runs the server-side tiling/save step.
+
 ### Implementation Notes
 
 **Token Refresh Mutex**:
