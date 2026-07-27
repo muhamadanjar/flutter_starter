@@ -48,13 +48,17 @@ class DioErrorMapper {
         return const TimeoutException(message: 'Connection timeout. Please try again.');
       case DioExceptionType.badResponse:
         final statusCode = error.response?.statusCode;
-        final message = error.response?.data?['message'] as String? ?? 'Something went wrong.';
+        final data = error.response?.data;
+        final message = data is Map
+            ? data['message'] as String? ?? 'Something went wrong.'
+            : data is String
+                ? data
+                : 'Something went wrong.';
         if (statusCode == 401) {
           return UnauthorizedException(message: message);
         }
         if (statusCode == 422) {
           final fieldErrors = <String, String>{};
-          final data = error.response?.data;
           if (data is Map) {
             final errors = data['errors'];
             if (errors is Map) {
