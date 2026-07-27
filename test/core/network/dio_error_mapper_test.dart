@@ -67,4 +67,28 @@ void main() {
       expect((mapped as ValidationException).fieldErrors, isEmpty);
     });
   });
+
+  group('DioErrorMapper.map error body type handling', () {
+    test('maps a plain-text (String) error body without throwing', () {
+      final err = _badResponse(500, 'Internal Server Error');
+
+      final mapped = DioErrorMapper.map(err);
+
+      expect(mapped, isA<ServerException>());
+      final serverEx = mapped as ServerException;
+      expect(serverEx.message, 'Internal Server Error');
+      expect(serverEx.statusCode, 500);
+    });
+
+    test('maps a non-JSON response body (e.g., tile server /cancel quirk)', () {
+      final err = _badResponse(500, 'text/plain response body');
+
+      final mapped = DioErrorMapper.map(err);
+
+      expect(mapped, isA<ServerException>());
+      final serverEx = mapped as ServerException;
+      expect(serverEx.statusCode, 500);
+      expect(serverEx.message, 'text/plain response body');
+    });
+  });
 }
