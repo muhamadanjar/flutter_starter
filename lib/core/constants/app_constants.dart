@@ -19,6 +19,7 @@ class AppConstants {
   static const String userBox = 'user_box';
   static const String settingsBox = 'settings_box';
   static const String cacheBox = 'cache_box';
+  static const String layerUploadsBox = 'layer_uploads';
 
   // Date Format
   static const String dateFormat = 'dd MMM yyyy';

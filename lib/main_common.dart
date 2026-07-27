@@ -57,6 +57,7 @@ Future<void> _initializeHive() async {
   await Hive.openBox(AppConstants.settingsBox);
   await Hive.openBox(AppConstants.cacheBox);
   await Hive.openBox('record_tracks');
+  await Hive.openBox(AppConstants.layerUploadsBox);
 
   // Initialize default settings if first launch
   final settingsBox = Hive.box(AppConstants.settingsBox);
