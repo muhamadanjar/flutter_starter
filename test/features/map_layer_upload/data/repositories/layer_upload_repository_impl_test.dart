@@ -16,6 +16,11 @@ class _FakeRemoteDataSource implements LayerUploadRemoteDataSource {
   bool cancelThrows500 = false;
   String finalizeStatus = 'done';
 
+  /// Chunk indexes that always throw a 500, regardless of
+  /// [chunkFailuresRemaining] — used to deterministically fail one member of
+  /// a concurrent batch while its siblings succeed.
+  Set<int> alwaysFailChunkIndexes = {};
+
   final Map<String, String> _serverStatus = {};
 
   @override
@@ -42,6 +47,9 @@ class _FakeRemoteDataSource implements LayerUploadRemoteDataSource {
     required Uint8List bytes,
   }) async {
     chunkCalls++;
+    if (alwaysFailChunkIndexes.contains(chunkIndex)) {
+      throw const ServerException(message: 'boom', statusCode: 500);
+    }
     if (chunkFailuresRemaining > 0) {
       chunkFailuresRemaining--;
       throw const ServerException(message: 'boom', statusCode: 500);
@@ -173,6 +181,73 @@ void main() {
       final failure = events.last.fold((f) => f, (_) => null);
       expect(failure, isA<ServerFailure>());
     });
+
+    test(
+      'a batch (size > 1) where all chunks succeed unions every index, not just the last processed',
+      () async {
+        // 4 chunks of 5 bytes, default maxConcurrentChunks (3) => batches of
+        // [0,1,2] then [3]. Regression: previously each chunk's result
+        // *replaced* `current` instead of merging into it, so only the last
+        // chunk processed in a batch survived.
+        await local.save(LayerUploadModel(
+          uploadId: 'u1',
+          layerId: 'l1',
+          filename: 'a.tif',
+          filePath: sourceFile.path,
+          totalSize: 20,
+          chunkSize: 5,
+          totalChunks: 4,
+          outputFormat: LayerOutputFormat.raster,
+          status: LayerUploadStatus.pending,
+          updatedAt: DateTime(2026, 1, 1),
+        ));
+
+        final events = await repository.resumeUpload('u1').toList();
+
+        expect(events.every((e) => e.isRight()), isTrue, reason: events.toString());
+        expect(remote.chunkCalls, 4);
+
+        final saved = await local.getById('u1');
+        expect(saved?.uploadedChunkIndexes, {0, 1, 2, 3});
+      },
+    );
+
+    test(
+      'a batch (size > 1) with one chunk exhausting retries still persists its successful siblings',
+      () async {
+        // Batch [0,1,2] — index 1 always fails, 0 and 2 succeed. Regression:
+        // previously the sibling successes in the same batch were never
+        // saved/yielded once a batch-mate failed.
+        remote.alwaysFailChunkIndexes = {1};
+        await local.save(LayerUploadModel(
+          uploadId: 'u1',
+          layerId: 'l1',
+          filename: 'a.tif',
+          filePath: sourceFile.path,
+          totalSize: 20,
+          chunkSize: 5,
+          totalChunks: 4,
+          outputFormat: LayerOutputFormat.raster,
+          status: LayerUploadStatus.pending,
+          updatedAt: DateTime(2026, 1, 1),
+        ));
+
+        final events = await repository.resumeUpload('u1').toList();
+
+        expect(events.last.isLeft(), isTrue);
+        final failure = events.last.fold((f) => f, (_) => null);
+        expect(failure, isA<ServerFailure>());
+
+        final successEvents = events.where((e) => e.isRight()).toList();
+        final lastSuccess = successEvents.last.fold((f) => throw f, (u) => u);
+        expect(lastSuccess.uploadedChunkIndexes, containsAll(<int>{0, 2}));
+        expect(lastSuccess.uploadedChunkIndexes, isNot(contains(1)));
+
+        final saved = await local.getById('u1');
+        expect(saved?.uploadedChunkIndexes, containsAll(<int>{0, 2}));
+        expect(saved?.uploadedChunkIndexes, isNot(contains(1)));
+      },
+    );
   });
 
   test('cancelUpload treats the swallowed 500 as success once status confirms cancelled', () async {

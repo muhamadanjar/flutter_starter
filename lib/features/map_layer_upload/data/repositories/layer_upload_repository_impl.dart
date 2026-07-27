@@ -274,10 +274,19 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
 
   /// Sends every not-yet-uploaded chunk in fixed-size batches of
   /// [maxConcurrentChunks]. Each chunk retries independently up to
-  /// [maxChunkRetries] times with exponential backoff. If any chunk in a
-  /// batch exhausts its retries, no further batches start and a failure is
-  /// yielded; chunks that already succeeded remain recorded via the events
-  /// already emitted.
+  /// [maxChunkRetries] times with exponential backoff.
+  ///
+  /// Every chunk in a batch is started from the same pre-batch snapshot of
+  /// `current` (since all batch members are dispatched together via
+  /// `Future.wait`), so each chunk's returned model only reflects its own
+  /// index merged into that shared snapshot — not its batch-mates'. Results
+  /// are therefore folded one at a time, *unioning* each successful chunk's
+  /// newly-confirmed index into the running `current` (rather than replacing
+  /// `current` outright), so a later chunk's result can never erase an
+  /// earlier sibling's success. If any chunk in the batch exhausts its
+  /// retries, the successful siblings already folded in are still
+  /// saved/yielded before the failure is yielded and the stream stops — no
+  /// further batches start.
   Stream<Either<Failure, LayerUpload>> _sendRemainingChunks(
     LayerUploadModel upload,
   ) async* {
@@ -290,16 +299,32 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
         for (final index in batch) _sendOneChunkWithRetry(current, index),
       ]);
 
+      Failure? batchFailure;
       for (final result in results) {
         final failure = result.fold((f) => f, (_) => null);
         if (failure != null) {
-          yield left(failure);
-          return;
+          batchFailure ??= failure;
+          continue;
         }
-      }
-      for (final result in results) {
-        current = result.fold((_) => current, (u) => u);
+        final succeeded = result.fold((_) => null, (u) => u)!;
+        current = LayerUploadModel.fromEntity(
+          current.copyWith(
+            uploadedChunkIndexes: {
+              ...current.uploadedChunkIndexes,
+              ...succeeded.uploadedChunkIndexes,
+            },
+            status: succeeded.status,
+            tileUrlTemplate: succeeded.tileUrlTemplate,
+            updatedAt: succeeded.updatedAt,
+          ),
+        );
+        await localDataSource.save(current);
         yield right(current);
+      }
+
+      if (batchFailure != null) {
+        yield left(batchFailure);
+        return;
       }
     }
   }
