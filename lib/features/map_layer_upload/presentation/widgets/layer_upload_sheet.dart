@@ -85,14 +85,36 @@ class _LayerUploadSheetState extends ConsumerState<LayerUploadSheet> {
   }
 }
 
-class _UploadProgress extends ConsumerWidget {
+class _UploadProgress extends ConsumerStatefulWidget {
   const _UploadProgress(this.state);
 
   final AsyncValue<LayerUpload> state;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return state.when(
+  ConsumerState<_UploadProgress> createState() => _UploadProgressState();
+}
+
+class _UploadProgressState extends ConsumerState<_UploadProgress> {
+  bool _publishing = false;
+
+  Future<void> _publish(String uploadId) async {
+    setState(() => _publishing = true);
+    final result = await ref.read(publishLayerToGeoserverUseCaseProvider).call(uploadId);
+    if (!mounted) return;
+    setState(() => _publishing = false);
+    result.fold(
+      (failure) => ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Publish gagal: ${failure.message}')),
+      ),
+      (_) => ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Layer dipublish')),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.state.when(
       loading: () => const Padding(
         padding: EdgeInsets.all(24),
         child: Center(child: CircularProgressIndicator()),
@@ -143,6 +165,26 @@ class _UploadProgress extends ConsumerWidget {
                 onPressed: () => ref.read(activeLayerUploadProvider.notifier).cancel(),
                 child: const Text('Batalkan'),
               ),
+            if (upload.status == LayerUploadStatus.done) ...[
+              if (upload.tileUrlTemplate != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  'Tile URL: ${upload.tileUrlTemplate}',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: _publishing ? null : () => _publish(upload.uploadId),
+                child: _publishing
+                    ? const SizedBox(
+                        height: 16,
+                        width: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Publish ke Geoserver'),
+              ),
+            ],
             if (upload.isTerminal) ...[
               const SizedBox(height: 8),
               FilledButton(

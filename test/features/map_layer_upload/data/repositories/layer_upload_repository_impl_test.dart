@@ -13,8 +13,14 @@ import 'package:flutter_test/flutter_test.dart';
 class _FakeRemoteDataSource implements LayerUploadRemoteDataSource {
   int chunkCalls = 0;
   int chunkFailuresRemaining = 0;
+  int chunkTimeoutsRemaining = 0;
   bool cancelThrows500 = false;
   String finalizeStatus = 'done';
+  int finalizeCalls = 0;
+
+  /// When true, [getStatus] never reports a terminal status — used to
+  /// exercise the `_pollStatus` bound (Important 7).
+  bool neverTerminal = false;
 
   /// Chunk indexes that always throw a 500, regardless of
   /// [chunkFailuresRemaining] — used to deterministically fail one member of
@@ -22,6 +28,12 @@ class _FakeRemoteDataSource implements LayerUploadRemoteDataSource {
   Set<int> alwaysFailChunkIndexes = {};
 
   final Map<String, String> _serverStatus = {};
+
+  /// Test helper: makes [getStatus] report [status] for [uploadId] without
+  /// going through [cancel] (which always reports `cancelled`).
+  void forceServerStatus(String uploadId, String status) {
+    _serverStatus[uploadId] = status;
+  }
 
   @override
   Future<Map<String, dynamic>> initUpload({
@@ -54,6 +66,10 @@ class _FakeRemoteDataSource implements LayerUploadRemoteDataSource {
       chunkFailuresRemaining--;
       throw const ServerException(message: 'boom', statusCode: 500);
     }
+    if (chunkTimeoutsRemaining > 0) {
+      chunkTimeoutsRemaining--;
+      throw const TimeoutException(message: 'timed out');
+    }
     return {
       'upload_id': uploadId,
       'received_bytes': (chunkIndex + 1) * 10,
@@ -70,7 +86,7 @@ class _FakeRemoteDataSource implements LayerUploadRemoteDataSource {
     return {
       'upload_id': uploadId,
       'layer_id': 'l1',
-      'status': _serverStatus[uploadId] ?? 'uploaded',
+      'status': neverTerminal ? 'processing' : (_serverStatus[uploadId] ?? 'uploaded'),
       'chunk_map': null,
       'error_message': null,
       'tile_url_template': null,
@@ -83,11 +99,13 @@ class _FakeRemoteDataSource implements LayerUploadRemoteDataSource {
     String? outputFormat,
     int? maxZoom,
   }) async {
+    finalizeCalls++;
     return {'status': finalizeStatus};
   }
 
   @override
   Future<Map<String, dynamic>> saveGeojson(String uploadId) async {
+    finalizeCalls++;
     return {'status': finalizeStatus};
   }
 
@@ -248,7 +266,149 @@ void main() {
         expect(saved?.uploadedChunkIndexes, isNot(contains(1)));
       },
     );
+
+    test(
+      'a chunk send that throws TimeoutException is retried, not immediately failed (Critical 1)',
+      () async {
+        // Times out on the first two attempts for every chunk, then
+        // succeeds. If TimeoutException bypassed the retry loop, this would
+        // fail immediately instead of completing.
+        remote.chunkTimeoutsRemaining = 1;
+        final events = await repository
+            .uploadFile(filePath: sourceFile.path, filename: 'a.tif', totalSize: 20)
+            .toList();
+
+        expect(events.every((e) => e.isRight()), isTrue, reason: events.toString());
+        final last = events.last.fold((f) => throw f, (u) => u);
+        expect(last.status, LayerUploadStatus.done);
+        // 2 chunks total; one of them needed an extra attempt after timing
+        // out once.
+        expect(remote.chunkCalls, 3);
+      },
+    );
+
+    test(
+      'a chunk send that exhausts retries via TimeoutException reports a NetworkFailure (Critical 1)',
+      () async {
+        remote.chunkTimeoutsRemaining = 100; // always times out
+        final events = await repository
+            .uploadFile(filePath: sourceFile.path, filename: 'a.tif', totalSize: 20)
+            .toList();
+
+        expect(events.last.isLeft(), isTrue);
+        final failure = events.last.fold((f) => f, (_) => null);
+        expect(failure, isA<NetworkFailure>());
+      },
+    );
+
+    test(
+      'a missing source file fails validation immediately without retrying (Important 4)',
+      () async {
+        await local.save(LayerUploadModel(
+          uploadId: 'u1',
+          layerId: 'l1',
+          filename: 'a.tif',
+          filePath: '${sourceFile.path}.does-not-exist',
+          totalSize: 20,
+          chunkSize: 10,
+          totalChunks: 2,
+          outputFormat: LayerOutputFormat.raster,
+          status: LayerUploadStatus.pending,
+          updatedAt: DateTime(2026, 1, 1),
+        ));
+
+        final events = await repository.resumeUpload('u1').toList();
+
+        expect(events.last.isLeft(), isTrue);
+        final failure = events.last.fold((f) => f, (_) => null);
+        expect(failure, isA<ValidationFailure>());
+        expect(remote.chunkCalls, 0);
+      },
+    );
   });
+
+  test(
+    'resuming a processing upload does not re-trigger finalize (Important 3)',
+    () async {
+      // Fully uploaded already, and the server-synced status (from
+      // resumeUpload's initial GET /status) is `processing` — finalization
+      // was already kicked off in a prior session. Regression: previously
+      // the repository unconditionally re-called /tile, re-triggering
+      // finalization server-side.
+      final processingRemote = _FakeRemoteDataSource()..forceServerStatus('u1', 'processing');
+      final processingLocal = _FakeLocalDataSource();
+      final processingRepo = LayerUploadRepositoryImpl(
+        remoteDataSource: processingRemote,
+        localDataSource: processingLocal,
+        chunkRetryInitialDelay: const Duration(milliseconds: 1),
+        statusPollInterval: const Duration(milliseconds: 1),
+        // Small bound: this test only cares that finalize is never
+        // re-triggered, not that polling eventually reaches a terminal
+        // status (the fake never reports one here).
+        maxPollAttempts: 2,
+      );
+
+      await processingLocal.save(LayerUploadModel(
+        uploadId: 'u1',
+        layerId: 'l1',
+        filename: 'a.tif',
+        filePath: '/tmp/a.tif',
+        totalSize: 20,
+        chunkSize: 10,
+        totalChunks: 2,
+        outputFormat: LayerOutputFormat.raster,
+        status: LayerUploadStatus.uploaded,
+        uploadedChunkIndexes: const {0, 1},
+        updatedAt: DateTime(2026, 1, 1),
+      ));
+
+      final events = await processingRepo.resumeUpload('u1').toList();
+
+      // No finalize (/tile or /save) call was made at any point — that's
+      // the behavior under test.
+      expect(processingRemote.finalizeCalls, 0);
+      // The very first synced event (before polling starts) already carries
+      // the `processing` status straight through from GET /status.
+      final firstUpload = events.first.fold((f) => throw f, (u) => u);
+      expect(firstUpload.status, LayerUploadStatus.processing);
+    },
+  );
+
+  test(
+    '_pollStatus gives up after maxPollAttempts and returns a ServerFailure instead of hanging (Important 7)',
+    () async {
+      final pollRemote = _FakeRemoteDataSource()..neverTerminal = true;
+      final pollLocal = _FakeLocalDataSource();
+      final pollRepo = LayerUploadRepositoryImpl(
+        remoteDataSource: pollRemote,
+        localDataSource: pollLocal,
+        chunkRetryInitialDelay: const Duration(milliseconds: 1),
+        statusPollInterval: const Duration(milliseconds: 1),
+        maxPollAttempts: 3,
+      );
+
+      await pollLocal.save(LayerUploadModel(
+        uploadId: 'u1',
+        layerId: 'l1',
+        filename: 'a.tif',
+        filePath: '/tmp/a.tif',
+        totalSize: 20,
+        chunkSize: 10,
+        totalChunks: 2,
+        outputFormat: LayerOutputFormat.raster,
+        status: LayerUploadStatus.processing,
+        uploadedChunkIndexes: const {0, 1},
+        updatedAt: DateTime(2026, 1, 1),
+      ));
+
+      final events = await pollRepo.resumeUpload('u1').toList();
+
+      expect(events.last.isLeft(), isTrue);
+      final failure = events.last.fold((f) => f, (_) => null);
+      expect(failure, isA<ServerFailure>());
+      expect((failure! as ServerFailure).message, contains('Timed out'));
+    },
+  );
 
   test('cancelUpload treats the swallowed 500 as success once status confirms cancelled', () async {
     await local.save(LayerUploadModel(

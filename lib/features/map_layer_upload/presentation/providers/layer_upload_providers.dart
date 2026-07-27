@@ -146,6 +146,11 @@ class ActiveLayerUploadNotifier extends Notifier<AsyncValue<LayerUpload>?> {
   Future<void> cancel() async {
     final current = state?.valueOrNull;
     if (current == null) return;
+    // Stop the still-running upload/resume/retry pipeline stream first, so
+    // it can no longer emit stale progress over the cancelled state or fire
+    // further chunk POSTs against a server-side-cancelled upload.
+    await _subscription?.cancel();
+    _subscription = null;
     final result = await ref.read(cancelLayerUploadUseCaseProvider).call(current.uploadId);
     result.fold(
       (failure) => state = AsyncValue.error(failure, StackTrace.current),

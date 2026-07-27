@@ -1,4 +1,4 @@
-import 'dart:async';
+import 'dart:async' hide TimeoutException;
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -30,6 +30,7 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
     this.maxChunkRetries = 3,
     this.chunkRetryInitialDelay = const Duration(milliseconds: 500),
     this.statusPollInterval = const Duration(seconds: 3),
+    this.maxPollAttempts = 100,
   });
 
   final LayerUploadRemoteDataSource remoteDataSource;
@@ -38,6 +39,14 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
   final int maxChunkRetries;
   final Duration chunkRetryInitialDelay;
   final Duration statusPollInterval;
+
+  /// Upper bound on the number of times [_pollStatus] will poll
+  /// `GET /status` waiting for a terminal state before giving up. Combined
+  /// with the default [statusPollInterval] of 3s, the default of 100 gives
+  /// ~5 minutes before [_pollStatus] surfaces a [ServerFailure] instead of
+  /// polling forever (see ADR 0002 — /tile failures on raster uploads
+  /// currently never set a `failed` status server-side).
+  final int maxPollAttempts;
 
   @override
   Stream<Either<Failure, LayerUpload>> uploadFile({
@@ -63,11 +72,17 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
     } on NetworkException catch (e) {
       yield left(NetworkFailure(message: e.message ?? 'No internet connection'));
       return;
+    } on TimeoutException catch (e) {
+      yield left(NetworkFailure(message: e.message ?? 'Request timed out'));
+      return;
     } on ValidationException catch (e) {
       yield left(ValidationFailure(message: e.message ?? 'Invalid file', fieldErrors: e.fieldErrors));
       return;
     } on ServerException catch (e) {
       yield left(ServerFailure(message: e.message ?? 'Server error', statusCode: e.statusCode));
+      return;
+    } catch (e) {
+      yield left(UnknownFailure(message: e.toString()));
       return;
     }
 
@@ -92,8 +107,14 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
     } on NetworkException catch (e) {
       yield left(NetworkFailure(message: e.message ?? 'No internet connection'));
       return;
+    } on TimeoutException catch (e) {
+      yield left(NetworkFailure(message: e.message ?? 'Request timed out'));
+      return;
     } on ServerException catch (e) {
       yield left(ServerFailure(message: e.message ?? 'Server error', statusCode: e.statusCode));
+      return;
+    } catch (e) {
+      yield left(UnknownFailure(message: e.toString()));
       return;
     }
 
@@ -119,8 +140,14 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
     } on NetworkException catch (e) {
       yield left(NetworkFailure(message: e.message ?? 'No internet connection'));
       return;
+    } on TimeoutException catch (e) {
+      yield left(NetworkFailure(message: e.message ?? 'Request timed out'));
+      return;
     } on ServerException catch (e) {
       yield left(ServerFailure(message: e.message ?? 'Retry failed', statusCode: e.statusCode));
+      return;
+    } catch (e) {
+      yield left(UnknownFailure(message: e.toString()));
       return;
     }
 
@@ -144,8 +171,12 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
       return right(merged);
     } on NetworkException catch (e) {
       return left(NetworkFailure(message: e.message ?? 'No internet connection'));
+    } on TimeoutException catch (e) {
+      return left(NetworkFailure(message: e.message ?? 'Request timed out'));
     } on ServerException catch (e) {
       return left(ServerFailure(message: e.message ?? 'Server error', statusCode: e.statusCode));
+    } catch (e) {
+      return left(UnknownFailure(message: e.toString()));
     }
   }
 
@@ -170,8 +201,12 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
       return right(merged);
     } on NetworkException catch (e) {
       return left(NetworkFailure(message: e.message ?? 'No internet connection'));
+    } on TimeoutException catch (e) {
+      return left(NetworkFailure(message: e.message ?? 'Request timed out'));
     } on ServerException catch (e) {
       return left(ServerFailure(message: e.message ?? 'Server error', statusCode: e.statusCode));
+    } catch (e) {
+      return left(UnknownFailure(message: e.toString()));
     }
   }
 
@@ -200,8 +235,12 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
       return right(unit);
     } on NetworkException catch (e) {
       return left(NetworkFailure(message: e.message ?? 'No internet connection'));
+    } on TimeoutException catch (e) {
+      return left(NetworkFailure(message: e.message ?? 'Request timed out'));
     } on ServerException catch (e) {
       return left(ServerFailure(message: e.message ?? 'Server error', statusCode: e.statusCode));
+    } catch (e) {
+      return left(UnknownFailure(message: e.toString()));
     }
   }
 
@@ -223,31 +262,45 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
       }
     }
 
-    if (current.status != LayerUploadStatus.uploaded && !current.isTerminal) {
+    if (current.status != LayerUploadStatus.uploaded &&
+        current.status != LayerUploadStatus.processing &&
+        !current.isTerminal) {
       current = LayerUploadModel.fromEntity(
         current.copyWith(status: LayerUploadStatus.uploaded),
       );
     }
 
-    try {
-      final json = current.outputFormat == LayerOutputFormat.raster
-          ? await remoteDataSource.triggerTile(uploadId: current.uploadId)
-          : await remoteDataSource.saveGeojson(current.uploadId);
-      current = current.mergeFinalizeResponse(json);
-    } on NetworkException catch (e) {
-      yield left(NetworkFailure(message: e.message ?? 'No internet connection'));
-      return;
-    } on ServerException catch (e) {
-      // Known issue for raster (ADR 0002): /tile currently 500s server-side
-      // without ever setting a failed status. Surface it as a failure but
-      // leave the persisted record as-is (still resumable/retriable) rather
-      // than marking it terminal ourselves.
-      yield left(ServerFailure(message: e.message ?? 'Finalize failed', statusCode: e.statusCode));
-      return;
-    }
+    // If a prior session already kicked off finalization (status synced as
+    // `processing` from GET /status during resumeUpload), calling /tile or
+    // /save again would re-trigger finalization server-side. Skip straight
+    // to polling instead.
+    if (current.status != LayerUploadStatus.processing && !current.isTerminal) {
+      try {
+        final json = current.outputFormat == LayerOutputFormat.raster
+            ? await remoteDataSource.triggerTile(uploadId: current.uploadId)
+            : await remoteDataSource.saveGeojson(current.uploadId);
+        current = current.mergeFinalizeResponse(json);
+      } on NetworkException catch (e) {
+        yield left(NetworkFailure(message: e.message ?? 'No internet connection'));
+        return;
+      } on TimeoutException catch (e) {
+        yield left(NetworkFailure(message: e.message ?? 'Request timed out'));
+        return;
+      } on ServerException catch (e) {
+        // Known issue for raster (ADR 0002): /tile currently 500s server-side
+        // without ever setting a failed status. Surface it as a failure but
+        // leave the persisted record as-is (still resumable/retriable) rather
+        // than marking it terminal ourselves.
+        yield left(ServerFailure(message: e.message ?? 'Finalize failed', statusCode: e.statusCode));
+        return;
+      } catch (e) {
+        yield left(UnknownFailure(message: e.toString()));
+        return;
+      }
 
-    await localDataSource.save(current);
-    yield right(current);
+      await localDataSource.save(current);
+      yield right(current);
+    }
 
     if (current.isTerminal) return;
     yield* _pollStatus(current);
@@ -255,7 +308,13 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
 
   Stream<Either<Failure, LayerUpload>> _pollStatus(LayerUploadModel upload) async* {
     var current = upload;
+    var attempts = 0;
     while (!current.isTerminal) {
+      if (attempts >= maxPollAttempts) {
+        yield left(const ServerFailure(message: 'Timed out waiting for finalization to complete'));
+        return;
+      }
+      attempts++;
       await Future<void>.delayed(statusPollInterval);
       try {
         final json = await remoteDataSource.getStatus(current.uploadId);
@@ -263,8 +322,14 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
       } on NetworkException catch (e) {
         yield left(NetworkFailure(message: e.message ?? 'No internet connection'));
         return;
+      } on TimeoutException catch (e) {
+        yield left(NetworkFailure(message: e.message ?? 'Request timed out'));
+        return;
       } on ServerException catch (e) {
         yield left(ServerFailure(message: e.message ?? 'Server error', statusCode: e.statusCode));
+        return;
+      } catch (e) {
+        yield left(UnknownFailure(message: e.toString()));
         return;
       }
       await localDataSource.save(current);
@@ -333,6 +398,14 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
     LayerUploadModel upload,
     int chunkIndex,
   ) async {
+    // Not transient/retryable: if the source file was purged from cache or
+    // deleted by the user between sessions, no amount of retrying will help.
+    if (!File(upload.filePath).existsSync()) {
+      return left(ValidationFailure(
+        message: 'Source file is no longer available: ${upload.filePath}',
+      ));
+    }
+
     var attempt = 0;
     while (true) {
       try {
@@ -353,11 +426,18 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
         if (attempt > maxChunkRetries) {
           return left(NetworkFailure(message: e.message ?? 'No internet connection'));
         }
+      } on TimeoutException catch (e) {
+        attempt++;
+        if (attempt > maxChunkRetries) {
+          return left(NetworkFailure(message: e.message ?? 'Request timed out'));
+        }
       } on ServerException catch (e) {
         attempt++;
         if (attempt > maxChunkRetries) {
           return left(ServerFailure(message: e.message ?? 'Chunk upload failed', statusCode: e.statusCode));
         }
+      } catch (e) {
+        return left(UnknownFailure(message: e.toString()));
       }
       final delay = chunkRetryInitialDelay * math.pow(2, attempt - 1);
       await Future<void>.delayed(delay);
@@ -372,10 +452,10 @@ class LayerUploadRepositoryImpl implements LayerUploadRepository {
   ) async {
     final start = chunkIndex * chunkSize;
     final end = math.min(start + chunkSize, totalSize);
-    final bytes = <int>[];
+    final builder = BytesBuilder(copy: false);
     await for (final part in File(filePath).openRead(start, end)) {
-      bytes.addAll(part);
+      builder.add(part);
     }
-    return Uint8List.fromList(bytes);
+    return builder.takeBytes();
   }
 }
