@@ -7,6 +7,8 @@ import '../../../../core/logger/index.dart';
 import '../../../../core/services/gps_service.dart';
 import '../../../../core/storage/preferences/pref_providers.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../map_layer_upload/presentation/widgets/layer_upload_fab.dart';
+import '../../../map_layer_upload/presentation/widgets/resume_layer_upload_banner.dart';
 import '../../domain/entities/track_record.dart';
 import '../providers/map_providers.dart';
 import '../widgets/map_view.dart';
@@ -135,6 +137,11 @@ class _MapPageState extends ConsumerState<MapPage> {
             initialZoom: _initialZoom,
             myLocation: _myLocation,
             trackPoints: _trackPoints,
+          ),
+
+          const Align(
+            alignment: Alignment.topCenter,
+            child: ResumeLayerUploadBanner(),
           ),
 
           // Top status chips — sit below the top-left menu button on mobile
@@ -325,6 +332,8 @@ class _MapFabCluster extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
+        const LayerUploadFab(),
+        const SizedBox(height: 12),
         TrackRecordFab(onPointsChanged: onPointsChanged),
         const SizedBox(height: 12),
         FloatingActionButton(
