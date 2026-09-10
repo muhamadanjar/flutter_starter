@@ -97,6 +97,8 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-    - .env
+    - .env.dev
+    - .env.staging
+    - .env.production
 
   generate: true

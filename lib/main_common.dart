@@ -11,12 +11,19 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-/// Common initialization logic for all flavors
-Future<void> mainCommon(AppConfig config) async {
+/// Common initialization logic for all flavors.
+Future<void> mainCommon({
+  required String environment,
+  required bool debugMode,
+  required String envFile,
+}) async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load .env (optional; providers fall back to defaults when absent)
-  await _loadEnv();
+  await _loadEnv(envFile);
+  final config = AppConfig.fromDotEnv(
+    environment: environment,
+    debugMode: debugMode,
+  );
 
   // Initialize Hive for local storage
   await _initializeHive();
@@ -29,19 +36,19 @@ Future<void> mainCommon(AppConfig config) async {
 
   runApp(
     ProviderScope(
-      overrides: [
-        appConfigProvider.overrideWithValue(config),
-      ],
+      overrides: [appConfigProvider.overrideWithValue(config)],
       child: const App(),
     ),
   );
 }
 
-Future<void> _loadEnv() async {
+Future<void> _loadEnv(String envFile) async {
   try {
-    await dotenv.load();
-  } catch (_) {
-    // .env missing (e.g. CI) — dotenv stays empty, defaults apply.
+    await dotenv.load(fileName: envFile);
+  } catch (error) {
+    throw StateError(
+      'Unable to load required environment file $envFile: $error',
+    );
   }
 }
 
@@ -91,7 +98,9 @@ Future<void> _checkInitialConnectivity() async {
   try {
     final networkInfo = NetworkInfoImpl(Connectivity());
     final isConnected = await networkInfo.isConnected;
-    debugPrint('[Network] Initial connectivity check: ${isConnected ? 'Online' : 'Offline'}');
+    debugPrint(
+      '[Network] Initial connectivity check: ${isConnected ? 'Online' : 'Offline'}',
+    );
   } catch (e) {
     debugPrint('[Network] Connectivity check failed: $e');
     // Silently ignore - the app will show offline banner if needed

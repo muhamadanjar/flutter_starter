@@ -13,39 +13,35 @@ lib/
 ├── main_common.dart       → Shared initialization
 └── core/
     ├── config/
-    │   └── app_config.dart         → Config definitions (dev/staging/prod)
+    │   └── app_config.dart         → Validated runtime API config
     └── providers/
         └── config_provider.dart    → Riverpod provider
 ```
 
 ## Configuration Values
 
-**Development (Local)**
-```
-Base URL: http://localhost:3000/api
-API Version: v1
-Environment: development
-Debug Mode: true
-Request Timeout: 30s
+Each flavor loads a dedicated local file. The API values are required; startup
+fails if a file is missing or a value is invalid. `debugMode` remains fixed by
+the flavor: enabled for development and disabled for staging/production.
+
+| Flavor | Loaded file | Environment | Debug mode |
+| --- | --- | --- | --- |
+| Development | `.env.dev` | `development` | enabled |
+| Staging | `.env.staging` | `staging` | disabled |
+| Production | `.env.production` | `production` | disabled |
+
+Every file requires:
+
+```env
+API_BASE_URL=https://api.example.com
+API_VERSION=v1
+REQUEST_TIMEOUT_SECONDS=30
 ```
 
-**Staging**
-```
-Base URL: https://staging-api.example.com/api
-API Version: v1
-Environment: staging
-Debug Mode: false
-Request Timeout: 30s
-```
-
-**Production**
-```
-Base URL: https://api.example.com/api
-API Version: v1
-Environment: production
-Debug Mode: false
-Request Timeout: 30s
-```
+`API_BASE_URL` must be an HTTP(S) origin without a path, query, or fragment.
+For example, use `https://api.example.com`, not `https://api.example.com/v1`.
+The actual `.env.*` files are ignored by Git. Copy the matching committed
+`.env.*.example` file before running a flavor.
 
 ## Usage
 
@@ -79,12 +75,11 @@ flutter build web -t lib/main_production.dart --release
 
 ### 1. AppConfig Class
 
-Defines configuration for each environment:
+Builds validated API configuration from the environment file selected by the
+flavor:
 ```dart
 // lib/core/config/app_config.dart
-static const production = AppConfig(
-  baseUrl: 'https://api.example.com/api',
-  apiVersion: 'v1',
+final config = AppConfig.fromDotEnv(
   environment: 'production',
   debugMode: false,
 );
@@ -95,7 +90,11 @@ static const production = AppConfig(
 Minimal entry point for each flavor:
 ```dart
 // lib/main_production.dart
-void main() => mainCommon(AppConfig.production);
+Future<void> main() => mainCommon(
+  environment: 'production',
+  debugMode: false,
+  envFile: '.env.production',
+);
 ```
 
 ### 3. Common Initialization
@@ -103,8 +102,17 @@ void main() => mainCommon(AppConfig.production);
 Shared setup logic:
 ```dart
 // lib/main_common.dart
-Future<void> mainCommon(AppConfig config) async {
+Future<void> mainCommon({
+  required String environment,
+  required bool debugMode,
+  required String envFile,
+}) async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: envFile);
+  final config = AppConfig.fromDotEnv(
+    environment: environment,
+    debugMode: debugMode,
+  );
   await _initializeHive();
   await _initializeFirebase();
   await _checkInitialConnectivity();
@@ -147,18 +155,22 @@ SomeData getData(GetDataRef ref) {
 
 ## Modifying Configuration
 
-To change a config value, edit `lib/core/config/app_config.dart`:
+To change a config value, copy the relevant template if needed, then edit the
+local environment file. For example, to configure staging:
 
-```dart
-static const staging = AppConfig(
-  baseUrl: 'https://new-staging-api.example.com/api', // ← Change here
-  apiVersion: 'v2', // ← Or here
-  environment: 'staging',
-  debugMode: false,
-);
+```bash
+cp .env.staging.example .env.staging
 ```
 
-No need to hardcode URLs throughout the codebase.
+```env
+# .env.staging
+API_BASE_URL=https://new-staging-api.example.com
+API_VERSION=v2
+REQUEST_TIMEOUT_SECONDS=30
+```
+
+Do not put API URLs in Dart source. Restart the app after changing an
+environment file; hot reload does not reload bundled assets.
 
 ## Adding New Config Values
 
@@ -241,10 +253,16 @@ Test with different configurations:
 
 ```dart
 testWidgets('Login works in production config', (tester) async {
+  const config = AppConfig(
+    baseUrl: 'https://api.example.com',
+    apiVersion: 'v1',
+    environment: 'production',
+    debugMode: false,
+  );
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        appConfigProvider.overrideWithValue(AppConfig.production),
+        appConfigProvider.overrideWithValue(config),
       ],
       child: const App(),
     ),
