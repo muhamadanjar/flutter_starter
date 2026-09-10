@@ -11,6 +11,8 @@ class ApiConstants {
   static const String changePassword = '/auth/change-password';
   static const String refreshToken = '/auth/refresh';
   static const String authMetas = '/auth/metas';
+  static const String oauthToken = '/oauth/token';
+  static const String oauthExchange = '/auth/oauth-exchange';
   static const String notifications = '/notifications';
   static const String notificationsReadAll = '/notifications/read-all';
   static const String news = '/news';

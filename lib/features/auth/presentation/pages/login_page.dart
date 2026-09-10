@@ -9,6 +9,7 @@ import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../providers/auth_provider.dart';
+import '../services/social_auth_service.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -17,7 +18,8 @@ class LoginPage extends ConsumerStatefulWidget {
   ConsumerState<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProviderStateMixin {
+class _LoginPageState extends ConsumerState<LoginPage>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -65,28 +67,49 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
     if (!_formKey.currentState!.validate()) return;
 
     await ref.read(authProvider.notifier).login(
-      username: _emailController.text.trim(),
-      password: _passwordController.text,
-    );
+          username: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
   }
 
-  void _onHandleLogin() {
-    log.i('handle login google');
+  Future<void> _onHandleLogin() async {
+    try {
+      log.i('Starting Google OAuth login');
+      final authorization =
+          await ref.read(socialAuthServiceProvider).authenticateGoogle();
+      await ref
+          .read(authProvider.notifier)
+          .loginWithSocialAuthorizationCode(authorization);
+    } on SocialAuthException catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.message)));
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Google sign-in was cancelled or failed.'),
+        ),
+      );
+      log.w('Google OAuth login failed: $error');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
-    final size = MediaQuery.sizeOf(context);
-
     ref.listen<AuthState>(authProvider, (prev, next) {
-      if (next.errorMessage != null && next.errorMessage != prev?.errorMessage) {
+      if (next.errorMessage != null &&
+          next.errorMessage != prev?.errorMessage) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(next.errorMessage!),
             backgroundColor: context.colors.error,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
       }
@@ -119,9 +142,15 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
                         focusNode: _emailFocusNode,
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.next,
-                        prefixIcon: Icon(Icons.person_outline, color: context.colors.textHint, size: 20),
+                        prefixIcon: Icon(
+                          Icons.person_outline,
+                          color: context.colors.textHint,
+                          size: 20,
+                        ),
                         onChanged: _onUsernameChanged,
-                        errorText: _username.invalid ? ValidatorMessages.usernameError(_username.error) : null,
+                        errorText: _username.invalid
+                            ? ValidatorMessages.usernameError(_username.error)
+                            : null,
                       ),
                       const SizedBox(height: 20),
 
@@ -133,17 +162,27 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
                         focusNode: _passwordFocusNode,
                         obscureText: _obscurePassword,
                         textInputAction: TextInputAction.done,
-                        prefixIcon: Icon(Icons.lock_outline, color: context.colors.textHint, size: 20),
+                        prefixIcon: Icon(
+                          Icons.lock_outline,
+                          color: context.colors.textHint,
+                          size: 20,
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                            _obscurePassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
                             color: context.colors.textHint,
                             size: 20,
                           ),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                         ),
                         onChanged: _onPasswordChanged,
-                        errorText: _password.invalid ? ValidatorMessages.passwordError(_password.error) : null,
+                        errorText: _password.invalid
+                            ? ValidatorMessages.passwordError(_password.error)
+                            : null,
                       ),
                       const SizedBox(height: 8),
 
@@ -156,7 +195,9 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
                           },
                           child: Text(
                             'Forgot Password?',
-                            style: AppTypography.labelMedium.copyWith(color: context.colors.primary),
+                            style: AppTypography.labelMedium.copyWith(
+                              color: context.colors.primary,
+                            ),
                           ),
                         ),
                       ),
@@ -178,7 +219,8 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
                       // Social Login (Placeholder)
                       CustomButton(
                         label: 'Continue with Google',
-                        onPressed: _onHandleLogin,
+                        onPressed: authState.isLoading ? null : _onHandleLogin,
+                        isLoading: authState.isLoading,
                         variant: ButtonVariant.outline,
                         icon: Icons.g_mobiledata,
                       ),
@@ -190,13 +232,17 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
                         children: [
                           Text(
                             "Don't have an account? ",
-                            style: AppTypography.bodyMedium.copyWith(color: context.colors.textSecondary),
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: context.colors.textSecondary,
+                            ),
                           ),
                           GestureDetector(
                             onTap: () => context.go('/register'),
                             child: Text(
                               'Sign Up',
-                              style: AppTypography.labelLarge.copyWith(color: context.colors.primary),
+                              style: AppTypography.labelLarge.copyWith(
+                                color: context.colors.primary,
+                              ),
                             ),
                           ),
                         ],
@@ -229,18 +275,26 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
               ),
             ],
           ),
-          child: const Icon(Icons.rocket_launch_rounded, color: Colors.white, size: 36),
+          child: const Icon(
+            Icons.rocket_launch_rounded,
+            color: Colors.white,
+            size: 36,
+          ),
         ),
         const SizedBox(height: 24),
         Text(
           'Welcome Back',
-          style: AppTypography.headlineMedium.copyWith(color: context.colors.textPrimary),
+          style: AppTypography.headlineMedium.copyWith(
+            color: context.colors.textPrimary,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
         Text(
           'Sign in to continue to your account',
-          style: AppTypography.bodyMedium.copyWith(color: context.colors.textSecondary),
+          style: AppTypography.bodyMedium.copyWith(
+            color: context.colors.textSecondary,
+          ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -255,7 +309,9 @@ class _LoginPageState extends ConsumerState<LoginPage> with SingleTickerProvider
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             'OR',
-            style: AppTypography.labelSmall.copyWith(color: context.colors.textHint),
+            style: AppTypography.labelSmall.copyWith(
+              color: context.colors.textHint,
+            ),
           ),
         ),
         Expanded(child: Divider(color: context.colors.divider)),

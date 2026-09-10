@@ -25,8 +25,8 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   AuthLocalDataSourceImpl({
     required Box<dynamic> authBox,
     required Box<dynamic> userBox,
-  })  : _authBox = authBox,
-        _userBox = userBox;
+  }) : _authBox = authBox,
+       _userBox = userBox;
 
   @override
   Future<void> saveToken(String token) async {

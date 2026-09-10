@@ -8,6 +8,7 @@ import '../../../../core/utils/validators.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../providers/auth_provider.dart';
+import '../services/social_auth_service.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -16,7 +17,8 @@ class RegisterPage extends ConsumerStatefulWidget {
   ConsumerState<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerProviderStateMixin {
+class _RegisterPageState extends ConsumerState<RegisterPage>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _usernameController = TextEditingController();
@@ -62,12 +64,33 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
     if (!_formKey.currentState!.validate()) return;
 
     await ref.read(authProvider.notifier).register(
-      username: _usernameController.text.trim(),
-      name: _nameController.text.trim(),
-      email: _emailController.text.trim(),
-      password: _passwordController.text,
-      confirmPassword: _confirmPasswordController.text,
-    );
+          username: _usernameController.text.trim(),
+          name: _nameController.text.trim(),
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          confirmPassword: _confirmPasswordController.text,
+        );
+  }
+
+  Future<void> _onGoogleSignIn() async {
+    try {
+      final authorization =
+          await ref.read(socialAuthServiceProvider).authenticateGoogle();
+      await ref
+          .read(authProvider.notifier)
+          .loginWithSocialAuthorizationCode(authorization);
+    } on SocialAuthException catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.message)),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Google sign-in was cancelled or failed.')),
+      );
+    }
   }
 
   @override
@@ -75,13 +98,16 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
     final authState = ref.watch(authProvider);
 
     ref.listen<AuthState>(authProvider, (prev, next) {
-      if (next.errorMessage != null && next.errorMessage != prev?.errorMessage) {
+      if (next.errorMessage != null &&
+          next.errorMessage != prev?.errorMessage) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(next.errorMessage!),
             backgroundColor: context.colors.error,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
         );
       }
@@ -113,9 +139,15 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
                         controller: _nameController,
                         keyboardType: TextInputType.name,
                         textInputAction: TextInputAction.next,
-                        prefixIcon: Icon(Icons.person_outline, color: context.colors.textHint, size: 20),
+                        prefixIcon: Icon(
+                          Icons.person_outline,
+                          color: context.colors.textHint,
+                          size: 20,
+                        ),
                         onChanged: (v) => setState(() => _name = Name.dirty(v)),
-                        errorText: _name.invalid ? ValidatorMessages.nameError(_name.error) : null,
+                        errorText: _name.invalid
+                            ? ValidatorMessages.nameError(_name.error)
+                            : null,
                       ),
                       const SizedBox(height: 20),
 
@@ -126,9 +158,16 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
                         controller: _usernameController,
                         keyboardType: TextInputType.text,
                         textInputAction: TextInputAction.next,
-                        prefixIcon: Icon(Icons.alternate_email, color: context.colors.textHint, size: 20),
-                        onChanged: (v) => setState(() => _username = Username.dirty(v)),
-                        errorText: _username.invalid ? ValidatorMessages.usernameError(_username.error) : null,
+                        prefixIcon: Icon(
+                          Icons.alternate_email,
+                          color: context.colors.textHint,
+                          size: 20,
+                        ),
+                        onChanged: (v) =>
+                            setState(() => _username = Username.dirty(v)),
+                        errorText: _username.invalid
+                            ? ValidatorMessages.usernameError(_username.error)
+                            : null,
                       ),
                       const SizedBox(height: 20),
 
@@ -139,9 +178,16 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
-                        prefixIcon: Icon(Icons.email_outlined, color: context.colors.textHint, size: 20),
-                        onChanged: (v) => setState(() => _email = Email.dirty(v)),
-                        errorText: _email.invalid ? ValidatorMessages.emailError(_email.error) : null,
+                        prefixIcon: Icon(
+                          Icons.email_outlined,
+                          color: context.colors.textHint,
+                          size: 20,
+                        ),
+                        onChanged: (v) =>
+                            setState(() => _email = Email.dirty(v)),
+                        errorText: _email.invalid
+                            ? ValidatorMessages.emailError(_email.error)
+                            : null,
                       ),
                       const SizedBox(height: 20),
 
@@ -152,14 +198,22 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
                         controller: _passwordController,
                         obscureText: _obscurePassword,
                         textInputAction: TextInputAction.next,
-                        prefixIcon: Icon(Icons.lock_outline, color: context.colors.textHint, size: 20),
+                        prefixIcon: Icon(
+                          Icons.lock_outline,
+                          color: context.colors.textHint,
+                          size: 20,
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                            _obscurePassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
                             color: context.colors.textHint,
                             size: 20,
                           ),
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                         ),
                         onChanged: (v) {
                           setState(() {
@@ -170,7 +224,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
                             );
                           });
                         },
-                        errorText: _password.invalid ? ValidatorMessages.passwordError(_password.error) : null,
+                        errorText: _password.invalid
+                            ? ValidatorMessages.passwordError(_password.error)
+                            : null,
                       ),
                       const SizedBox(height: 20),
 
@@ -181,14 +237,23 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
                         controller: _confirmPasswordController,
                         obscureText: _obscureConfirmPassword,
                         textInputAction: TextInputAction.done,
-                        prefixIcon: Icon(Icons.lock_outline, color: context.colors.textHint, size: 20),
+                        prefixIcon: Icon(
+                          Icons.lock_outline,
+                          color: context.colors.textHint,
+                          size: 20,
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscureConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                            _obscureConfirmPassword
+                                ? Icons.visibility_off_outlined
+                                : Icons.visibility_outlined,
                             color: context.colors.textHint,
                             size: 20,
                           ),
-                          onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                          onPressed: () => setState(
+                            () => _obscureConfirmPassword =
+                                !_obscureConfirmPassword,
+                          ),
                         ),
                         onChanged: (v) => setState(() {
                           _confirmedPassword = ConfirmedPassword.dirty(
@@ -196,7 +261,11 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
                             value: v,
                           );
                         }),
-                        errorText: _confirmedPassword.invalid ? ValidatorMessages.confirmedPasswordError(_confirmedPassword.error) : null,
+                        errorText: _confirmedPassword.invalid
+                            ? ValidatorMessages.confirmedPasswordError(
+                                _confirmedPassword.error,
+                              )
+                            : null,
                       ),
                       const SizedBox(height: 8),
 
@@ -205,17 +274,25 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
                         padding: const EdgeInsets.only(top: 8),
                         child: RichText(
                           text: TextSpan(
-                            style: AppTypography.bodySmall.copyWith(color: context.colors.textHint),
+                            style: AppTypography.bodySmall.copyWith(
+                              color: context.colors.textHint,
+                            ),
                             children: [
-                              const TextSpan(text: 'By signing up, you agree to our '),
+                              const TextSpan(
+                                text: 'By signing up, you agree to our ',
+                              ),
                               TextSpan(
                                 text: 'Terms of Service',
-                                style: AppTypography.bodySmall.copyWith(color: context.colors.primary),
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: context.colors.primary,
+                                ),
                               ),
                               const TextSpan(text: ' and '),
                               TextSpan(
                                 text: 'Privacy Policy',
-                                style: AppTypography.bodySmall.copyWith(color: context.colors.primary),
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: context.colors.primary,
+                                ),
                               ),
                             ],
                           ),
@@ -234,7 +311,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
                       // Social
                       CustomButton(
                         label: 'Continue with Google',
-                        onPressed: () {/* TODO: Google Sign In */},
+                        onPressed: authState.isLoading ? null : _onGoogleSignIn,
+                        isLoading: authState.isLoading,
                         variant: ButtonVariant.outline,
                         icon: Icons.g_mobiledata,
                       ),
@@ -246,13 +324,17 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
                         children: [
                           Text(
                             'Already have an account? ',
-                            style: AppTypography.bodyMedium.copyWith(color: context.colors.textSecondary),
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: context.colors.textSecondary,
+                            ),
                           ),
                           GestureDetector(
                             onTap: () => context.go('/login'),
                             child: Text(
                               'Sign In',
-                              style: AppTypography.labelLarge.copyWith(color: context.colors.primary),
+                              style: AppTypography.labelLarge.copyWith(
+                                color: context.colors.primary,
+                              ),
                             ),
                           ),
                         ],
@@ -285,18 +367,26 @@ class _RegisterPageState extends ConsumerState<RegisterPage> with SingleTickerPr
               ),
             ],
           ),
-          child: const Icon(Icons.person_add_rounded, color: Colors.white, size: 36),
+          child: const Icon(
+            Icons.person_add_rounded,
+            color: Colors.white,
+            size: 36,
+          ),
         ),
         const SizedBox(height: 24),
         Text(
           'Create Account',
-          style: AppTypography.headlineMedium.copyWith(color: context.colors.textPrimary),
+          style: AppTypography.headlineMedium.copyWith(
+            color: context.colors.textPrimary,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
         Text(
           'Fill in the details to get started',
-          style: AppTypography.bodyMedium.copyWith(color: context.colors.textSecondary),
+          style: AppTypography.bodyMedium.copyWith(
+            color: context.colors.textSecondary,
+          ),
           textAlign: TextAlign.center,
         ),
       ],

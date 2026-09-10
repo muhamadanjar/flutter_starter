@@ -459,6 +459,7 @@ See [AGENTS.md](docs/AGENTS.md) for rules.
 | [CLEAN_ARCHITECTURE.md](docs/CLEAN_ARCHITECTURE.md) | Architecture guide with examples |
 | [ADAPTIVE_LAYOUTS.md](docs/ADAPTIVE_LAYOUTS.md) | Responsive UI patterns |
 | [ENVIRONMENT_SETUP.md](docs/ENVIRONMENT_SETUP.md) | Flavor setup (implemented) |
+| [SOCIAL_LOGIN.md](docs/SOCIAL_LOGIN.md) | Google OAuth + User Management API setup |
 | [FIREBASE_SETUP.md](docs/FIREBASE_SETUP.md) | Firebase & push notifications |
 | [DEPENDENCY_AUDIT.md](docs/DEPENDENCY_AUDIT.md) | Package audit & migrations |
 | [PACKAGE_UPGRADE_ROADMAP.md](docs/PACKAGE_UPGRADE_ROADMAP.md) | Upgrade strategy |

@@ -8,6 +8,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/network/network_info.dart';
 import '../../../../core/network/session_events.dart';
+import '../../../../core/providers/config_provider.dart';
 import '../../../../core/providers/fcm_sync_provider.dart';
 import '../../../../core/providers/location_sync_provider.dart';
 import '../../../../core/services/fcm_sync_service.dart';
@@ -19,6 +20,8 @@ import '../../domain/entities/user.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/logout_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
+import '../../domain/usecases/social_login_usecase.dart';
+import '../services/social_auth_service.dart';
 
 // Data Sources
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
@@ -54,6 +57,14 @@ final logoutUseCaseProvider = Provider<LogoutUseCase>((ref) {
   return LogoutUseCase(ref.watch(authRepositoryProvider));
 });
 
+final socialLoginUseCaseProvider = Provider<SocialLoginUseCase>((ref) {
+  return SocialLoginUseCase(ref.watch(authRepositoryProvider));
+});
+
+final socialAuthServiceProvider = Provider<SocialAuthService>((ref) {
+  return SocialAuthService(ref.watch(appConfigProvider));
+});
+
 // Auth State
 enum AuthStatus { initial, authenticated, unauthenticated, loading }
 
@@ -87,25 +98,28 @@ class AuthState {
 
 // Auth Notifier
 class AuthNotifier extends StateNotifier<AuthState> {
-
   AuthNotifier({
     required LoginUseCase loginUseCase,
+    required SocialLoginUseCase socialLoginUseCase,
     required RegisterUseCase registerUseCase,
     required LogoutUseCase logoutUseCase,
     required AuthRepositoryImpl repository,
     required FcmSyncService fcmSync,
     required LocationSyncService locationSync,
   })  : _loginUseCase = loginUseCase,
+        _socialLoginUseCase = socialLoginUseCase,
         _registerUseCase = registerUseCase,
         _logoutUseCase = logoutUseCase,
         _repository = repository,
         _fcmSync = fcmSync,
         _locationSync = locationSync,
         super(const AuthState()) {
-    _sessionExpiredSub =
-        SessionEvents.onSessionExpired.listen((_) => _handleSessionExpired());
+    _sessionExpiredSub = SessionEvents.onSessionExpired.listen(
+      (_) => _handleSessionExpired(),
+    );
   }
   final LoginUseCase _loginUseCase;
+  final SocialLoginUseCase _socialLoginUseCase;
   final RegisterUseCase _registerUseCase;
   final LogoutUseCase _logoutUseCase;
   final AuthRepositoryImpl _repository;
@@ -122,7 +136,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   void _onAuthenticated() {
-    
     log.i('[START][FCM] SYNC');
     unawaited(_fcmSync.sync());
     _fcmSync.startTokenRefreshListener();
@@ -142,7 +155,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (isLoggedIn) {
       final result = await _repository.getProfile();
       result.fold(
-        (failure) => state = const AuthState(status: AuthStatus.unauthenticated),
+        (failure) =>
+            state = const AuthState(status: AuthStatus.unauthenticated),
         (user) {
           state = AuthState(status: AuthStatus.authenticated, user: user);
           _onAuthenticated();
@@ -153,12 +167,42 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<void> login({required String username, required String password}) async {
+  Future<void> login({
+    required String username,
+    required String password,
+  }) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
     final result = await _loginUseCase(username: username, password: password);
 
     result.fold(
+      (failure) => state = state.copyWith(
+        isLoading: false,
+        errorMessage: failure.message,
+        status: AuthStatus.unauthenticated,
+      ),
+      (user) {
+        state = AuthState(
+          status: AuthStatus.authenticated,
+          user: user,
+          isLoading: false,
+        );
+        _onAuthenticated();
+      },
+    );
+  }
+
+  Future<void> loginWithSocialAuthorizationCode(
+    SocialAuthorizationResult result,
+  ) async {
+    state = state.copyWith(isLoading: true, errorMessage: null);
+    final loginResult = await _socialLoginUseCase(
+      authorizationCode: result.authorizationCode,
+      codeVerifier: result.codeVerifier,
+      redirectUri: result.redirectUri,
+      clientId: result.clientId,
+    );
+    loginResult.fold(
       (failure) => state = state.copyWith(
         isLoading: false,
         errorMessage: failure.message,
@@ -222,6 +266,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier(
     loginUseCase: ref.watch(loginUseCaseProvider),
+    socialLoginUseCase: ref.watch(socialLoginUseCaseProvider),
     registerUseCase: ref.watch(registerUseCaseProvider),
     logoutUseCase: ref.watch(logoutUseCaseProvider),
     repository: ref.watch(authRepositoryProvider),
