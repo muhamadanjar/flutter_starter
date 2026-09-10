@@ -6,6 +6,6 @@ import '../config/app_config.dart';
 final appConfigProvider = Provider<AppConfig>((ref) {
   throw UnimplementedError(
     'appConfigProvider must be overridden in main()\n'
-    'Example: appConfigProvider.overrideWithValue(AppConfig.production)',
+    'Example: appConfigProvider.overrideWithValue(config)',
   );
 });

@@ -63,8 +63,8 @@ flutter pub run build_runner build
 flutter run
 ```
 
-Runs with:
-- Base URL: `http://localhost:3000/api`
+Runs with `.env.dev`:
+- API endpoint, version, and timeout read from the file
 - Debug mode: ON
 - Environment: development
 
@@ -206,7 +206,7 @@ App supports 3 environments via flavors:
 flutter run -t lib/main_dev.dart
 # or just: flutter run (default)
 ```
-- Base URL: `http://localhost:3000/api`
+- API configuration: `.env.dev`
 - Debug mode: ON
 - Hot reload: ✅ enabled
 
@@ -214,7 +214,7 @@ flutter run -t lib/main_dev.dart
 ```bash
 flutter run -t lib/main_staging.dart
 ```
-- Base URL: `https://staging-api.example.com/api`
+- API configuration: `.env.staging`
 - Debug mode: OFF
 - Firebase: staging configuration
 
@@ -222,22 +222,24 @@ flutter run -t lib/main_staging.dart
 ```bash
 flutter run -t lib/main_production.dart
 ```
-- Base URL: `https://api.example.com/api`
+- API configuration: `.env.production`
 - Debug mode: OFF
 - Firebase: production configuration
 
 ### Changing Configuration
 
-Edit `lib/core/config/app_config.dart`:
+Copy the appropriate committed template, then edit its local environment file:
 
 ```dart
-static const staging = AppConfig(
-  baseUrl: 'https://new-api.example.com/api',  // ← Change here
-  apiVersion: 'v1',
-  environment: 'staging',
-  debugMode: false,
-);
+cp .env.staging.example .env.staging
+# .env.staging
+API_BASE_URL=https://new-api.example.com
+API_VERSION=v1
+REQUEST_TIMEOUT_SECONDS=30
 ```
+
+`API_BASE_URL` must be an HTTP(S) origin without a path. The local `.env.*`
+files are ignored by Git; their `.example` counterparts are committed.
 
 Then run:
 ```bash

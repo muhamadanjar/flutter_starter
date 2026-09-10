@@ -1,11 +1,11 @@
 {
     "schema_version": 2,
-    "commit": "ed8eb455a8ed9e214cc0ceca4f27d45370b00702",
-    "indexed_at": "2026-09-10T16:20:26Z",
-    "project": "home-anjar-orca-workspaces-enterprise_flutter_app-sheepshead",
-    "nodes": 1958,
-    "edges": 6049,
-    "original_size": 3735552,
-    "compressed_size": 266029,
-    "compression_level": 9
+    "commit": "b1ae61f2395db7635b6bf5d2a8692fb30b912d43",
+    "indexed_at": "2026-09-10T18:07:34Z",
+    "project": "enterprise_flutter_app",
+    "nodes": 1993,
+    "edges": 6168,
+    "original_size": 5373952,
+    "compressed_size": 507761,
+    "compression_level": 3
 }
