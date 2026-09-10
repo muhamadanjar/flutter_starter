@@ -1,11 +1,6 @@
 /// Auth response DTO (from login/register)
 class AuthResponseDto {
-
-  const AuthResponseDto({
-    required this.token,
-    this.refreshToken,
-    this.user,
-  });
+  const AuthResponseDto({required this.token, this.refreshToken, this.user});
 
   factory AuthResponseDto.fromJson(Map<String, dynamic> json) {
     return AuthResponseDto(

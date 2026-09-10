@@ -8,6 +8,15 @@ abstract class AuthRepository {
     required String password,
   });
 
+  /// Completes the backend OAuth authorization-code flow and persists its
+  /// resulting internal application session.
+  Future<Either<Failure, User>> loginWithSocialAuthorizationCode({
+    required String authorizationCode,
+    required String codeVerifier,
+    required String redirectUri,
+    required String clientId,
+  });
+
   Future<Either<Failure, User>> register({
     required String username,
     required String name,

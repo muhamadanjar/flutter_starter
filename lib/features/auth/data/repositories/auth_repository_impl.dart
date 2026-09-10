@@ -26,7 +26,11 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     if (!await networkInfo.isConnected) {
-      return left(NetworkFailure(message: 'No internet connection. Please check your network.'));
+      return left(
+        NetworkFailure(
+          message: 'No internet connection. Please check your network.',
+        ),
+      );
     }
 
     try {
@@ -35,40 +39,93 @@ class AuthRepositoryImpl implements AuthRepository {
         password: password,
       );
 
-      // Response: {data: {user: {...}, auth: {access_token, refresh_token, ...}}}
-      final data = response['data'] as Map<String, dynamic>;
-      final auth = data['auth'] as Map<String, dynamic>? ?? const {};
-      final token = auth['access_token'] as String? ?? '';
-      final refreshToken = auth['refresh_token'] as String? ?? '';
-      final userModel = UserModel.fromJson(data['user'] as Map<String, dynamic>);
-
-      // Save to local storage
-      await localDataSource.saveToken(token);
-      if (refreshToken.isNotEmpty) {
-        await localDataSource.saveRefreshToken(refreshToken);
-      }
-      await localDataSource.saveUserId(userModel.id);
-      await localDataSource.saveUser(userModel);
-      await localDataSource.setLoggedIn(true);
-
-      return right(userModel);
+      return _saveLoginResponse(response);
     } on ServerException catch (e) {
-      return left(ServerFailure(
-        message: e.message ?? 'Server error occurred',
-        statusCode: e.statusCode,
-      ));
+      return left(
+        ServerFailure(
+          message: e.message ?? 'Server error occurred',
+          statusCode: e.statusCode,
+        ),
+      );
     } on UnauthorizedException catch (e) {
       return left(UnauthorizedFailure(message: e.message ?? 'Unauthorized'));
     } on ValidationException catch (e) {
-      return left(ValidationFailure(
-        message: e.message ?? 'Validation error',
-        fieldErrors: e.fieldErrors,
-      ));
+      return left(
+        ValidationFailure(
+          message: e.message ?? 'Validation error',
+          fieldErrors: e.fieldErrors,
+        ),
+      );
     } on NetworkException catch (e) {
       return left(NetworkFailure(message: e.message ?? 'Network error'));
     } catch (e) {
       return left(UnknownFailure(message: e.toString()));
     }
+  }
+
+  @override
+  Future<Either<Failure, User>> loginWithSocialAuthorizationCode({
+    required String authorizationCode,
+    required String codeVerifier,
+    required String redirectUri,
+    required String clientId,
+  }) async {
+    if (!await networkInfo.isConnected) {
+      return left(
+        const NetworkFailure(
+          message: 'No internet connection. Please check your network.',
+        ),
+      );
+    }
+    try {
+      final response = await remoteDataSource.loginWithSocialAuthorizationCode(
+        authorizationCode: authorizationCode,
+        codeVerifier: codeVerifier,
+        redirectUri: redirectUri,
+        clientId: clientId,
+      );
+      return _saveLoginResponse(response);
+    } on ServerException catch (e) {
+      return left(
+        ServerFailure(
+          message: e.message ?? 'Server error occurred',
+          statusCode: e.statusCode,
+        ),
+      );
+    } on UnauthorizedException catch (e) {
+      return left(UnauthorizedFailure(message: e.message ?? 'Unauthorized'));
+    } on ValidationException catch (e) {
+      return left(
+        ValidationFailure(
+          message: e.message ?? 'Validation error',
+          fieldErrors: e.fieldErrors,
+        ),
+      );
+    } on NetworkException catch (e) {
+      return left(NetworkFailure(message: e.message ?? 'Network error'));
+    } catch (e) {
+      return left(UnknownFailure(message: e.toString()));
+    }
+  }
+
+  Future<Either<Failure, User>> _saveLoginResponse(
+    Map<String, dynamic> response,
+  ) async {
+    // Response: {data: {user: {...}, auth: {access_token, refresh_token, ...}}}
+    final data = response['data'] as Map<String, dynamic>;
+    final auth = data['auth'] as Map<String, dynamic>? ?? const {};
+    final token = auth['access_token'] as String? ?? '';
+    final refreshToken = auth['refresh_token'] as String? ?? '';
+    final userModel = UserModel.fromJson(data['user'] as Map<String, dynamic>);
+
+    await localDataSource.saveToken(token);
+    if (refreshToken.isNotEmpty) {
+      await localDataSource.saveRefreshToken(refreshToken);
+    }
+    await localDataSource.saveUserId(userModel.id);
+    await localDataSource.saveUser(userModel);
+    await localDataSource.setLoggedIn(true);
+    return right(userModel);
   }
 
   @override
@@ -80,7 +137,11 @@ class AuthRepositoryImpl implements AuthRepository {
     required String confirmPassword,
   }) async {
     if (!await networkInfo.isConnected) {
-      return left(const NetworkFailure(message: 'No internet connection. Please check your network.'));
+      return left(
+        const NetworkFailure(
+          message: 'No internet connection. Please check your network.',
+        ),
+      );
     }
 
     try {
@@ -95,15 +156,19 @@ class AuthRepositoryImpl implements AuthRepository {
       // Register returns the user only (no tokens); log in to get a session
       return login(username: username, password: password);
     } on ServerException catch (e) {
-      return left(ServerFailure(
-        message: e.message ?? 'Server error occurred',
-        statusCode: e.statusCode,
-      ));
+      return left(
+        ServerFailure(
+          message: e.message ?? 'Server error occurred',
+          statusCode: e.statusCode,
+        ),
+      );
     } on ValidationException catch (e) {
-      return left(ValidationFailure(
-        message: e.message ?? 'Validation error',
-        fieldErrors: e.fieldErrors,
-      ));
+      return left(
+        ValidationFailure(
+          message: e.message ?? 'Validation error',
+          fieldErrors: e.fieldErrors,
+        ),
+      );
     } on NetworkException catch (e) {
       return left(NetworkFailure(message: e.message ?? 'Network error'));
     } catch (e) {
@@ -143,10 +208,12 @@ class AuthRepositoryImpl implements AuthRepository {
         await localDataSource.saveUser(userModel);
         return right(userModel);
       } on ServerException catch (e) {
-        return left(ServerFailure(
-          message: e.message ?? 'Server error occurred',
-          statusCode: e.statusCode,
-        ));
+        return left(
+          ServerFailure(
+            message: e.message ?? 'Server error occurred',
+            statusCode: e.statusCode,
+          ),
+        );
       } on UnauthorizedException catch (e) {
         return left(UnauthorizedFailure(message: e.message ?? 'Unauthorized'));
       } catch (e) {

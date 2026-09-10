@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Authentication complete</title>
+  </head>
+  <body>
+    <p>Authentication complete. You may close this window.</p>
+    <script>
+      window.opener?.postMessage(
+        { 'flutter-web-auth-2': window.location.href },
+        window.location.origin,
+      );
+      window.close();
+    </script>
+  </body>
+</html>
