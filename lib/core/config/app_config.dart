@@ -1,11 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AppConfig {
-  final String baseUrl;
-  final String apiVersion;
-  final String environment;
-  final bool debugMode;
-  final Duration requestTimeout;
 
   const AppConfig({
     required this.baseUrl,
@@ -55,6 +50,11 @@ class AppConfig {
       requestTimeout: Duration(seconds: timeoutSeconds),
     );
   }
+  final String baseUrl;
+  final String apiVersion;
+  final String environment;
+  final bool debugMode;
+  final Duration requestTimeout;
 
   static String _requiredValue(String key) {
     final value = dotenv.maybeGet(key)?.trim();

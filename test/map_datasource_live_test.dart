@@ -16,7 +16,7 @@ class _AlwaysOnline implements NetworkInfo {
 void main() {
   test('getLayers parses live catalog', () async {
     final ds = MapRemoteDataSourceImpl(ExternalDioClient(
-      baseUrl: 'http://localhost:8050',
+      baseUrl: 'https://tileserver.jattirayyakonsultindo.co.id',
       networkInfo: _AlwaysOnline(),
       enableLogging: false,
     ));

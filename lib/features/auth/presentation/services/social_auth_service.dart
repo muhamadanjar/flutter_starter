@@ -3,9 +3,11 @@ import 'dart:math';
 
 import 'package:crypto/crypto.dart';
 import 'package:enterprise_flutter_app/core/config/app_config.dart';
+import 'package:enterprise_flutter_app/core/logger/logger_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+
 
 class SocialAuthorizationResult {
   const SocialAuthorizationResult({
@@ -48,6 +50,9 @@ class SocialAuthService {
     final redirectUri = _redirectUri();
     final verifier = _randomUrlSafeValue();
     final state = _randomUrlSafeValue();
+
+    log.i("penggunaan redirect $redirectUri");
+
     final challenge = base64Url
         .encode(sha256.convert(utf8.encode(verifier)).bytes)
         .replaceAll('=', '');
@@ -98,6 +103,7 @@ class SocialAuthService {
 
   String _redirectUri() {
     if (kIsWeb) {
+      log.i("menggunakan web");
       return dotenv.env['SOCIAL_WEB_REDIRECT_URI'] ??
           Uri.base.resolve('auth.html').toString();
     }
