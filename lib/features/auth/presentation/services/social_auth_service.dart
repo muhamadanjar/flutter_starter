@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:crypto/crypto.dart';
 import 'package:enterprise_flutter_app/core/config/app_config.dart';
-import 'package:enterprise_flutter_app/core/logger/logger_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
@@ -51,8 +50,6 @@ class SocialAuthService {
     final verifier = _randomUrlSafeValue();
     final state = _randomUrlSafeValue();
 
-    log.i("penggunaan redirect $redirectUri");
-
     final challenge = base64Url
         .encode(sha256.convert(utf8.encode(verifier)).bytes)
         .replaceAll('=', '');
@@ -62,6 +59,9 @@ class SocialAuthService {
         'client_id': clientId,
         'redirect_uri': redirectUri,
         'response_type': 'code',
+        // Scope dikonsumsi OAuth server API sendiri (bukan Google — Google leg
+        // dikerjakan server via authlib, kredensial ada di .env API).
+        // offline_access wajib kalau mau refresh token.
         'scope': 'openid profile email offline_access',
         'state': state,
         'code_challenge': challenge,
@@ -75,7 +75,18 @@ class SocialAuthService {
         callbackUrlScheme: Uri.parse(redirectUri).scheme,
       ),
     );
-    if (resultUri.toString().split('?').first != redirectUri) {
+    // Normalize: bandingkan scheme+host+path saja (toleransi trailing slash),
+    // abaikan query & fragment. Custom scheme seperti enterprise-flutter-app://
+    // rawan normalisasi (trailing '/') oleh browser/WebView.
+    final expected = Uri.parse(redirectUri);
+    final matches = resultUri.scheme == expected.scheme &&
+        resultUri.host == expected.host &&
+        _stripTrailingSlash(resultUri.path) ==
+            _stripTrailingSlash(expected.path);
+    if (!matches) {
+      debugPrint(
+        '[SocialAuth] callback mismatch: got=$resultUri expected=$redirectUri',
+      );
       throw const SocialAuthException('Unexpected OAuth callback destination.');
     }
     if (resultUri.queryParameters['state'] != state) {
@@ -101,9 +112,11 @@ class SocialAuthService {
     );
   }
 
+  String _stripTrailingSlash(String path) =>
+      path.endsWith('/') ? path.substring(0, path.length - 1) : path;
+
   String _redirectUri() {
     if (kIsWeb) {
-      log.i("menggunakan web");
       return dotenv.env['SOCIAL_WEB_REDIRECT_URI'] ??
           Uri.base.resolve('auth.html').toString();
     }

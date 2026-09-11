@@ -38,6 +38,13 @@ Web uses `web/auth.html`, which returns the popup callback through
 
 ## Troubleshooting
 
+- `invalid_client`: `SOCIAL_OAUTH_CLIENT_ID` harus client OAuth first-party milik
+  API backend, **bukan** Google client ID (bukan `.apps.googleusercontent.com`).
+  Google client (type Web) dikonfigurasi server-side lewat `OAUTH_GOOGLE_CLIENT_ID`
+  dan `OAUTH_GOOGLE_CLIENT_SECRET`.
+- `redirect_uri_mismatch`: daftarkan exact callback URL API sebagai Authorized
+  redirect URI di Google Cloud Console.
+
 - `Invalid redirect_uri`: add the exact URI (including path) to the API OAuth
   client's allowlist.
 - `Provider 'google' tidak tersedia`: set the API's Google credentials.

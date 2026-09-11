@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Authentication complete</title>
-  </head>
-  <body>
-    <p>Authentication complete. You may close this window.</p>
-    <script>
-      window.opener?.postMessage(
-        { 'flutter-web-auth-2': window.location.href },
-        window.location.origin,
-      );
-      window.close();
-    </script>
-  </body>
+<head><title>Authorizing...</title></head>
+<body>
+<p>Authentication complete. Closing window...</p>
+<script>
+  const message = { 'flutter-web-auth-2': window.location.href };
+
+  if (window.opener) {
+    window.opener.postMessage(message, window.location.origin);
+    window.close();
+  } else if (window.parent && window.parent !== window) {
+    window.parent.postMessage(message, window.location.origin);
+  } else {
+    localStorage.setItem('flutter-web-auth-2', window.location.href);
+    window.close();
+  }
+</script>
+</body>
 </html>
